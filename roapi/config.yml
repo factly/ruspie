@@ -1,0 +1,8 @@
+addr:
+  http: 0.0.0.0:8000
+  postgres: 0.0.0.0:5432
+tables:
+  - name: "uk_cities"
+    uri: "../test_data/uk_cities_with_headers.csv"
+    option:
+      format: "csv"
