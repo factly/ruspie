@@ -4,9 +4,9 @@ use axum::{http::Method, Extension, Router};
 use roapi::server::http::HttpApiServer;
 use tokio::sync::Mutex;
 
-use crate::{api, context::FactlyApiContext};
+use crate::{api, context::RuspieApiContext};
 
-pub fn build_http_server<H: FactlyApiContext>(
+pub fn build_http_server<H: RuspieApiContext>(
     ctx: Arc<Mutex<H>>,
     default_host: String
 ) -> anyhow::Result<(HttpApiServer, SocketAddr)>{

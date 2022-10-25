@@ -1,11 +1,16 @@
 pub mod graph;
 pub mod rest;
+pub mod routes;
 pub mod schema;
 pub mod sql;
-pub mod routes;
 
+use axum::response::IntoResponse;
+use columnq::datafusion::arrow;
+use columnq::encoding::ContentType;
 use columnq::table::TableLoadOption;
 use columnq::table::TableSource;
+use roapi::api::encode_record_batches;
+use roapi::error::ApiErrResp;
 
 pub fn get_table_source(table: &str) -> TableSource {
     let table = table.split(".").collect::<Vec<&str>>();
@@ -18,15 +23,26 @@ pub fn get_table_source(table: &str) -> TableSource {
     );
     map.insert(
         String::from("use_memory_table"),
-        serde_json::Value::Bool(false)
+        serde_json::Value::Bool(false),
     );
     let opt: TableLoadOption = serde_json::from_value(serde_json::Value::Object(map)).unwrap();
     TableSource::new(
         table_name,
         format!(
             "./test/{}",
-            table_name.clone().trim().to_owned() +"." + extention
+            table_name.clone().trim().to_owned() + "." + extention
         ),
     )
     .with_option(opt)
+}
+
+pub fn encode_vec_record_batches(
+    content_type: ContentType,
+    batches: Vec<Vec<arrow::record_batch::RecordBatch>>,
+) -> Result<impl IntoResponse, ApiErrResp> {
+    let mut v = vec![];
+    for mut v1 in batches {
+        v.append(&mut v1)
+    }
+    encode_record_batches(content_type, &v)
 }

@@ -2,7 +2,7 @@ use roapi::server::http::HttpApiServer;
 use tokio::sync::Mutex;
 use std::sync::Arc;
 
-use crate::{context::RawFactlyApiContext, server};
+use crate::{context::RawRuspieApiContext, server};
 
 pub struct Application {
     pub http_addr: std::net::SocketAddr,
@@ -13,7 +13,7 @@ impl Application {
     pub async fn build() -> anyhow::Result<Self> {
         let default_host = std::env::var("HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
 
-        let ctx = Arc::new(Mutex::new(RawFactlyApiContext::new()));
+        let ctx = Arc::new(Mutex::new(RawRuspieApiContext::new()));
 
         let (http_server, http_addr) = server::build_http_server(ctx, default_host)?;
 

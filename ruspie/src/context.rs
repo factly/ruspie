@@ -10,21 +10,29 @@ use columnq::{
 use roapi::{context::RoapiContext, error::ApiErrResp};
 
 #[async_trait]
-pub trait FactlyApiContext: RoapiContext {
+pub trait RuspieApiContext: RoapiContext {
     async fn conf_table(&mut self, table_source: &TableSource) -> Result<(), ColumnQError>;
-    async fn get_table(&self,table_name: &str) -> bool;
-    async fn query_rest_table_2(
+    async fn table_exists(&self, table_name: &str) -> bool;
+    async fn query_rest_table_ruspie(
         &self,
         table_name: &str,
         params: &HashMap<String, String>,
     ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError>;
+    async fn query_graphql_ruspie(
+        &self,
+        query: &str,
+    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError>;
+    async fn query_sql_ruspie(
+        &self,
+        query: &str,
+    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError>;
 }
 
-pub struct RawFactlyApiContext {
+pub struct RawRuspieApiContext {
     pub cq: ColumnQ,
 }
 
-impl RawFactlyApiContext {
+impl RawRuspieApiContext {
     pub fn new() -> Self {
         let cq = ColumnQ::new();
         Self { cq }
@@ -32,29 +40,42 @@ impl RawFactlyApiContext {
 }
 
 #[async_trait]
-impl FactlyApiContext for RawFactlyApiContext {
+impl RuspieApiContext for RawRuspieApiContext {
     async fn conf_table(&mut self, table_source: &TableSource) -> Result<(), ColumnQError> {
         self.cq.load_table(&table_source).await
     }
 
-    async fn get_table(&self, table_name: &str) -> bool {
+    async fn table_exists(&self, table_name: &str) -> bool {
         match self.cq.schema_map().get(table_name) {
-            Some (_) => return true,
-            None => return false
+            Some(_) => return true,
+            None => return false,
         };
-        
     }
-    async fn query_rest_table_2(
+    async fn query_rest_table_ruspie(
         &self,
         table_name: &str,
         params: &HashMap<String, String>,
     ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
         self.cq.query_rest_table_2(table_name, params).await
     }
+
+    async fn query_graphql_ruspie(
+        &self,
+        query: &str,
+    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
+        self.cq.query_graphql_2(query).await
+    }
+
+    async fn query_sql_ruspie(
+        &self,
+        query: &str,
+    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
+        self.cq.query_sql_2(query).await
+    }
 }
 
 #[async_trait]
-impl RoapiContext for RawFactlyApiContext {
+impl RoapiContext for RawRuspieApiContext {
     #[inline]
     fn read_only_mode() -> bool {
         true
@@ -90,26 +111,26 @@ impl RoapiContext for RawFactlyApiContext {
     #[inline]
     async fn query_graphql(
         &self,
-        query: &str,
+        _query: &str,
     ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError> {
-        self.cq.query_graphql(query).await
+        unreachable!()
     }
 
     #[inline]
     async fn query_sql(
         &self,
-        query: &str,
+        _query: &str,
     ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError> {
-        self.cq.query_sql(query).await
+        unreachable!()
     }
 
     #[inline]
     async fn query_rest_table(
         &self,
-        table_name: &str,
-        params: &HashMap<String, String>,
+        _table_name: &str,
+        _params: &HashMap<String, String>,
     ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError> {
-        self.cq.query_rest_table(table_name, params).await
+        unreachable!()
     }
 
     #[inline]

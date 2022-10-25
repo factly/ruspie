@@ -372,6 +372,16 @@ pub async fn exec_query(
         .map_err(QueryError::query_exec)
 }
 
+pub async fn exec_query_2(
+    dfctx: &datafusion::execution::context::SessionContext,
+    q: &str,
+) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
+    query_to_df(dfctx, q)?
+        .collect_partitioned()
+        .await
+        .map_err(QueryError::query_exec)
+}
+
 #[cfg(test)]
 mod tests {
     use datafusion::arrow::array::*;

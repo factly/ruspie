@@ -112,11 +112,25 @@ impl ColumnQ {
         query::graphql::exec_query(&self.dfctx, query).await
     }
 
+    pub async fn query_graphql_2(
+        &self,
+        query: &str,
+    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
+        query::graphql::exec_query_2(&self.dfctx, query).await
+    }
+
     pub async fn query_sql(
         &self,
         query: &str,
     ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError> {
         query::sql::exec_query(&self.dfctx, query).await
+    }
+
+    pub async fn query_sql_2(
+        &self,
+        query: &str,
+    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
+        query::sql::exec_query_2(&self.dfctx, query).await
     }
 
     pub async fn query_rest_table(
