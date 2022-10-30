@@ -7,7 +7,47 @@ use columnq::{
     table::TableSource,
     ColumnQ,
 };
+use config::Config;
 use roapi::{context::RoapiContext, error::ApiErrResp};
+
+#[derive(Clone)]
+pub struct DatasetExtContext {
+    pub current_ext: Option<String>,
+    pub default_ext: String,
+}
+
+impl Default for DatasetExtContext {
+    fn default() -> Self {
+        
+        let config = Config::builder()
+            .add_source(config::File::with_name("./config.yml"))
+            .build()
+            .unwrap();
+        let config = config
+            .try_deserialize::<HashMap<String, HashMap<String, String>>>()
+            .unwrap();
+
+        let default_ext = config.get("config").unwrap().get("default_ext").unwrap();
+        Self {
+            current_ext: None,
+            default_ext: default_ext.as_str().to_owned(),
+        }
+    }
+}
+
+impl DatasetExtContext {
+    pub fn set_default_ext(&mut self, ext: String) {
+        self.default_ext = ext
+    }
+
+    pub fn set_current_ext(&mut self, ext: Option<String>) {
+        self.current_ext = ext
+    }
+
+    pub fn get_default_ext(&self) -> &String {
+        &self.default_ext
+    }
+}
 
 #[async_trait]
 pub trait RuspieApiContext: RoapiContext {
@@ -136,6 +176,7 @@ impl RoapiContext for RawRuspieApiContext {
     #[inline]
     async fn kv_get(&self, kv_name: &str, key: &str) -> Result<Option<String>, QueryError> {
         Ok(self.cq.kv_get(kv_name, key)?.cloned())
+        // unreachable!()
     }
 
     #[inline]

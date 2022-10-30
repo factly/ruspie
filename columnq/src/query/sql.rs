@@ -31,6 +31,7 @@ pub async fn exec_query_2(
         datafusion::dataframe::DataFrame::new(dfctx.state.clone(), &plan),
     );
 
+
     df.collect_partitioned().await.map_err(QueryError::query_exec)
 }
 

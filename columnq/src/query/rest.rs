@@ -161,7 +161,16 @@ pub fn table_query_to_df(
     if let Some(val) = params.get("limit") {
         let limit = val.parse::<usize>().map_err(num_parse_err)?;
         // df = df.limit(limit, Some).map_err(QueryError::invalid_limit)?;
-        df = df.limit(0, Some(limit)).map_err(QueryError::invalid_limit)?;
+        if let Some(val) = params.get("page") {
+            let skip = val.parse::<usize>().map_err(num_parse_err)? * limit;
+            df = df
+                .limit(skip, Some(limit))
+                .map_err(QueryError::invalid_limit)?;
+        } else {
+            df = df
+                .limit(0, Some(limit))
+                .map_err(QueryError::invalid_limit)?;
+        }
     }
 
     Ok(df)
@@ -182,7 +191,9 @@ pub async fn query_table_2(
     params: &HashMap<String, String>,
 ) -> Result<Vec<Vec<RecordBatch>>, QueryError> {
     let df = table_query_to_df(dfctx, table_name, params)?;
-    df.collect_partitioned().await.map_err(QueryError::query_exec)
+    df.collect_partitioned()
+        .await
+        .map_err(QueryError::query_exec)
 }
 
 #[cfg(test)]

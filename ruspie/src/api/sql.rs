@@ -1,14 +1,15 @@
 use std::sync::Arc;
 
-use crate::context::RuspieApiContext;
+use crate::context::{RuspieApiContext, DatasetExtContext};
 use axum::{body::Bytes, extract, http::HeaderMap, response::IntoResponse, Extension};
 
-use super::{encode_vec_record_batches, get_table_source};
+use super::{encode_vec_record_batches, get_table_source, extract_ext_from_headers};
 use roapi::{api::encode_type_from_hdr, error::ApiErrResp};
 use tokio::sync::Mutex;
 
 pub async fn sql<H: RuspieApiContext>(
     Extension(ctx): extract::Extension<Arc<Mutex<H>>>,
+    Extension(dataset_ext_context): Extension<Arc<Mutex<DatasetExtContext>>>,
     headers: HeaderMap,
     body: Bytes,
 ) -> Result<impl IntoResponse, ApiErrResp> {
@@ -22,10 +23,12 @@ pub async fn sql<H: RuspieApiContext>(
         .unwrap();
     let table_name = query.split(" ").collect::<Vec<&str>>()[idx + 1];
     if !context
-        .table_exists(table_name.split(".").collect::<Vec<&str>>()[0])
+        .table_exists(table_name)
         .await
     {
-        let table_source = get_table_source(table_name);
+
+        let extension = extract_ext_from_headers(dataset_ext_context, &headers).await;
+        let table_source = get_table_source(table_name, &extension);
         if let Err(e) = context.conf_table(&table_source).await {
             return Err(ApiErrResp::load_table(e));
         }
