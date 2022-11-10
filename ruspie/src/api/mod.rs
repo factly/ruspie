@@ -4,8 +4,6 @@ pub mod routes;
 pub mod schema;
 pub mod sql;
 
-use std::sync::Arc;
-
 use axum::http::HeaderMap;
 use axum::response::IntoResponse;
 use columnq::datafusion::arrow;
@@ -14,9 +12,6 @@ use columnq::table::TableLoadOption;
 use columnq::table::TableSource;
 use roapi::api::encode_record_batches;
 use roapi::error::ApiErrResp;
-use tokio::sync::Mutex;
-
-use crate::context::DatasetExtContext;
 
 pub fn get_table_source(table_name: &str, extension: &str) -> TableSource {
     let mut map = serde_json::Map::new();
@@ -26,7 +21,7 @@ pub fn get_table_source(table_name: &str, extension: &str) -> TableSource {
     );
     map.insert(
         String::from("use_memory_table"),
-        serde_json::Value::Bool(false),
+        serde_json::Value::Bool(true),
     );
     let opt: TableLoadOption = serde_json::from_value(serde_json::Value::Object(map)).unwrap();
     TableSource::new(
@@ -50,22 +45,14 @@ pub fn encode_vec_record_batches(
     encode_record_batches(content_type, &v)
 }
 
-pub async fn extract_ext_from_headers(dataset_ext_context: Arc<Mutex<DatasetExtContext>>, headers: &HeaderMap) -> String {
-    let mut dsectx = dataset_ext_context.lock().await;
-        let default_ext = headers.get("default_ext");
-        let current_ext = headers.get("current_ext");
-        let extension: &str;
+pub fn extract_ext_from_headers(headers: &HeaderMap) -> String {
+    let file_ext = headers.get("file-ext");
+    let extension: &str;
 
-        if let Some(v) = default_ext {
-            dsectx.set_default_ext(v.to_str().unwrap().to_string());
-        }
-        if let Some(v) = current_ext {
-            dsectx.set_current_ext(Some(v.to_str().unwrap().to_string()));
-            extension = v.to_str().unwrap();
-        } else {
-            let ex = dsectx.get_default_ext();
-            extension = ex.as_str();
-        }
+    match file_ext {
+        None => extension = "csv",
+        Some(s) => extension = s.to_str().unwrap(),
+    }
 
-        extension.to_string()
+    extension.to_string()
 }

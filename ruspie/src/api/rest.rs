@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::Arc};
 
-use crate::context::{RuspieApiContext, DatasetExtContext};
+use crate::context::RuspieApiContext;
 use axum::{
     extract,
     http::HeaderMap,
@@ -13,14 +13,13 @@ use super::{get_table_source, encode_vec_record_batches, extract_ext_from_header
 
 pub async fn rest<H: RuspieApiContext>(
     Extension(ctx): extract::Extension<Arc<Mutex<H>>>,
-    Extension(dataset_ext_context): extract::Extension<Arc<Mutex<DatasetExtContext>>>,
     headers: HeaderMap,
     extract::Path(table): extract::Path<String>,
     extract::Query(params): extract::Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, ApiErrResp> {
     let mut context = ctx.lock().await;
     if !context.table_exists(&table).await {
-        let extension = extract_ext_from_headers(dataset_ext_context, &headers).await;
+        let extension = extract_ext_from_headers(&headers);
         let table_source = get_table_source(&table, &extension);
         if let Err(e) = context.conf_table(&table_source).await {
             return Err(ApiErrResp::load_table(e));
