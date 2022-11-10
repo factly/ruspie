@@ -90,7 +90,6 @@ pub async fn to_mem_table(t: &TableSource) -> Result<Arc<dyn TableProvider>, Col
             })?),
             partitions,
         )?);
-
     Ok(table)
 }
 

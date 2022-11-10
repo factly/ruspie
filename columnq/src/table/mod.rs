@@ -90,9 +90,14 @@ pub struct TableOptionCsv {
     delimiter: u8,
     #[serde(default = "TableOptionCsv::default_projection")]
     projection: Option<Vec<usize>>,
+    use_memory_table: bool
 }
 
 impl TableOptionCsv {
+    #[inline]
+    pub fn default_use_memory_table() -> bool {
+        true
+    }
     #[inline]
     pub fn default_has_header() -> bool {
         true
@@ -142,6 +147,7 @@ impl Default for TableOptionCsv {
             has_header: Self::default_has_header(),
             delimiter: Self::default_delimiter(),
             projection: Self::default_projection(),
+            use_memory_table: Self::default_use_memory_table()
         }
     }
 }
@@ -477,7 +483,7 @@ pub async fn load(t: &TableSource) -> Result<Arc<dyn TableProvider>, ColumnQErro
         })
     } else {
         let t: Arc<dyn TableProvider> = match t.extension()? {
-            "csv" => Arc::new(csv::to_mem_table(t).await?),
+            "csv" => csv::to_datafusion_table(t).await?,
             "json" => Arc::new(json::to_mem_table(t).await?),
             "ndjson" | "jsonl" => Arc::new(ndjson::to_mem_table(t).await?),
             "parquet" => parquet::to_datafusion_table(t).await?,

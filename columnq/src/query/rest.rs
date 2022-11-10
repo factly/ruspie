@@ -66,7 +66,6 @@ pub fn table_query_to_df(
     let mut df = dfctx
         .table(table_name)
         .map_err(|e| QueryError::invalid_table(e, table_name))?;
-
     // filter[col1]eq='foo'
     // filter[col2]lt=2
     for (key, val) in params.iter().filter(|(k, _)| k.starts_with("filter[")) {
