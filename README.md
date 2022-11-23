@@ -1,4 +1,4 @@
-# ruspi
+# ruspie
 Move to `ruspie` directory and create a directory called `test` and save csv and parquet files to that directory
 
 Then run the following command
