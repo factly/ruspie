@@ -21,7 +21,7 @@ pub fn get_table_source(table_name: &str, extension: &str) -> TableSource {
     );
     map.insert(
         String::from("use_memory_table"),
-        serde_json::Value::Bool(true),
+        serde_json::Value::Bool(false),
     );
     let opt: TableLoadOption = serde_json::from_value(serde_json::Value::Object(map)).unwrap();
     TableSource::new(

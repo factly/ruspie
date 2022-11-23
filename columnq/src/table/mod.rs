@@ -90,6 +90,7 @@ pub struct TableOptionCsv {
     delimiter: u8,
     #[serde(default = "TableOptionCsv::default_projection")]
     projection: Option<Vec<usize>>,
+    #[serde(default = "TableOptionCsv::default_use_memory_table")]
     use_memory_table: bool
 }
 
