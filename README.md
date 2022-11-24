@@ -24,7 +24,7 @@ Note: add a limit query param along with the request while querying large files
 example: `curl "localhost:8080/api/tables/file?limit=100"`
 
 The default file extention is `csv`
-you can change the file extention by passing `file-ext` header with the request
+you can change the file extention by passing `FILE-EXT` header with the request
 
 example:
-    `curl -H "file-ext: parquet" "localhost:8080/api/tables/another_file"`
+    `curl -H "FILE-EXT: parquet" "localhost:8080/api/tables/another_file"`

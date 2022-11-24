@@ -46,11 +46,12 @@ pub fn encode_vec_record_batches(
 }
 
 pub fn extract_ext_from_headers(headers: &HeaderMap) -> String {
-    let file_ext = headers.get("file-ext");
+    let file_ext = headers.get("FILE-EXT");
     let extension: &str;
 
+    let binding = std::env::var("DEFAULT_EXT").unwrap_or_else(|_| String::from("csv"));
     match file_ext {
-        None => extension = "csv",
+        None => extension = binding.as_str(),
         Some(s) => extension = s.to_str().unwrap(),
     }
 
