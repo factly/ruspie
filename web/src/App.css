@@ -1,0 +1,80 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  font-family: 'Inter', sans-serif;
+}
+
+.navbar {
+  height: 48px;
+  width: 100vw;
+  margin: auto 0;
+  border-bottom: 1px rgba(0,0,0,.20) solid;
+}
+
+.header {
+  height: 36px;
+  display: flex;
+  background-color: #1a73e8;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-list {
+  display: flex;
+  list-style: none;
+  justify-content: space-around;
+  width: 40%;
+  color: #ffffff;
+  font-weight: 1000;
+}
+
+.list-elements {
+  cursor: pointer;
+}
+
+#heading {
+  font-size: 28px;
+  font-weight: bolder;
+  margin: 16px 0px 0px 16px;
+}
+
+.request-response-div {
+  display: flex;
+  margin-top: 16px;
+  align-items: stretch;
+}
+
+.request-division {
+  width: 50%;
+  display: flex;
+  margin-left: 20px;
+}
+
+.text-area-div {
+ width: 50%;
+ display: flex;
+}
+
+
+#response-textarea {
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-size: 16px;
+  resize: none;
+  width: 90%;
+  min-height: 80vw;
+}
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
