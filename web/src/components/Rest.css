@@ -41,7 +41,7 @@ input[type=number], select {
 
 input[type=submit] {
   width: 90%;
-  background-color: #1a73e8;
+  background-color: #9b0046;
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
@@ -60,3 +60,23 @@ label {
   display: flex;
   flex-direction: column;
 }
+
+.backLink {
+  font-size: 12px;
+  font-weight: 1000;
+  background-color: #fff;
+  color: #9b0046;
+  padding: 14px 20px;
+  border: 1px solid #9b0046;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  margin-right: 10%;
+  text-decoration: none;
+}
+
+.attribute-Selector {
+  margin-top: 8px;
+  width: 90%
+}
+

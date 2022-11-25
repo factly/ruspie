@@ -5,6 +5,8 @@
 
 .App {
   font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 .navbar {
@@ -12,12 +14,14 @@
   width: 100vw;
   margin: auto 0;
   border-bottom: 1px rgba(0,0,0,.20) solid;
+  background-color: #9b0046;
+  color: #ffffff;
+  padding: 16px 0px 0px 16px;
 }
 
 .header {
   height: 36px;
   display: flex;
-  background-color: #1a73e8;
   justify-content: center;
   align-items: center;
 }
@@ -38,7 +42,6 @@
 #heading {
   font-size: 28px;
   font-weight: bolder;
-  margin: 16px 0px 0px 16px;
 }
 
 .request-response-div {
@@ -68,7 +71,7 @@
   font-size: 16px;
   resize: none;
   width: 90%;
-  min-height: 80vw;
+  min-height: 50vw;
 }
 @keyframes App-logo-spin {
   from {
