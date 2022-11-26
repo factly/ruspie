@@ -3,8 +3,8 @@ use std::sync::Arc;
 use crate::context::RuspieApiContext;
 use axum::{body::Bytes, extract, http::HeaderMap, response::IntoResponse, Extension};
 
-use super::{encode_vec_record_batches, get_table_source, extract_ext_from_headers};
-use roapi::{api::encode_type_from_hdr, error::ApiErrResp};
+use super::{ get_table_source, extract_ext_from_headers};
+use roapi::{api::{encode_type_from_hdr, encode_record_batches}, error::ApiErrResp};
 use tokio::sync::Mutex;
 
 pub async fn sql<H: RuspieApiContext>(
@@ -32,8 +32,10 @@ pub async fn sql<H: RuspieApiContext>(
             return Err(ApiErrResp::load_table(e));
         }
     }
-    let encode_type = encode_type_from_hdr(headers);
-    let batches = context.query_sql_ruspie(query).await?;
+    let response_format = H::get_response_format(&context).await;
+    let encode_type = encode_type_from_hdr(headers, response_format);
+    let batches = context.query_sql(query).await?;
 
-    encode_vec_record_batches(encode_type, batches)
+    // encode_vec_record_batches(encode_type, batches)
+    encode_record_batches(encode_type, &batches)
 }

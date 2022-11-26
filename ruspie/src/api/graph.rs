@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
-use super::{encode_vec_record_batches, extract_ext_from_headers, get_table_source};
+use super::{ extract_ext_from_headers, get_table_source};
 use crate::context::RuspieApiContext;
 use axum::{body::Bytes, extract, http::HeaderMap, response::IntoResponse, Extension};
-use roapi::{api::encode_type_from_hdr, error::ApiErrResp};
+use roapi::{api::{encode_type_from_hdr, encode_record_batches}, error::ApiErrResp};
 use tokio::sync::Mutex;
 
 pub async fn graphql<H: RuspieApiContext>(
@@ -25,7 +25,8 @@ pub async fn graphql<H: RuspieApiContext>(
             return Err(ApiErrResp::load_table(e));
         }
     }
-    let encode_type = encode_type_from_hdr(headers);
-    let batches = context.query_graphql_ruspie(query).await?;
-    encode_vec_record_batches(encode_type, batches)
+    let response_format = H::get_response_format(&context).await;
+    let encode_type = encode_type_from_hdr(headers, response_format);
+    let batches = context.query_graphql(query).await?;
+    encode_record_batches(encode_type, &batches)
 }

@@ -1,6 +1,6 @@
 [workspace]
 
-members = ["columnq", "roapi", "ruspie"]
+members = ["ruspie"]
 
 [profile.dev]
 split-debuginfo = "unpacked"
