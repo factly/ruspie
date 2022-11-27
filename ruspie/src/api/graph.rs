@@ -3,6 +3,7 @@ use std::sync::Arc;
 use super::{encode_vec_record_batches, extract_ext_from_headers, get_table_source};
 use crate::context::RuspieApiContext;
 use axum::{body::Bytes, extract, http::HeaderMap, response::IntoResponse, Extension};
+use columnq::encoding;
 use roapi::{api::encode_type_from_hdr, error::ApiErrResp};
 use tokio::sync::Mutex;
 
@@ -25,7 +26,7 @@ pub async fn graphql<H: RuspieApiContext>(
             return Err(ApiErrResp::load_table(e));
         }
     }
-    let encode_type = encode_type_from_hdr(headers);
+    let encode_type = encode_type_from_hdr(headers, encoding::ContentType::default());
     let batches = context.query_graphql_ruspie(query).await?;
     encode_vec_record_batches(encode_type, batches)
 }

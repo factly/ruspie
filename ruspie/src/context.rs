@@ -3,6 +3,7 @@ use std::{collections::HashMap, sync::Arc};
 use axum::async_trait;
 use columnq::{
     datafusion::{arrow, error::DataFusionError, prelude::DataFrame},
+    encoding,
     error::{ColumnQError, QueryError},
     table::TableSource,
     ColumnQ,
@@ -30,12 +31,16 @@ pub trait RuspieApiContext: RoapiContext {
 
 pub struct RawRuspieApiContext {
     pub cq: ColumnQ,
+    pub response_format: encoding::ContentType,
 }
 
 impl RawRuspieApiContext {
     pub fn new() -> Self {
         let cq = ColumnQ::new();
-        Self { cq }
+        Self {
+            cq,
+            response_format: encoding::ContentType::default(),
+        }
     }
 }
 
@@ -56,21 +61,21 @@ impl RuspieApiContext for RawRuspieApiContext {
         table_name: &str,
         params: &HashMap<String, String>,
     ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        self.cq.query_rest_table_2(table_name, params).await
+        self.cq.query_rest_table_ruspie(table_name, params).await
     }
 
     async fn query_graphql_ruspie(
         &self,
         query: &str,
     ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        self.cq.query_graphql_2(query).await
+        self.cq.query_graphql_ruspie(query).await
     }
 
     async fn query_sql_ruspie(
         &self,
         query: &str,
     ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        self.cq.query_sql_2(query).await
+        self.cq.query_sql_ruspie(query).await
     }
 }
 
@@ -142,5 +147,10 @@ impl RoapiContext for RawRuspieApiContext {
     #[inline]
     async fn sql_to_df(&self, query: &str) -> Result<Arc<DataFrame>, DataFusionError> {
         self.cq.dfctx.sql(query).await
+    }
+
+    #[inline]
+    async fn get_response_format(&self) -> encoding::ContentType {
+        self.response_format
     }
 }

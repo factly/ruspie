@@ -66,6 +66,7 @@ pub fn table_query_to_df(
     let mut df = dfctx
         .table(table_name)
         .map_err(|e| QueryError::invalid_table(e, table_name))?;
+
     // filter[col1]eq='foo'
     // filter[col2]lt=2
     for (key, val) in params.iter().filter(|(k, _)| k.starts_with("filter[")) {
@@ -159,9 +160,8 @@ pub fn table_query_to_df(
     // limit needs to be applied after sort to make sure the result is deterministics
     if let Some(val) = params.get("limit") {
         let limit = val.parse::<usize>().map_err(num_parse_err)?;
-        // df = df.limit(limit, Some).map_err(QueryError::invalid_limit)?;
         if let Some(val) = params.get("page") {
-            let skip = val.parse::<usize>().map_err(num_parse_err)? * limit;
+            let skip = (val.parse::<usize>().map_err(num_parse_err)? - 1) * limit;
             df = df
                 .limit(skip, Some(limit))
                 .map_err(QueryError::invalid_limit)?;
@@ -184,7 +184,7 @@ pub async fn query_table(
     df.collect().await.map_err(QueryError::query_exec)
 }
 
-pub async fn query_table_2(
+pub async fn query_table_ruspie(
     dfctx: &datafusion::execution::context::SessionContext,
     table_name: &str,
     params: &HashMap<String, String>,
@@ -227,7 +227,7 @@ mod tests {
                 )?
                 .select(vec![col("ami_id"), col("version")])?
                 .sort(vec![column_sort_expr_asc("ami_id")])?
-                .limit(10, None)?,
+                .limit(0, Some(10))?,
         );
 
         Ok(())

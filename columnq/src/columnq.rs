@@ -112,11 +112,11 @@ impl ColumnQ {
         query::graphql::exec_query(&self.dfctx, query).await
     }
 
-    pub async fn query_graphql_2(
+    pub async fn query_graphql_ruspie(
         &self,
         query: &str,
     ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        query::graphql::exec_query_2(&self.dfctx, query).await
+        query::graphql::exec_query_ruspie(&self.dfctx, query).await
     }
 
     pub async fn query_sql(
@@ -126,11 +126,11 @@ impl ColumnQ {
         query::sql::exec_query(&self.dfctx, query).await
     }
 
-    pub async fn query_sql_2(
+    pub async fn query_sql_ruspie(
         &self,
         query: &str,
     ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        query::sql::exec_query_2(&self.dfctx, query).await
+        query::sql::exec_query_ruspie(&self.dfctx, query).await
     }
 
     pub async fn query_rest_table(
@@ -141,12 +141,12 @@ impl ColumnQ {
         query::rest::query_table(&self.dfctx, table_name, params).await
     }
 
-    pub async fn query_rest_table_2(
+    pub async fn query_rest_table_ruspie(
         &self,
         table_name: &str,
         params: &HashMap<String, String>,
     ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        query::rest::query_table_2(&self.dfctx, table_name, params).await
+        query::rest::query_table_ruspie(&self.dfctx, table_name, params).await
     }
 
     pub fn kv_get(&self, kv_name: &str, key: &str) -> Result<Option<&String>, QueryError> {

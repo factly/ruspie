@@ -20,7 +20,7 @@ pub async fn to_datafusion_table(t: &TableSource) -> Result<Arc<dyn TableProvide
         .clone()
         .unwrap_or_else(|| TableLoadOption::csv(TableOptionCsv::default()));
     if opt.as_csv().unwrap().use_memory_table {
-        return to_mem_table(t).await
+        return to_mem_table(t).await;
     }
     let table_url = ListingTableUrl::parse(t.get_uri_str())?;
     let options = ListingOptions::new(Arc::new(CsvFormat::default()));
@@ -37,7 +37,6 @@ pub async fn to_datafusion_table(t: &TableSource) -> Result<Arc<dyn TableProvide
         .with_schema(schemaref);
     Ok(Arc::new(ListingTable::try_new(table_config)?))
 }
-
 pub async fn to_mem_table(
     t: &TableSource,
 ) -> Result<Arc<dyn TableProvider>, ColumnQError> {
@@ -96,8 +95,7 @@ pub async fn to_mem_table(
         })?;
 
     let table = Arc::new(datafusion::datasource::MemTable::try_new(
-        schema_ref, 
-        partitions,
+        schema_ref, partitions,
     )?);
 
     Ok(table)

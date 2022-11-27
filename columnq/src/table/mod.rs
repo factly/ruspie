@@ -22,6 +22,7 @@ pub mod google_spreadsheets;
 pub mod json;
 pub mod ndjson;
 pub mod parquet;
+pub mod xlsx;
 
 #[derive(Deserialize, Clone, Debug, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
@@ -75,7 +76,7 @@ impl From<TableSchema> for arrow::datatypes::Schema {
 }
 
 #[derive(Deserialize, Debug, Clone, Eq, PartialEq)]
-pub struct TableOptionGoogleSpreasheet {
+pub struct TableOptionGoogleSpreadsheet {
     application_secret_path: String,
     sheet_title: Option<String>,
 }
@@ -95,10 +96,6 @@ pub struct TableOptionCsv {
 }
 
 impl TableOptionCsv {
-    #[inline]
-    pub fn default_use_memory_table() -> bool {
-        true
-    }
     #[inline]
     pub fn default_has_header() -> bool {
         true
@@ -140,6 +137,10 @@ impl TableOptionCsv {
             )),
         }
     }
+    #[inline]
+    pub fn default_use_memory_table() -> bool {
+        true
+    }
 }
 
 impl Default for TableOptionCsv {
@@ -172,6 +173,11 @@ impl Default for TableOptionParquet {
             use_memory_table: Self::default_use_memory_table(),
         }
     }
+}
+
+#[derive(Deserialize, Debug, Clone, Eq, PartialEq)]
+pub struct TableOptionXlsx {
+    sheet_name: Option<String>,
 }
 
 #[derive(Deserialize, Debug, Clone, Eq, PartialEq)]
@@ -215,7 +221,8 @@ pub enum TableLoadOption {
     ndjson {},
     jsonl {},
     parquet(TableOptionParquet),
-    google_spreadsheet(TableOptionGoogleSpreasheet),
+    google_spreadsheet(TableOptionGoogleSpreadsheet),
+    xlsx(TableOptionXlsx),
     delta(TableOptionDelta),
     arrow {},
     arrows {},
@@ -225,12 +232,19 @@ pub enum TableLoadOption {
 }
 
 impl TableLoadOption {
-    fn as_google_spreadsheet(&self) -> Result<&TableOptionGoogleSpreasheet, ColumnQError> {
+    fn as_google_spreadsheet(&self) -> Result<&TableOptionGoogleSpreadsheet, ColumnQError> {
         match self {
             Self::google_spreadsheet(opt) => Ok(opt),
             _ => Err(ColumnQError::ExpectFormatOption(
                 "google_spreadsheets".to_string(),
             )),
+        }
+    }
+
+    fn as_xlsx(&self) -> Result<&TableOptionXlsx, ColumnQError> {
+        match self {
+            Self::xlsx(opt) => Ok(opt),
+            _ => Err(ColumnQError::ExpectFormatOption("xlsx".to_string())),
         }
     }
 
@@ -263,6 +277,7 @@ impl TableLoadOption {
             Self::csv { .. } => "csv",
             Self::parquet { .. } => "parquet",
             Self::google_spreadsheet(_) | Self::delta { .. } => "",
+            Self::xlsx { .. } => "xlsx",
             Self::arrow { .. } => "arrow",
             Self::arrows { .. } => "arrows",
             Self::mysql { .. } => "mysql",
@@ -423,7 +438,9 @@ impl TableSource {
             (None, TableIoSource::Uri(uri)) => {
                 match Path::new(uri).extension().and_then(OsStr::to_str) {
                     Some(ext) => match ext {
-                        "csv" | "json" | "ndjson" | "jsonl" | "parquet" | "arrow" | "arrows" => ext,
+                        "csv" | "json" | "ndjson" | "jsonl" | "parquet" | "arrow" | "arrows"
+                        | "xlsx" => ext,
+                        "sqlite" | "sqlite3" | "db" => "sqlite",
                         _ => {
                             return Err(ColumnQError::InvalidUri(format!(
                                 "unsupported extension in uri: {}",
@@ -463,12 +480,12 @@ pub async fn load(t: &TableSource) -> Result<Arc<dyn TableProvider>, ColumnQErro
             TableLoadOption::ndjson { .. } | TableLoadOption::jsonl { .. } => {
                 Arc::new(ndjson::to_mem_table(t).await?)
             }
-            // TableLoadOption::csv { .. } => Arc::new(csv::to_mem_table(t).await?),
             TableLoadOption::csv { .. } => csv::to_datafusion_table(t).await?,
             TableLoadOption::parquet { .. } => parquet::to_datafusion_table(t).await?,
             TableLoadOption::google_spreadsheet(_) => {
                 Arc::new(google_spreadsheets::to_mem_table(t).await?)
             }
+            TableLoadOption::xlsx { .. } => Arc::new(xlsx::to_mem_table(t).await?),
             TableLoadOption::delta { .. } => delta::to_datafusion_table(t).await?,
             TableLoadOption::arrow { .. } => Arc::new(arrow_ipc_file::to_mem_table(t).await?),
             TableLoadOption::arrows { .. } => Arc::new(arrow_ipc_stream::to_mem_table(t).await?),
@@ -686,7 +703,7 @@ batch_size: 512
     #[cfg(feature = "database-sqlite")]
     #[tokio::test]
     async fn test_load_sqlite_table() -> anyhow::Result<()> {
-        let t = TableSource::new("uk_cities", "sqlite://../test_data/sqlite.db");
+        let t = TableSource::new("uk_cities", "sqlite://../test_data/sqlite/sample.db");
         let table = load(&t).await?;
         let ctx = datafusion::prelude::SessionContext::new();
         let stats = table
@@ -695,6 +712,28 @@ batch_size: 512
             .statistics();
         assert_eq!(stats.num_rows, Some(37));
 
+        Ok(())
+    }
+
+    #[cfg(feature = "database-sqlite")]
+    #[tokio::test]
+    async fn test_load_sqlite_table_with_config() -> anyhow::Result<()> {
+        for ext in vec!["db", "sqlite", "sqlite3"] {
+            let t: TableSource = serde_yaml::from_str(&format!(
+                r#"
+name: "uk_cities"
+uri: "sqlite://../test_data/sqlite/sample.{}"
+"#,
+                ext
+            ))?;
+            let table = load(&t).await?;
+            let ctx = datafusion::prelude::SessionContext::new();
+            let stats = table
+                .scan(&ctx.state(), &None, &[], None)
+                .await?
+                .statistics();
+            assert_eq!(stats.num_rows, Some(37));
+        }
         Ok(())
     }
 }
