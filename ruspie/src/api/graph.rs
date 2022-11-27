@@ -26,6 +26,7 @@ pub async fn graphql<H: RuspieApiContext>(
             return Err(ApiErrResp::load_table(e));
         }
     }
+    println!("{:?}", query);
     let encode_type = encode_type_from_hdr(headers, encoding::ContentType::default());
     let batches = context.query_graphql_ruspie(query).await?;
     encode_vec_record_batches(encode_type, batches)

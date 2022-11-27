@@ -15,7 +15,7 @@ tokio = { version = "1", features = ["rt-multi-thread"] }
 axum = { version = "0.5", features = ["default", "http2"] }
 serde_json = "1.0.87"
 tower-http="0"
-dotenv="0"
+dotenvy="0"
 config="0"
 serde="1.0.147"
 thiserror="1"
