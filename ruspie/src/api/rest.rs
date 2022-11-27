@@ -17,7 +17,6 @@ pub async fn rest<H: RuspieApiContext>(
     extract::Path(table): extract::Path<String>,
     extract::Query(params): extract::Query<HashMap<String, String>>,
 ) -> Result<impl IntoResponse, ApiErrResp> {
-    println!("called");
     let mut context = ctx.lock().await;
     if !context.table_exists(&table).await {
         let extension = extract_ext_from_headers(&headers);
