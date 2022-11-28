@@ -1,12 +1,12 @@
 #![allow(dead_code)]
 
-use std::{error::Error as StdError, fmt};
-use axum::http::Response;
 use axum::http;
+use axum::http::Response;
 use serde::{Serialize, Serializer};
 use serde_json::Value;
+use std::fmt::{self};
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, thiserror::Error, Serialize)]
 pub enum AuthControllerError {
     #[error("API key `{0}` not found.")]
     ApiKeyNotFound(String),
@@ -15,10 +15,10 @@ pub enum AuthControllerError {
     #[error(transparent)]
     ApiKey(#[from] Error),
     #[error("Internal error: {0}")]
-    Internal(Box<dyn StdError + Send + Sync + 'static>),
+    Internal(String),
 }
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, thiserror::Error, Serialize)]
 pub enum Error {
     #[error("`{0}` field is mandatory.")]
     MissingParameter(&'static str),
@@ -34,13 +34,15 @@ pub enum Error {
     InvalidApiKeyUid(Value),
     #[error("The `{0}` field cannot be modified for the given resource.")]
     ImmutableField(String),
+    #[error("Unknown error encountered")]
+    UnknownError(String),
 }
 
 #[derive(Serialize, thiserror::Error, Debug)]
 pub struct AuthError {
     #[serde(serialize_with = "serialize_statuscode")]
     pub code: http::StatusCode,
-    pub error: String,
+    pub error: AuthControllerError,
     pub message: String,
 }
 
@@ -54,7 +56,7 @@ where
 impl From<http::Error> for AuthError {
     fn from(e: http::Error) -> Self {
         AuthError {
-            error: "http_error".to_string(),
+            error: AuthControllerError::Internal(e.to_string()),
             message: e.to_string(),
             code: http::StatusCode::INTERNAL_SERVER_ERROR,
         }
@@ -73,5 +75,97 @@ impl axum::response::IntoResponse for AuthError {
         let body = axum::body::boxed(axum::body::Full::from(payload));
 
         Response::builder().status(self.code).body(body).unwrap()
+    }
+}
+
+impl AuthError {
+    pub fn invalid_api_key_name(name: Value) -> Self {
+        AuthError {
+            code: http::StatusCode::BAD_REQUEST,
+            error: AuthControllerError::ApiKey(Error::InvalidApiKeyName(name)),
+            message: "API key name is invalid.".to_string(),
+        }
+    }
+
+    pub fn invalid_api_key_description(des: Value) -> Self {
+        AuthError {
+            code: http::StatusCode::BAD_REQUEST,
+            error: AuthControllerError::ApiKey(Error::InvalidApiKeyDescription(des)),
+            message: "API key description is invalid".to_string(),
+        }
+    }
+
+    pub fn invalid_api_key_uid(uid: Value) -> Self {
+        AuthError {
+            code: http::StatusCode::BAD_REQUEST,
+            error: AuthControllerError::ApiKey(Error::InvalidApiKeyUid(uid)),
+            message: "API key uid is invalid.".to_string(),
+        }
+    }
+
+    pub fn missing_parameter(param: &'static str) -> Self {
+        AuthError {
+            code: http::StatusCode::BAD_REQUEST,
+            error: AuthControllerError::ApiKey(Error::MissingParameter(param)),
+            message: format!("Missing parameter {}", param),
+        }
+    }
+
+    pub fn invalid_api_key_expires_at(value: Value) -> Self {
+        AuthError {
+            code: http::StatusCode::BAD_REQUEST,
+            message: format!("Invalid API key expires at {}", value),
+            error: AuthControllerError::ApiKey(Error::InvalidApiKeyExpiresAt(value)),
+        }
+    }
+
+    pub fn immutable_field(value: String) -> Self {
+        AuthError {
+            code: http::StatusCode::BAD_REQUEST,
+            message: format!("cannot change value {} of an immutable field", value),
+            error: AuthControllerError::ApiKey(Error::ImmutableField(value)),
+        }
+    }
+
+    pub fn create_dir_all_failed(err: &dyn std::error::Error) -> Self {
+        AuthError {
+            code: http::StatusCode::INTERNAL_SERVER_ERROR,
+            error: AuthControllerError::Internal(err.to_string()),
+            message: err.to_string(),
+        }
+    }
+
+    pub fn internal_error(err: String) -> Self {
+        AuthError {
+            code: http::StatusCode::INTERNAL_SERVER_ERROR,
+            error: AuthControllerError::Internal(err.clone()),
+            message: err,
+        }
+    }
+
+    pub fn api_key_already_exists(err: String) -> Self {
+        AuthError {
+            code: http::StatusCode::BAD_REQUEST,
+            error: AuthControllerError::ApiKeyAlreadyExists(err.clone()),
+            message: err,
+        }
+    }
+
+    pub fn api_key_not_found(e: String) -> Self {
+        AuthError {
+            code: http::StatusCode::NOT_FOUND,
+            error: AuthControllerError::ApiKeyNotFound(e.clone()),
+            message: e,
+        }
+    }
+}
+
+impl From<heed::Error> for AuthError {
+    fn from(e: heed::Error) -> Self {
+        AuthError {
+            code: http::StatusCode::INTERNAL_SERVER_ERROR,
+            error: AuthControllerError::Internal(e.to_string()),
+            message: e.to_string(),
+        }
     }
 }

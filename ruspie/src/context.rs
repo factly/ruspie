@@ -10,6 +10,8 @@ use columnq::{
 };
 use roapi::{context::RoapiContext, error::ApiErrResp};
 
+use crate::auth::controller::AuthController;
+
 #[async_trait]
 pub trait RuspieApiContext: RoapiContext {
     async fn conf_table(&mut self, table_source: &TableSource) -> Result<(), ColumnQError>;
@@ -32,14 +34,16 @@ pub trait RuspieApiContext: RoapiContext {
 pub struct RawRuspieApiContext {
     pub cq: ColumnQ,
     pub response_format: encoding::ContentType,
+    pub auth_controller: AuthController
 }
 
 impl RawRuspieApiContext {
-    pub fn new() -> Self {
+    pub fn new(auth_controller: AuthController) -> Self {
         let cq = ColumnQ::new();
         Self {
             cq,
             response_format: encoding::ContentType::default(),
+            auth_controller,
         }
     }
 }
@@ -145,8 +149,9 @@ impl RoapiContext for RawRuspieApiContext {
     }
 
     #[inline]
-    async fn sql_to_df(&self, query: &str) -> Result<Arc<DataFrame>, DataFusionError> {
-        self.cq.dfctx.sql(query).await
+    async fn sql_to_df(&self, _query: &str) -> Result<Arc<DataFrame>, DataFusionError> {
+        // self.cq.dfctx.sql(query).await
+        unreachable!()
     }
 
     #[inline]

@@ -57,4 +57,3 @@ pub fn extract_ext_from_headers(headers: &HeaderMap) -> String {
 
     extension.to_string()
 }
-

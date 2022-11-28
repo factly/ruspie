@@ -17,7 +17,6 @@ pub async fn graphql<H: RuspieApiContext>(
         .split(|c| c == '{' || c == '(' || c == '}' || c == ')')
         .collect::<Vec<&str>>()[1]
         .trim();
-
     let mut context = ctx.lock().await;
     if !context.table_exists(table_name).await {
         let extension = extract_ext_from_headers(&headers);
