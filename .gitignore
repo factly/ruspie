@@ -95,7 +95,7 @@ web/.pnp
 web/.pnp.js
 
 # testing
-web//coverage
+web/coverage
 
 # production
 web/build
@@ -106,7 +106,6 @@ web/.env.local
 web/.env.development.local
 web/.env.test.local
 web/.env.production.local
-web/
 web/npm-debug.log*
 web/yarn-debug.log*
 web/yarn-error.log*

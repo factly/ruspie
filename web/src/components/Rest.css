@@ -27,6 +27,7 @@ input[type=text], select {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
 }
 
 input[type=number], select {
@@ -80,3 +81,34 @@ label {
   width: 90%
 }
 
+.filterDiv {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  /* margin-right: 10%; */
+  align-items: center;
+}
+
+.add-button {
+  background-color: #9b0046;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 40%;
+}
+
+.close-button {
+  color: #9b0046;
+  background-color: white;
+  margin: 8px 0;
+  border: 1px solid #9b0046;
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
+  width: 5%;
+  font-size: 15px;
+}

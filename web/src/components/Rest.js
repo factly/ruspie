@@ -6,10 +6,40 @@ import './LinkGroup.css';
 import { useAppDataContext } from "./AppDataContext";
 import Select from 'react-select'
 import { Link } from "react-router-dom";
+import { createFilter, isColumnDatatypeString } from "../util/filter";
 
 function Rest({  }){
   // responseData stores the search data coming from ruspie and displays it in the response textarea
   const [responseData, setResponseData] = useState('');
+
+  //getting the global context which has some getters and setters for getting the file name and schema
+  let { currentFileSchema, currentFileName } = useAppDataContext();
+
+  const operatorList = [
+    {
+      label: '>',
+      value: 'gt='
+    },
+    {
+      label: '<',
+      value: 'lt='
+    },
+    {
+      label: '=',
+      value: '='
+    },
+    {
+      label: '>=',
+      value: 'gte='
+    },
+    {
+      label: '<=',
+      value: 'lte='
+    }
+  ]
+
+  // filterInputsFields stores the filter inputs
+  const [filterInputFields, setFilterInputFields] = useState([]);
 
   // inputs stores the form data in key value pairs
   const [inputs, setInputs] = useState({
@@ -30,13 +60,15 @@ function Rest({  }){
       }
     }
 
-    fetch(`http://localhost:8080/api/tables/${currentFileName}?` + new URLSearchParams(queryParam), 
+    const URL = `http://localhost:8080/api/tables/${currentFileName}?` + new URLSearchParams(queryParam) + createFilter(filterInputFields, currentFileSchema)
+    fetch(URL, 
     // {
     //   headers: {
     //     'FILE-EXT': inputs?.file_format
     //   }
     // }
     ) 
+
     .then((res) => {
       if (res.status !== 200) {
         return res.json().then(data => {
@@ -63,8 +95,38 @@ function Rest({  }){
   const handleColumnsChange = (selectedValues) => {
     setInputs({...inputs, "columns": selectedValues?.map((object) => object?.value)})
   }
-  //getting the global context which has some getters and setters for getting the file name and schema
-  let { currentFileSchema, currentFileName } = useAppDataContext();
+
+  const addFilterFields = (e) => {
+    e.preventDefault()
+    setFilterInputFields([...filterInputFields, {
+      columnName: '',
+      operator: '',
+      value: ''
+    }])
+  }
+
+  const removeFilterFields = (e, index) => {
+    e.preventDefault()
+    setFilterInputFields([...filterInputFields.slice(0, index),...filterInputFields.slice(index + 1)])
+  }
+
+  const handleFilterFormColumnSelectChange = (index, event) => {
+    let data = [...filterInputFields];
+    data[index]['columnName'] = event.value;
+    setFilterInputFields(data);
+  }
+
+  const handleFilterFormOperatorSelectChange = (index, event) => {
+    let data = [...filterInputFields];
+    data[index]['operator'] = event.value;
+    setFilterInputFields(data);
+  }
+  const handleFilterFormInputChange = (index, event) => {
+    let data = [...filterInputFields];
+    data[index][event.target.name] = event.target.value;
+    setFilterInputFields(data);
+  }
+
   return (
    <div className="request-response-div">
       <div className="request-division">
@@ -104,12 +166,54 @@ function Rest({  }){
                   >
                   </Select>
                 </div>
+                <br/>
                 <div className="form-input-div">
                   <label htmlFor="filters">
                     Filters
                   </label>
-                  <input name="filters" type={'text'} id='filters' placeholder="please enter filters"></input>
+                  {
+                    filterInputFields.map((input, index) => {
+                      const isString = isColumnDatatypeString(currentFileSchema?.fields, input?.columnName)
+                      return (
+                        <div key={index} className="filterDiv">
+                          <Select
+                            name="columnName"
+                            placeholder='select filter column'
+                            isClearable={false}
+                            required={true}
+                            options={currentFileSchema?.fields?.map((field) => { 
+                              return {
+                                value: field.name,
+                                label: field.name
+                              }
+                            })} 
+                            styles={{
+                              width: '30%'
+                            }}
+                          onChange={(e) => handleFilterFormColumnSelectChange(index, e)}
+                          />
+                          <Select
+                            name="operator"
+                            placeholder='select the operator'
+                            isClearable={false}
+                            required={true}
+                            options={(isString) ?[operatorList[2]] : operatorList} 
+                            styles={{
+                              width: '20%'
+                            }}
+                            onChange={(e) => handleFilterFormOperatorSelectChange(index, e)}
+                          />
+                          <input name="value" type={'text'} id='value' placeholder="enter the value" style={{width: '20%'}} onChange={(e) => handleFilterFormInputChange(index, e)}/>
+                          <button className="close-button" onClick={(e) => removeFilterFields(e, index)} > X </button>
+                          {/* {
+                            (index > 0 ? <button className="close-button" onClick={(e) => removeFilterFields(e, index)} > Remove </button> : null)
+                          }                           */}
+                        </div>
+                      )
+                    })
+                  }
                 </div>
+                <button className="add-button" onClick={addFilterFields}> Add </button>
                 <input type={'submit'} value='Execute Request'></input>
                 <Link className='backLink' to="/"> 
                   Back to Schema 
