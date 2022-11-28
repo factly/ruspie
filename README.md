@@ -28,3 +28,7 @@ you can change the file extention by passing `FILE-EXT` header with the request
 
 example:
     `curl -H "FILE-EXT: parquet" "localhost:8080/api/tables/another_file"`
+
+
+# Running the Ruspie API Tool:
+Run - `make build-web`

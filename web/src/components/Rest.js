@@ -8,13 +8,12 @@ import Select from 'react-select'
 import { Link } from "react-router-dom";
 
 function Rest({  }){
-  // responseData stores the schema data coming from ruspie api and displays it in the response textarea
+  // responseData stores the search data coming from ruspie and displays it in the response textarea
   const [responseData, setResponseData] = useState('');
 
   // inputs stores the form data in key value pairs
   const [inputs, setInputs] = useState({
     limit : 20,
-    offset: 0,
     file_format: 'csv',
     columns: []
   })
@@ -23,8 +22,6 @@ function Rest({  }){
     
     let queryParam = {}
     queryParam.limit = inputs.limit
-    queryParam.offset = inputs.offset
-    queryParam.file_format = inputs.file_format
     if (inputs.columns?.length > 0) {
       queryParam.columns = ''
       queryParam.columns = inputs.columns[0]
@@ -33,7 +30,13 @@ function Rest({  }){
       }
     }
 
-    fetch(`http://localhost:8080/api/tables/${currentFileName}?` + new URLSearchParams(queryParam)) 
+    fetch(`http://localhost:8080/api/tables/${currentFileName}?` + new URLSearchParams(queryParam), 
+    // {
+    //   headers: {
+    //     'FILE-EXT': inputs?.file_format
+    //   }
+    // }
+    ) 
     .then((res) => {
       if (res.status !== 200) {
         return res.json().then(data => {
@@ -80,12 +83,6 @@ function Rest({  }){
                     Page Size
                   </label>
                   <input name="limit" type={'number'} id='limit' placeholder="please enter limit" min={0} defaultValue={20}></input>
-                </div>
-                <div className="form-input-div">
-                  <label htmlFor="offset">
-                    Offset
-                  </label>
-                  <input name='offset' type={'number'} id='offset' placeholder="please enter offset" min={0}></input>
                 </div>
                 <div className="form-input-div">
                   <label htmlFor="columns">
