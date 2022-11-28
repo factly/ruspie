@@ -5,7 +5,7 @@ use columnq::{
     datafusion::{arrow, error::DataFusionError, prelude::DataFrame},
     error::{ColumnQError, QueryError},
     table::TableSource,
-    ColumnQ,
+    ColumnQ, encoding,
 };
 use roapi::{context::RoapiContext, error::ApiErrResp};
 
@@ -13,29 +13,30 @@ use roapi::{context::RoapiContext, error::ApiErrResp};
 pub trait RuspieApiContext: RoapiContext {
     async fn conf_table(&mut self, table_source: &TableSource) -> Result<(), ColumnQError>;
     async fn table_exists(&self, table_name: &str) -> bool;
-    async fn query_rest_table_ruspie(
-        &self,
-        table_name: &str,
-        params: &HashMap<String, String>,
-    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError>;
-    async fn query_graphql_ruspie(
-        &self,
-        query: &str,
-    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError>;
-    async fn query_sql_ruspie(
-        &self,
-        query: &str,
-    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError>;
+    // async fn query_rest_table_ruspie(
+    //     &self,
+    //     table_name: &str,
+    //     params: &HashMap<String, String>,
+    // ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError>;
+    // async fn query_graphql_ruspie(
+    //     &self,
+    //     query: &str,
+    // ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError>;
+    // async fn query_sql_ruspie(
+    //     &self,
+    //     query: &str,
+    // ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError>;
 }
 
 pub struct RawRuspieApiContext {
     pub cq: ColumnQ,
+    pub response_format: encoding::ContentType
 }
 
 impl RawRuspieApiContext {
     pub fn new() -> Self {
         let cq = ColumnQ::new();
-        Self { cq }
+        Self { cq, response_format: encoding::ContentType::Csv }
     }
 }
 
@@ -51,27 +52,27 @@ impl RuspieApiContext for RawRuspieApiContext {
             None => return false,
         };
     }
-    async fn query_rest_table_ruspie(
-        &self,
-        table_name: &str,
-        params: &HashMap<String, String>,
-    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        self.cq.query_rest_table_2(table_name, params).await
-    }
+    // async fn query_rest_table_ruspie(
+    //     &self,
+    //     table_name: &str,
+    //     params: &HashMap<String, String>,
+    // ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
+    //     self.cq.query_rest_table_2(table_name, params).await
+    // }
 
-    async fn query_graphql_ruspie(
-        &self,
-        query: &str,
-    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        self.cq.query_graphql_2(query).await
-    }
+    // async fn query_graphql_ruspie(
+    //     &self,
+    //     query: &str,
+    // ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
+    //     self.cq.query_graphql_2(query).await
+    // }
 
-    async fn query_sql_ruspie(
-        &self,
-        query: &str,
-    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        self.cq.query_sql_2(query).await
-    }
+    // async fn query_sql_ruspie(
+    //     &self,
+    //     query: &str,
+    // ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
+    //     self.cq.query_sql_2(query).await
+    // }
 }
 
 #[async_trait]
@@ -96,6 +97,11 @@ impl RoapiContext for RawRuspieApiContext {
     }
 
     #[inline]
+    async fn get_response_format(&self) -> encoding::ContentType {
+        self.response_format
+    }
+
+    #[inline]
     async fn table_schema_json_bytes(&self, table_name: &str) -> Result<Vec<u8>, ApiErrResp> {
         serde_json::to_vec(
             self.cq
@@ -111,26 +117,29 @@ impl RoapiContext for RawRuspieApiContext {
     #[inline]
     async fn query_graphql(
         &self,
-        _query: &str,
+        query: &str,
     ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError> {
-        unreachable!()
+        // unreachable!()
+        self.cq.query_graphql(query).await
     }
 
     #[inline]
     async fn query_sql(
         &self,
-        _query: &str,
+        query: &str,
     ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError> {
-        unreachable!()
+        // unreachable!()
+        self.cq.query_sql(query).await
     }
 
     #[inline]
     async fn query_rest_table(
         &self,
-        _table_name: &str,
-        _params: &HashMap<String, String>,
+        table_name: &str,
+        params: &HashMap<String, String>,
     ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError> {
-        unreachable!()
+        // unreachable!()
+        self.cq.query_rest_table(table_name, params).await
     }
 
     #[inline]

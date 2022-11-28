@@ -1,10 +1,10 @@
 #![allow(dead_code)]
 
-use std::{error::Error as StdError, fmt};
-use axum::http::Response;
 use axum::http;
+use axum::http::Response;
 use serde::{Serialize, Serializer};
 use serde_json::Value;
+use std::{error::Error as StdError, fmt};
 
 #[derive(Debug, thiserror::Error)]
 pub enum AuthControllerError {
@@ -73,5 +73,15 @@ impl axum::response::IntoResponse for AuthError {
         let body = axum::body::boxed(axum::body::Full::from(payload));
 
         Response::builder().status(self.code).body(body).unwrap()
+    }
+}
+
+impl AuthError {
+    pub fn new() -> Self {
+        Self {
+            code: http::StatusCode::INTERNAL_SERVER_ERROR,
+            error: "".to_string(),
+            message: "".to_string(),
+        }
     }
 }

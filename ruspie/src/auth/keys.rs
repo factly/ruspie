@@ -1,5 +1,6 @@
+#![allow(dead_code, unused_variables)]
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::{Value, from_value};
 use time::OffsetDateTime;
 
 use super::error::AuthError;
@@ -24,12 +25,15 @@ pub struct Key {
 }
 
 impl Key {
-    // pub fn create_from_value(value: Value) -> Result<Self> {
-    //     let name = match value.get("name") {
-    //         None | Some(Value::Null) => None,
-    //         Some(des) => from_value(des.clone())
-    //             .map(Some)
-    //             .map_err(|_| E)?,
-    //     };
-    // }
+    pub fn create_from_value(value: Value) -> Result<Self> {
+        let name = match value.get("name") {
+            None | Some(Value::Null) => None,
+            Some(des) => from_value::<String>(des.clone())
+                .map(Some)
+                .map_err(|_| AuthError::new())?,
+        };
+
+        // Ok(Self { description: Some("".to_owned()), name: (), uid: (), expires_at: (), created_at: (), updated_at: () })
+        todo!()
+    }
 }
