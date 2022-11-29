@@ -4,6 +4,7 @@ import './Rest.css';
 import ResponseTextArea from './ResponseTextArea';
 import { useAppDataContext } from './AppDataContext';
 import LinkGroup from './LinkGroup';
+import { schemaURL } from '../constants/apiEndpoints';
 
 function Schema() {
   //getting the global context which has some getters and setters for getting the file name and schema
@@ -19,7 +20,7 @@ function Schema() {
   // handle submit handle the form submission when the user clicks in Get Schema button
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch(`http://localhost:8080/api/schema/${encodeURI(context.currentFileName)}`)
+    fetch(`${schemaURL}/${encodeURI(context.currentFileName)}`)
       .then((res) => {
         if (res.status !== 200) {
           return res.json().then((data) => {

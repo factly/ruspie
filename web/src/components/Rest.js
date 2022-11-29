@@ -7,6 +7,7 @@ import { useAppDataContext } from './AppDataContext';
 import Select from 'react-select';
 import { Link } from 'react-router-dom';
 import { createFilter, isColumnDatatypeString } from '../util/filter';
+import { restEndpoint } from '../constants/apiEndpoints';
 
 function Rest({}) {
   // responseData stores the search data coming from ruspie and displays it in the response textarea
@@ -61,10 +62,10 @@ function Rest({}) {
     }
 
     const URL =
-      `http://localhost:8080/api/tables/${currentFileName}?` +
+      `${restEndpoint}/${currentFileName}?` +
       new URLSearchParams(queryParam) +
       createFilter(filterInputFields, currentFileSchema);
-    fetch(URL, { headers: { 'FILE-EXT': inputs?.file_format } })
+    fetch(URL)
       .then((res) => {
         if (res.status !== 200) {
           return res.json().then((data) => {
@@ -227,9 +228,6 @@ function Rest({}) {
                         {' '}
                         X{' '}
                       </button>
-                      {/* {
-                            (index > 0 ? <button className="close-button" onClick={(e) => removeFilterFields(e, index)} > Remove </button> : null)
-                          }                           */}
                     </div>
                   );
                 })}
