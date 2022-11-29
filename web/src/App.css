@@ -13,7 +13,7 @@
   height: 48px;
   width: 100vw;
   margin: auto 0;
-  border-bottom: 1px rgba(0,0,0,.20) solid;
+  border-bottom: 1px rgba(0, 0, 0, 0.2) solid;
   background-color: #9b0046;
   color: #ffffff;
   padding: 16px 0px 0px 16px;
@@ -57,10 +57,9 @@
 }
 
 .text-area-div {
- width: 50%;
- display: flex;
+  width: 50%;
+  display: flex;
 }
-
 
 #response-textarea {
   padding: 12px 20px;

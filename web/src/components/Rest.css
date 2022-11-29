@@ -19,7 +19,8 @@
   gap: 6px;
 }
 
-input[type=text], select {
+input[type='text'],
+select {
   width: 90%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -30,7 +31,8 @@ input[type=text], select {
   font-family: 'Inter', sans-serif;
 }
 
-input[type=number], select {
+input[type='number'],
+select {
   width: 90%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -40,7 +42,7 @@ input[type=number], select {
   box-sizing: border-box;
 }
 
-input[type=submit] {
+input[type='submit'] {
   width: 90%;
   background-color: #9b0046;
   color: white;
@@ -55,7 +57,6 @@ label {
   font-weight: 600;
   font-size: 16px;
 }
-
 
 .form-input-div {
   display: flex;
@@ -78,7 +79,7 @@ label {
 
 .attribute-Selector {
   margin-top: 8px;
-  width: 90%
+  width: 90%;
 }
 
 .filterDiv {
@@ -101,11 +102,12 @@ label {
 }
 
 .close-button {
-  color: #9b0046;
-  background-color: white;
+  /* background-color: #9b0046; */
+  color: white;
+  background-color: #9b0046;
   margin: 8px 0;
-  border: 1px solid #9b0046;
-  border-radius: 50%;
+  border: 1px #9b0046 solid;
+  /* border-radius: 50%; */
   height: 40px;
   width: 40px;
   cursor: pointer;

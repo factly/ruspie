@@ -1,23 +1,23 @@
-import Sql from "../components/Sql";
-import Rest from "../components/Rest";
-import GraphQL from "../components/Graphql";
-import Schema from "../components/Schema";
+import Sql from '../components/Sql';
+import Rest from '../components/Rest';
+import GraphQL from '../components/Graphql';
+import Schema from '../components/Schema';
 
 export default [
   {
-    path: "/",
+    path: '/',
     Component: Schema,
-  }, 
-  {
-    path: "/rest",
-    Component: Rest
   },
   {
-    path: "/sql",
-    Component: Sql
+    path: '/rest',
+    Component: Rest,
   },
   {
-    path: "/graphql",
-    Component: GraphQL
-  }
-]
+    path: '/sql',
+    Component: Sql,
+  },
+  {
+    path: '/graphql',
+    Component: GraphQL,
+  },
+];

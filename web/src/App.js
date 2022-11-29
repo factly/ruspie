@@ -8,18 +8,18 @@ function App() {
   return (
     <AppContext>
       <div className="App">
-        <div className='navbar'>
-          <h1 id='heading'>Ruspie API Tool</h1>
+        <div className="navbar">
+          <h1 id="heading">Ruspie API Tool</h1>
         </div>
-        <Router basename=''>
+        <Router basename="">
           <Routes>
-            {
-              routes.map((route) => <Route path={route.path} element={<route.Component/>}/>)
-            }
+            {routes.map((route) => (
+              <Route path={route.path} element={<route.Component />} />
+            ))}
           </Routes>
         </Router>
       </div>
-    </AppContext>  
+    </AppContext>
   );
 }
 
