@@ -65,21 +65,21 @@ impl RuspieApiContext for RawRuspieApiContext {
         table_name: &str,
         params: &HashMap<String, String>,
     ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        self.cq.query_rest_table_ruspie(table_name, params).await
+        self.cq.query_rest_table_without_memory(table_name, params).await
     }
 
     async fn query_graphql_ruspie(
         &self,
         query: &str,
     ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        self.cq.query_graphql_ruspie(query).await
+        self.cq.query_graphql_without_memory(query).await
     }
 
     async fn query_sql_ruspie(
         &self,
         query: &str,
     ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        self.cq.query_sql_ruspie(query).await
+        self.cq.query_sql_without_memory(query).await
     }
 }
 
