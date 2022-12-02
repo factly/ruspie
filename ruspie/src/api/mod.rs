@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 pub mod graph;
 pub mod rest;
 pub mod routes;
@@ -27,7 +28,7 @@ pub fn get_table_source(table_name: &str, extension: &str) -> TableSource {
     TableSource::new(
         table_name,
         format!(
-            "./test/{}",
+            "../test_data/{}",
             table_name.clone().trim().to_owned() + "." + extension
         ),
     )
@@ -56,4 +57,18 @@ pub fn extract_ext_from_headers(headers: &HeaderMap) -> String {
     }
 
     extension.to_string()
+}
+
+pub fn get_limit() -> i64 {
+    std::env::var("LIMIT")
+        .unwrap_or_else(|_| "30".to_owned())
+        .parse::<i64>()
+        .unwrap()
+}
+
+pub fn get_max_limit() -> i64 {
+    std::env::var("MAX_LIMIT")
+        .unwrap_or_else(|_| "40".to_owned())
+        .parse::<i64>()
+        .unwrap()
 }

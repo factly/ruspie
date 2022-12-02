@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
-use crate::context::RuspieApiContext;
+use crate::{api::get_max_limit, context::RuspieApiContext};
 use axum::{body::Bytes, extract, http::HeaderMap, response::IntoResponse, Extension};
 use columnq::encoding;
 
-use super::{encode_vec_record_batches, extract_ext_from_headers, get_table_source};
+use super::{encode_vec_record_batches, extract_ext_from_headers, get_limit, get_table_source};
 use roapi::{api::encode_type_from_hdr, error::ApiErrResp};
 use tokio::sync::Mutex;
 
@@ -14,7 +14,9 @@ pub async fn sql<H: RuspieApiContext>(
     body: Bytes,
 ) -> Result<impl IntoResponse, ApiErrResp> {
     let mut context = ctx.lock().await;
-    let query = std::str::from_utf8(&body).map_err(ApiErrResp::read_query)?;
+    let mut query = std::str::from_utf8(&body)
+        .map_err(ApiErrResp::read_query)?
+        .to_string();
     let idx = query
         .split(" ")
         .collect::<Vec<&str>>()
@@ -29,8 +31,25 @@ pub async fn sql<H: RuspieApiContext>(
             return Err(ApiErrResp::load_table(e));
         }
     }
+    if query.contains("limit") || query.contains("LIMIT") {
+        let vec_q = query.split(" ").collect::<Vec<&str>>();
+        let i = vec_q
+            .iter()
+            .position(|&x| x == "limit" || x == "LIMIT")
+            .unwrap();
+        let mut limit = vec_q[i + 1]
+            .parse::<i64>().unwrap();
+        if limit > get_max_limit() {
+            limit = get_limit();
+        }
+        query = query.replace(vec_q[i + 1], limit.to_string().as_str())
+    } else {
+        let limit = get_limit().to_string();
+        query = query + " limit " + limit.as_str();
+    }
+    println!("{:?}", query);
     let encode_type = encode_type_from_hdr(headers, encoding::ContentType::default());
-    let batches = context.query_sql_ruspie(query).await?;
+    let batches = context.query_sql_ruspie(query.as_str()).await?;
 
     encode_vec_record_batches(encode_type, batches)
 }

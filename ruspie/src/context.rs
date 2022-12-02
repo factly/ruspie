@@ -34,7 +34,7 @@ pub trait RuspieApiContext: RoapiContext {
 pub struct RawRuspieApiContext {
     pub cq: ColumnQ,
     pub response_format: encoding::ContentType,
-    pub auth_controller: AuthController
+    pub auth_controller: AuthController,
 }
 
 impl RawRuspieApiContext {
@@ -65,7 +65,9 @@ impl RuspieApiContext for RawRuspieApiContext {
         table_name: &str,
         params: &HashMap<String, String>,
     ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        self.cq.query_rest_table_without_memory(table_name, params).await
+        self.cq
+            .query_rest_table_without_memory(table_name, params)
+            .await
     }
 
     async fn query_graphql_ruspie(
@@ -143,14 +145,12 @@ impl RoapiContext for RawRuspieApiContext {
     }
 
     #[inline]
-    async fn kv_get(&self, kv_name: &str, key: &str) -> Result<Option<String>, QueryError> {
-        Ok(self.cq.kv_get(kv_name, key)?.cloned())
-        // unreachable!()
+    async fn kv_get(&self, _kv_name: &str, _key: &str) -> Result<Option<String>, QueryError> {
+        unreachable!()
     }
 
     #[inline]
     async fn sql_to_df(&self, _query: &str) -> Result<Arc<DataFrame>, DataFusionError> {
-        // self.cq.dfctx.sql(query).await
         unreachable!()
     }
 
