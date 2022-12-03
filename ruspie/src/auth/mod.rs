@@ -1,88 +1,105 @@
-use hmac::{Hmac, Mac};
+#![allow(dead_code)]
+use std::{sync::Arc, path::Path};
+
 use serde_json::Value;
-use sha2::Sha256;
-use time::{OffsetDateTime, PrimitiveDateTime, Date, format_description::well_known::Rfc3339};
-use time::macros::{format_description, time};
+use time::OffsetDateTime;
 use uuid::Uuid;
-use uuid::fmt::Hyphenated;
 
-use self::error::AuthError;
+use self::{store::{HeedAuthStore, generate_key_as_hexa}, error::AuthControllerError, keys::Key};
 
-pub type Result<T> = std::result::Result<T, AuthError>;
-
-pub mod error;
-pub mod keys;
-pub mod controller;
 mod store;
+mod error;
+pub mod keys;
 
-fn parse_expiration_date(value: &Value) -> Result<Option<OffsetDateTime>> {
-    match value {
-        Value::String(string) => OffsetDateTime::parse(string, &Rfc3339)
-            .or_else(|_| {
-                PrimitiveDateTime::parse(
-                    string,
-                    format_description!(
-                        "[year repr:full base:calendar]-[month repr:numerical]-[day]T[hour]:[minute]:[second]"
-                    ),
-                ).map(|datetime| datetime.assume_utc())
-            })
-            .or_else(|_| {
-                PrimitiveDateTime::parse(
-                    string,
-                    format_description!(
-                        "[year repr:full base:calendar]-[month repr:numerical]-[day] [hour]:[minute]:[second]"
-                    ),
-                ).map(|datetime| datetime.assume_utc())
-            })
-            .or_else(|_| {
-                    Date::parse(string, format_description!(
-                        "[year repr:full base:calendar]-[month repr:numerical]-[day]"
-                    )).map(|date| PrimitiveDateTime::new(date, time!(00:00)).assume_utc())
-            })
-            .map_err(|_| AuthError::invalid_api_key_expires_at(value.clone()))
-            // check if the key is already expired.
-            .and_then(|d| {
-                if d > OffsetDateTime::now_utc() {
-                    Ok(d)
-                } else {
-                    Err(AuthError::invalid_api_key_expires_at(value.clone()))
-                }
-            })
-            .map(Option::Some),
-        Value::Null => Ok(None),
-        _otherwise => Err(AuthError::invalid_api_key_expires_at(value.clone())),
+type Result<T> = std::result::Result<T, AuthControllerError>;
+
+#[derive(Clone)]
+pub struct AuthController {
+    store: Arc<HeedAuthStore>,
+    master_key: Option<String>,
+}
+
+impl AuthController {
+    pub fn new(db_path: impl AsRef<Path>, master_key: &Option<String>) -> Result<Self> {
+        let store = HeedAuthStore::new(db_path)?;
+
+        Ok(Self { store: Arc::new(store), master_key: master_key.clone() })
     }
-}
 
-/// Divides one slice into an array and the tail at an index,
-/// returns `None` if `N` is out of bounds.
-pub fn try_split_array_at<T, const N: usize>(slice: &[T]) -> Option<(&[T; N], &[T])>
-where
-    [T; N]: for<'a> TryFrom<&'a [T]>,
-{
-    let (head, tail) = try_split_at(slice, N)?;
-    let head = head.try_into().ok()?;
-    Some((head, tail))
-}
-
-// Divides one slice into two at an index, returns `None` if mid is out of bounds.
-pub fn try_split_at<T>(slice: &[T], mid: usize) -> Option<(&[T], &[T])> {
-    if mid <= slice.len() {
-        Some(slice.split_at(mid))
-    } else {
-        None
+    pub fn create_key(&self, value: Value) -> Result<Key> {
+        let key = Key::create_from_value(value)?;
+        match self.store.get_api_key(key.uid)? {
+            Some(_) => Err(AuthControllerError::ApiKeyAlreadyExists(key.uid.to_string())),
+            None => self.store.put_api_key(key),
+        }
     }
-}
 
-pub fn generate_key_as_hexa(uid: Uuid, master_key: &[u8]) -> String {
-    // format uid as hyphenated allowing user to generate their own keys.
-    let mut uid_buffer = [0; Hyphenated::LENGTH];
-    let uid = uid.hyphenated().encode_lower(&mut uid_buffer);
+    pub fn update_key(&self, uid: Uuid, value: Value) -> Result<Key> {
+        let mut key = self.get_key(uid)?;
+        key.update_from_value(value)?;
+        self.store.put_api_key(key)
+    }
 
-    // new_from_slice function never fail.
-    let mut mac = Hmac::<Sha256>::new_from_slice(master_key).unwrap();
-    mac.update(uid.as_bytes());
+    pub fn get_key(&self, uid: Uuid) -> Result<Key> {
+        self.store
+            .get_api_key(uid)?
+            .ok_or_else(|| AuthControllerError::ApiKeyNotFound(uid.to_string()))
+    }
 
-    let result = mac.finalize();
-    format!("{:x}", result.into_bytes())
+    pub fn get_optional_uid_from_encoded_key(&self, encoded_key: &[u8]) -> Result<Option<Uuid>> {
+        match &self.master_key {
+            Some(master_key) => {
+                self.store.get_uid_from_encoded_key(encoded_key, master_key.as_bytes())
+            }
+            None => Ok(None),
+        }
+    }
+
+    pub fn get_uid_from_encoded_key(&self, encoded_key: &str) -> Result<Uuid> {
+        self.get_optional_uid_from_encoded_key(encoded_key.as_bytes())?
+            .ok_or_else(|| AuthControllerError::ApiKeyNotFound(encoded_key.to_string()))
+    }
+
+    pub fn list_keys(&self) -> Result<Vec<Key>> {
+        self.store.list_api_keys()
+    }
+
+    pub fn delete_key(&self, uid: Uuid) -> Result<()> {
+        if self.store.delete_api_key(uid)? {
+            Ok(())
+        } else {
+            Err(AuthControllerError::ApiKeyNotFound(uid.to_string()))
+        }
+    }
+
+    pub fn get_master_key(&self) -> Option<&String> {
+        self.master_key.as_ref()
+    }
+
+    /// Generate a valid key from a key id using the current master key.
+    /// Returns None if no master key has been set.
+    pub fn generate_key(&self, uid: Uuid) -> Option<String> {
+        self.master_key.as_ref().map(|master_key| generate_key_as_hexa(uid, master_key.as_bytes()))
+    }
+
+    pub fn is_key_authorized(
+        &self,
+        uid: Uuid,
+    ) -> Result<bool> {
+        let key = self.get_key(uid)?;
+        match key.expires_at {
+            None => Ok(false),
+            Some(exp) => Ok(OffsetDateTime::now_utc() < exp)
+        }
+    }
+
+    pub fn raw_delete_all_keys(&mut self) -> Result<()> {
+        self.store.delete_all_keys()
+    }
+
+    /// Delete all the keys in the DB.
+    pub fn raw_insert_key(&mut self, key: Key) -> Result<()> {
+        self.store.put_api_key(key)?;
+        Ok(())
+    }
 }

@@ -10,8 +10,6 @@ use columnq::{
 };
 use roapi::{context::RoapiContext, error::ApiErrResp};
 
-use crate::auth::controller::AuthController;
-
 #[async_trait]
 pub trait RuspieApiContext: RoapiContext {
     async fn conf_table(&mut self, table_source: &TableSource) -> Result<(), ColumnQError>;
@@ -34,16 +32,15 @@ pub trait RuspieApiContext: RoapiContext {
 pub struct RawRuspieApiContext {
     pub cq: ColumnQ,
     pub response_format: encoding::ContentType,
-    pub auth_controller: AuthController,
 }
 
 impl RawRuspieApiContext {
-    pub fn new(auth_controller: AuthController) -> Self {
+    pub fn new() -> Self {
         let cq = ColumnQ::new();
         Self {
             cq,
             response_format: encoding::ContentType::default(),
-            auth_controller,
+            
         }
     }
 }

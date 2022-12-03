@@ -1,13 +1,12 @@
 #![allow(dead_code)]
+use std::{sync::Arc, path::Path, fs::create_dir_all, cmp::Reverse};
+use heed::{Env, Database, types::{ByteSlice, SerdeJson, DecodeIgnore}, EnvOpenOptions};
+use hmac::{Hmac,Mac};
+use sha2::Sha256;
+use uuid::{Uuid, fmt::Hyphenated};
 
-use std::{fs, path::Path, sync::Arc, cmp::Reverse};
-
-use super::{error::AuthError, keys::Key, Result, generate_key_as_hexa};
-use heed::{
-    types::{ByteSlice, SerdeJson, DecodeIgnore},
-    Database, Env, EnvOpenOptions,
-};
-use uuid::Uuid;
+use super::{keys::Key, error::AuthControllerError};
+type Result<T> = std::result::Result<T, AuthControllerError>;
 
 const AUTH_STORE_SIZE: usize = 1_073_741_824; //1GiB
 const AUTH_DB_PATH: &str = "auth";
@@ -16,9 +15,9 @@ const KEY_ID_ACTION_INDEX_EXPIRATION_DB_NAME: &str = "keyid-action-index-expirat
 
 #[derive(Clone)]
 pub struct HeedAuthStore {
-    env: Arc<Env>,
-    keys: Database<ByteSlice, SerdeJson<Key>>,
-    should_close_on_drop: bool,
+    pub env: Arc<Env>,
+    pub keys: Database<ByteSlice, SerdeJson<Key>>,
+    pub should_close_on_drop: bool
 }
 
 impl Drop for HeedAuthStore {
@@ -29,7 +28,7 @@ impl Drop for HeedAuthStore {
     }
 }
 
-pub fn open_auth_store_env(path: &Path) -> heed::Result<Env> {
+pub fn open_auth_store_env(path: &Path) -> heed::Result<heed::Env> {
     let mut options = EnvOpenOptions::new();
     options.map_size(AUTH_STORE_SIZE); // 1GB
     options.max_dbs(2);
@@ -39,19 +38,10 @@ pub fn open_auth_store_env(path: &Path) -> heed::Result<Env> {
 impl HeedAuthStore {
     pub fn new(path: impl AsRef<Path>) -> Result<Self> {
         let path = path.as_ref().join(AUTH_DB_PATH);
-        fs::create_dir_all(&path).map_err(|e| AuthError::create_dir_all_failed(&e))?;
-        let env = Arc::new(
-            open_auth_store_env(path.as_ref())
-                .map_err(|e| AuthError::internal_error(e.to_string()))?,
-        );
-        let keys = env
-            .create_database(Some(KEY_DB_NAME))?;
-
-        Ok(Self {
-            env,
-            keys,
-            should_close_on_drop: true,
-        })
+        create_dir_all(&path)?;
+        let env = Arc::new(open_auth_store_env(path.as_ref())?);
+        let keys = env.create_database(Some(KEY_DB_NAME))?;
+        Ok(Self { env, keys, should_close_on_drop: true })
     }
 
     pub fn set_drop_on_close(&mut self, v: bool) {
@@ -67,11 +57,9 @@ impl HeedAuthStore {
     pub fn put_api_key(&self, key: Key) -> Result<Key> {
         let uid = key.uid;
         let mut wtxn = self.env.write_txn()?;
-
         self.keys.put(&mut wtxn, uid.as_bytes(), &key)?;
         wtxn.commit()?;
-
-        Ok(key)
+        todo!()
     }
 
     pub fn get_api_key(&self, uid: Uuid) -> Result<Option<Key>> {
@@ -91,7 +79,7 @@ impl HeedAuthStore {
             .iter(&rtxn)?
             .filter_map(|res| match res {
                 Ok((uid, _)) => {
-                    let (uid, _) = super::try_split_array_at(uid)?;
+                    let (uid, _) = try_split_array_at(uid)?;
                     let uid = Uuid::from_bytes(*uid);
                     if generate_key_as_hexa(uid, master_key).as_bytes() == encoded_key {
                         Some(uid)
@@ -110,6 +98,7 @@ impl HeedAuthStore {
         let mut wtxn = self.env.write_txn()?;
         let existing = self.keys.delete(&mut wtxn, uid.as_bytes())?;
         wtxn.commit()?;
+
         Ok(existing)
     }
 
@@ -131,16 +120,34 @@ impl HeedAuthStore {
         Ok(list)
     }
 
-    // fn delete_key_from_inverted_db(&self, wtxn: &mut RwTxn, key: &KeyId) -> Result<()> {
-    //     let mut iter = self
-    //         .action_keyid_index_expiration
-    //         .remap_types::<ByteSlice, DecodeIgnore>()
-    //         .prefix_iter_mut(wtxn, key.as_bytes())?;
-    //     while iter.next().transpose()?.is_some() {
-    //         // safety: we don't keep references from inside the LMDB database.
-    //         unsafe { iter.del_current()? };
-    //     }
+}
 
-    //     Ok(())
-    // }
+pub fn try_split_at<T>(slice: &[T], mid: usize) -> Option<(&[T], &[T])> {
+    if mid <= slice.len() {
+        Some(slice.split_at(mid))
+    } else {
+        None
+    }
+}
+
+pub fn try_split_array_at<T, const N: usize>(slice: &[T]) -> Option<(&[T; N], &[T])>
+where
+    [T; N]: for<'a> TryFrom<&'a [T]>,
+{
+    let (head, tail) = try_split_at(slice, N)?;
+    let head = head.try_into().ok()?;
+    Some((head, tail))
+}
+
+pub fn generate_key_as_hexa(uid: Uuid, master_key: &[u8]) -> String {
+    // format uid as hyphenated allowing user to generate their own keys.
+    let mut uid_buffer = [0; Hyphenated::LENGTH];
+    let uid = uid.hyphenated().encode_lower(&mut uid_buffer);
+
+    // new_from_slice function never fail.
+    let mut mac = Hmac::<Sha256>::new_from_slice(master_key).unwrap();
+    mac.update(uid.as_bytes());
+
+    let result = mac.finalize();
+    format!("{:x}", result.into_bytes())
 }

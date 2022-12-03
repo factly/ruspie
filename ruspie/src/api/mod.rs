@@ -4,6 +4,7 @@ pub mod rest;
 pub mod routes;
 pub mod schema;
 pub mod sql;
+pub mod auth;
 
 use axum::http::HeaderMap;
 use axum::response::IntoResponse;
@@ -28,7 +29,7 @@ pub fn get_table_source(table_name: &str, extension: &str) -> TableSource {
     TableSource::new(
         table_name,
         format!(
-            "../test_data/{}",
+            "./test/{}",
             table_name.clone().trim().to_owned() + "." + extension
         ),
     )

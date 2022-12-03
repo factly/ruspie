@@ -21,8 +21,7 @@ pub fn build_http_server<H: RuspieApiContext>(
 
     let cors = tower_http::cors::CorsLayer::new()
         .allow_methods(vec![Method::GET, Method::POST, Method::OPTIONS])
-        .allow_origin(tower_http::cors::Any)
-        .allow_credentials(false);
+        .allow_origin(tower_http::cors::Any);
 
     app = app.layer(cors);
     let listener = TcpListener::bind(http_addr)?;
