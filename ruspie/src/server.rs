@@ -4,7 +4,7 @@ use std::{
     sync::Arc,
 };
 
-use axum::{ http::Method, Extension, Router};
+use axum::{http::Method, Extension, Router};
 use roapi::server::http::HttpApiServer;
 use tokio::sync::Mutex;
 
@@ -25,16 +25,29 @@ pub fn build_http_server<H: RuspieApiContext>(
         Err(_) => None,
     };
     let auth = RawAuthContext::new(&Path::new("./"), &master_key)?;
+
     let routes: Router = api::routes::register_app_routes::<H>();
-    let mut app = routes.layer(Extension(ctx)).layer(Extension(auth.clone()));
+    let auth_routes = api::routes::register_auth_api_routes();
+
+    let mut app = routes.layer(Extension(ctx));
+
+    let middleware =
+        axum::middleware::from_fn(move |req, next| auth_middleware(req, next, auth.clone()));
+    if master_key.is_some() {
+        app = app
+            .nest("/auth", auth_routes)
+            .layer(middleware)
+            .layer(Extension(RawAuthContext::new(
+                &Path::new("./"),
+                &master_key,
+            )?));
+    }
 
     let cors = tower_http::cors::CorsLayer::new()
         .allow_methods(vec![Method::GET, Method::POST, Method::OPTIONS])
         .allow_origin(tower_http::cors::Any);
 
-    let middleware =
-        axum::middleware::from_fn(move |req, next| auth_middleware(req, next, auth.clone()));
-    app = app.layer(cors).layer(middleware);
+    app = app.layer(cors);
     let listener = TcpListener::bind(http_addr)?;
     let addr = listener
         .local_addr()

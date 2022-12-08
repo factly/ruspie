@@ -47,7 +47,6 @@ pub async fn sql<H: RuspieApiContext>(
         let limit = get_limit().to_string();
         query = query + " limit " + limit.as_str();
     }
-    println!("{:?}", query);
     let encode_type = encode_type_from_hdr(headers, encoding::ContentType::default());
     let batches = context.query_sql_ruspie(query.as_str()).await?;
 

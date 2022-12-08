@@ -1,10 +1,10 @@
+pub mod auth;
 #[allow(dead_code)]
 pub mod graph;
 pub mod rest;
 pub mod routes;
 pub mod schema;
 pub mod sql;
-pub mod auth;
 
 use axum::http::HeaderMap;
 use axum::response::IntoResponse;
@@ -26,10 +26,11 @@ pub fn get_table_source(table_name: &str, extension: &str) -> TableSource {
         serde_json::Value::Bool(false),
     );
     let opt: TableLoadOption = serde_json::from_value(serde_json::Value::Object(map)).unwrap();
+    let path =  std::env::var("FILE_PATH").unwrap_or_else(|_| String::from("test"));
     TableSource::new(
         table_name,
         format!(
-            "./test/{}",
+            "./{}/{}",path,
             table_name.clone().trim().to_owned() + "." + extension
         ),
     )
