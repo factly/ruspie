@@ -1,13 +1,17 @@
 use std::{
     net::{SocketAddr, TcpListener},
+    path::Path,
     sync::Arc,
 };
 
-use axum::{http::Method, Extension, Router};
+use axum::{ http::Method, Extension, Router};
 use roapi::server::http::HttpApiServer;
 use tokio::sync::Mutex;
 
-use crate::{api, context::RuspieApiContext};
+use crate::{
+    api::{self, auth::middleware::auth_middleware},
+    context::{api_context::RuspieApiContext, auth::context::RawAuthContext},
+};
 
 pub fn build_http_server<H: RuspieApiContext>(
     ctx: Arc<Mutex<H>>,
@@ -15,15 +19,22 @@ pub fn build_http_server<H: RuspieApiContext>(
 ) -> anyhow::Result<(HttpApiServer, SocketAddr)> {
     let default_http_port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
     let http_addr = [default_host, default_http_port].join(":");
+
+    let master_key = match std::env::var("MASTER_KEY") {
+        Ok(key) => Some(key),
+        Err(_) => None,
+    };
+    let auth = RawAuthContext::new(&Path::new("./"), &master_key)?;
     let routes: Router = api::routes::register_app_routes::<H>();
-    let mut app = routes
-        .layer(Extension(ctx));
+    let mut app = routes.layer(Extension(ctx)).layer(Extension(auth.clone()));
 
     let cors = tower_http::cors::CorsLayer::new()
         .allow_methods(vec![Method::GET, Method::POST, Method::OPTIONS])
         .allow_origin(tower_http::cors::Any);
 
-    app = app.layer(cors);
+    let middleware =
+        axum::middleware::from_fn(move |req, next| auth_middleware(req, next, auth.clone()));
+    app = app.layer(cors).layer(middleware);
     let listener = TcpListener::bind(http_addr)?;
     let addr = listener
         .local_addr()

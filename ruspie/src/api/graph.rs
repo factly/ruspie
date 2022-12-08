@@ -3,7 +3,7 @@ use std::sync::Arc;
 use super::get_max_limit;
 use super::get_limit;
 use super::{encode_vec_record_batches, extract_ext_from_headers, get_table_source};
-use crate::context::RuspieApiContext;
+use crate::context::api_context::RuspieApiContext;
 use axum::{body::Bytes, extract, http::HeaderMap, response::IntoResponse, Extension};
 use columnq::encoding;
 use columnq::error::QueryError;

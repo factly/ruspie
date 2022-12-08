@@ -1,6 +1,8 @@
 #![allow(dead_code)]
 
+
 use axum::{response::IntoResponse, http::{Response, StatusCode}};
+use roapi::error::ApiErrResp;
 use serde::Serialize;
 use serde_json::Value;
 
@@ -60,5 +62,11 @@ impl From<heed::Error> for AuthControllerError {
 impl From<std::io::Error> for AuthControllerError {
     fn from(e: std::io::Error) -> Self {
         AuthControllerError::Internal(e.to_string())
+    }
+}
+
+impl From<ApiErrResp> for AuthControllerError {
+    fn from(_: ApiErrResp) -> Self {
+        todo!()
     }
 }

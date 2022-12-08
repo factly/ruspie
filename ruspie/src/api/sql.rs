@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::{api::get_max_limit, context::RuspieApiContext};
+use crate::{api::get_max_limit, context::api_context::RuspieApiContext};
 use axum::{body::Bytes, extract, http::HeaderMap, response::IntoResponse, Extension};
 use columnq::encoding;
 

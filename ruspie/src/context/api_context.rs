@@ -40,7 +40,6 @@ impl RawRuspieApiContext {
         Self {
             cq,
             response_format: encoding::ContentType::default(),
-            
         }
     }
 }

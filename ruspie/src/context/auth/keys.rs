@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-use enum_iterator::Sequence;
 use serde::{Deserialize, Serialize};
 use serde_json::{from_value, Value};
 use time::{
@@ -21,7 +19,6 @@ pub struct Key {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     pub uid: KeyId,
-    pub actions: Action,
     #[serde(with = "time::serde::rfc3339::option")]
     pub expires_at: Option<OffsetDateTime>,
     #[serde(with = "time::serde::rfc3339")]
@@ -50,13 +47,6 @@ impl Key {
             || Ok(Uuid::new_v4()),
             |uid| from_value(uid.clone()).map_err(|_| Error::InvalidApiKeyUid(uid.clone())),
         )?;
-
-        let actions = value
-            .get("actions")
-            .map(|act| {
-                from_value(act.clone()).map_err(|_| Error::InvalidApiKeyActions(act.clone()))
-            })
-            .ok_or(Error::MissingParameter("actions"))??;
         let expires_at = value
             .get("expiresAt")
             .map(parse_expiration_date)
@@ -69,7 +59,6 @@ impl Key {
             name,
             description,
             uid,
-            actions,
             expires_at,
             created_at,
             updated_at,
@@ -91,10 +80,6 @@ impl Key {
             return Err(Error::ImmutableField("uid".to_string()));
         }
 
-        if value.get("actions").is_some() {
-            return Err(Error::ImmutableField("actions".to_string()));
-        }
-
         if value.get("expiresAt").is_some() {
             return Err(Error::ImmutableField("expiresAt".to_string()));
         }
@@ -111,32 +96,10 @@ impl Key {
 
         Ok(())
     }
-    pub fn default_api_key() -> Self {
-        let now = OffsetDateTime::now_utc();
-        let uid = Uuid::new_v4();
-        Self {
-            name: Some("Default Admin API Key".to_string()),
-            description: Some("Use it for anything that is not a search operation. Caution! Do not expose it on a public frontend".to_string()),
-            uid,
-            actions: Action::ApiKey,
-            expires_at: None,
-            created_at: now,
-            updated_at: now,
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash, Sequence, Copy)]
-#[repr(u8)]
-pub enum Action {
-    #[serde(rename = "master_key")]
-    MasterKey,
-    #[serde(rename = "api_key")]
-    ApiKey,
 }
 
 fn parse_expiration_date(value: &Value) -> Result<Option<OffsetDateTime>> {
-    match value {
+    let e = match value {
         Value::String(string) => OffsetDateTime::parse(string, &Rfc3339)
             .or_else(|_| {
                 PrimitiveDateTime::parse(
@@ -171,23 +134,7 @@ fn parse_expiration_date(value: &Value) -> Result<Option<OffsetDateTime>> {
             .map(Option::Some),
         Value::Null => Ok(None),
         _otherwise => Err(Error::InvalidApiKeyExpiresAt(value.clone())),
-    }
-}
-
-pub const MASTERKEY: u8 = Action::MasterKey.repr();
-pub const APIKEY: u8 = Action::ApiKey.repr();
-
-
-impl Action {
-    pub const fn from_repr(repr: u8) -> Option<Self> {
-        match repr {
-            MASTERKEY => Some(Self::ApiKey),
-            APIKEY => Some(Self::MasterKey),
-            _otherwise => None,
-        }
-    }
-
-    pub const fn repr(&self) -> u8 {
-        *self as u8
-    }
+    };
+    println!("{:?}", e);
+    e
 }

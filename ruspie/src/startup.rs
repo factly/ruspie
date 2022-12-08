@@ -2,7 +2,7 @@ use roapi::server::http::HttpApiServer;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use crate::{context::RawRuspieApiContext, server};
+use crate::{context::api_context::RawRuspieApiContext, server};
 
 pub struct Application {
     pub http_addr: std::net::SocketAddr,

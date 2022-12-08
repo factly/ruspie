@@ -1,7 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
 use super::{encode_vec_record_batches, extract_ext_from_headers, get_table_source};
-use crate::context::RuspieApiContext;
+use crate::context::api_context::RuspieApiContext;
 use axum::{extract, http::HeaderMap, response::IntoResponse, Extension};
 use columnq::encoding;
 use roapi::{api::encode_type_from_hdr, error::ApiErrResp};
@@ -24,7 +24,7 @@ pub async fn rest<H: RuspieApiContext>(
 
     if let Some(limit) = params.get("limit") {
         let limit = limit.parse::<u64>().unwrap();
-        let max_limit = std::env::var("ENV_MAX_LIMIT")
+        let max_limit = std::env::var("MAX_LIMIT")
             .unwrap_or_else(|_| String::from("30"))
             .parse::<u64>()
             .unwrap();
@@ -32,7 +32,7 @@ pub async fn rest<H: RuspieApiContext>(
             params.insert(String::from("limit"), max_limit.to_string());
         }
     } else {
-        let limit = std::env::var("ENV_LIMIT").unwrap_or_else(|_| String::from("10"));
+        let limit = std::env::var("LIMIT").unwrap_or_else(|_| String::from("10"));
         params.insert(String::from("limit"), limit);
     }
 

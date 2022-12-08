@@ -1,7 +1,6 @@
 use startup::Application;
 
 mod api;
-mod auth;
 mod context;
 mod server;
 mod startup;

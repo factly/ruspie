@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use super::{extract_ext_from_headers, get_table_source};
-use crate::context::RuspieApiContext;
+use crate::context::api_context::RuspieApiContext;
 use axum::{extract, http::HeaderMap, response::IntoResponse, Extension};
 use roapi::{api::bytes_to_json_resp, error::ApiErrResp};
 use tokio::sync::Mutex;
