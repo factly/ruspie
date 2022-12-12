@@ -15,6 +15,7 @@ type Result<T> = std::result::Result<T, AuthControllerError>;
 pub trait AuthContext: Send + Sync + 'static {
     fn create_key(&self, value: Value) -> Result<Key>;
     fn update_key(&self, uid: Uuid, value: Value) -> Result<Key>;
+    fn invalidate_key(&self, uid: Uuid) -> Result<Key>;
     fn get_key(&self, uid: Uuid) -> Result<Key>;
     fn list_keys(&self) -> Result<Vec<Key>>;
     fn get_optional_uid_from_encoded_key(&self, encoded_key: &[u8]) -> Result<Option<Uuid>>;
@@ -47,6 +48,12 @@ impl AuthContext for RawAuthContext {
     fn update_key(&self, uid: Uuid, value: Value) -> Result<Key> {
         let mut key = self.get_key(uid)?;
         key.update_from_value(value)?;
+        self.store.put_api_key(key)
+    }
+
+    fn invalidate_key(&self, uid: Uuid) -> Result<Key> {
+        let mut key = self.get_key(uid)?;
+        key.expires_at = Some(OffsetDateTime::now_utc());
         self.store.put_api_key(key)
     }
 

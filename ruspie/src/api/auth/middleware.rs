@@ -28,14 +28,18 @@ pub async fn auth_middleware<B>(
                 return Ok(next.run(req).await);
             }
             false => {
-                
                 let s = auth
                     .get_optional_uid_from_encoded_key(token.as_bytes())
                     .map_err(|_e| StatusCode::FORBIDDEN)?;
-                if s.is_none() {
+                if s.is_none()
+                    || !auth
+                        .is_key_authorized(s.unwrap())
+                        .map_err(|_| StatusCode::FORBIDDEN)?
+                {
                     return Err(StatusCode::FORBIDDEN);
                 }
-               return Ok(next.run(req).await);
+
+                return Ok(next.run(req).await);
             }
         }
     }

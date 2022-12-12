@@ -64,6 +64,7 @@ impl Key {
             updated_at,
         })
     }
+    
     pub fn update_from_value(&mut self, value: Value) -> Result<()> {
         if let Some(des) = value.get("description") {
             let des =

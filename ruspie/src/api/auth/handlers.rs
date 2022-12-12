@@ -6,7 +6,7 @@ use crate::context::auth::{
     error::AuthControllerError,
 };
 
-use super::KeyView;
+use super::{KeyView, Pagination};
 
 pub async fn create_api_key(
     Json(payload): Json<Value>,
@@ -17,15 +17,21 @@ pub async fn create_api_key(
 }
 
 pub async fn get_api_keys(
+    paginate: axum::extract::Query<Pagination>,
     Extension(auth_controller): Extension<RawAuthContext>,
 ) -> Result<impl IntoResponse, AuthControllerError> {
-    let keys = auth_controller.list_keys()?;
-    let keys = keys
-        .iter()
-        .map(move |key| KeyView::from_key(key.clone(), &auth_controller))
-        .collect::<Vec<KeyView>>();
+    let page_view = tokio::task::spawn_blocking(move || -> Result<_, AuthControllerError> {
+        let keys = auth_controller.list_keys()?;
+        let page_view = paginate.auto_paginate_sized(
+            keys.into_iter()
+                .map(|k| KeyView::from_key(k, &auth_controller)),
+        );
 
-    Ok(Json(keys))
+        Ok(page_view)
+    })
+    .await
+    .map_err(|e| AuthControllerError::Internal(e.to_string()))??;
+    Ok(Json(page_view))
 }
 
 pub async fn delete_api_key(
@@ -42,5 +48,14 @@ pub async fn update_api_key(
 ) -> Result<impl IntoResponse, AuthControllerError> {
     auth_controller
         .update_key(key_id, payload)
+        .map(|key| Json(KeyView::from_key(key, &auth_controller)))
+}
+
+pub async fn invalidate_key(
+    Path(key_id): Path<uuid::Uuid>,
+    Extension(auth_controller): Extension<RawAuthContext>,
+) -> Result<impl IntoResponse, AuthControllerError> {
+    auth_controller
+        .invalidate_key(key_id)
         .map(|key| Json(KeyView::from_key(key, &auth_controller)))
 }
