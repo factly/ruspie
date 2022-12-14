@@ -2,7 +2,7 @@
 ## INTRODUCTION
 Ruspie is a query engine for datasets stored in CSV and Parquet formats. It allows you to query your data using SQL, REST API, and GraphQL. Ruspie is built on top of Apache Arrow and Datafusion, and it is written in Rust.
 
-To use Ruspie, you can start the server by running the cargo run command, and specifying the path to your dataset files using the `FILE_PATH` environment variable. You can then send queries to the server using the REST API, SQL, or GraphQL. Ruspie supports a variety of query operators, such as filtering, sorting, and limiting the number of results, which can be specified in the query.
+To use Ruspie, you can start the server by running the `cargo run` command, and specifying the path to your dataset files using the `FILE_PATH` environment variable. You can then send queries(SQL, GraphQL, REST Query params) to the server using the REST API. Ruspie supports a variety of query operators, such as filtering, sorting, and limiting the number of results, which can be specified in the query.
 
 
 
@@ -13,7 +13,7 @@ Install Rust, if you don't already have it installed. You can do this by followi
 
 Clone the Ruspie repository from GitHub: git clone https://github.com/factly/ruspie.git
 
-Navigate to the cloned repository and build the project using cargo build
+Navigate to the cloned repository and build the project using `cargo build`
 
 Set the `FILE_PATH` environment variable to the path of the dataset files that you want to serve through the API. For example: `FILE_PATH=./data`
 
@@ -50,11 +50,11 @@ You can also set the environment variables in your shell configuration file (e.g
 ## ENDPOINTS
 Ruspie exposes the following endpoints:
 
-1. GET /api/tables/{table_name}: This endpoint allows you to query a dataset using the REST API. You can specify query operators such as filters, sorting, and limits in the URL query parameters.
+1. GET /api/tables/{table_name}: This endpoint allows you to query a dataset using the REST query params. You can specify query operators such as filters, sorting, and limits in the URL query parameters.
 
-2. POST /api/sql: This endpoint allows you to query a dataset using SQL. You can pass the SQL query in the request body as plain text.
+2. POST /api/sql: This endpoint allows you to query a dataset using SQL queries. You can pass the SQL query in the request body as plain text.
 
-3. POST /api/graphql: This endpoint allows you to query a dataset using GraphQL. You can pass the GraphQL query in the request body as plain text.
+3. POST /api/graphql: This endpoint allows you to query a dataset using GraphQL queries. You can pass the GraphQL query in the request body as plain text.
 
 4. GET /api/schemas/{table_name}: This endpoint returns the schema of the specified dataset.
 
@@ -167,8 +167,8 @@ Ruspie provides a set of endpoints for managing keys, which can be accessed by m
 
 1. `GET`: lists all keys that have been generated.
 2. `POST`: generates a new key.
-3. `PATCH` /{KEY_ID}: edits the name and description of a key.
-4. `DELETE` /{KEY_ID}: deletes a key.
+3. `PATCH` /{key_id}: edits the name and description of a key.
+4. `DELETE` /{key_id}: deletes a key.
 5. `POST` /invalidate/{key_id}: invalidates a key, rendering it no longer valid for authentication.
 
 To access these endpoints, users must provide the AUTHORIZATION header with their request, in the form `Bearer {MASTER_KEY}`, where `{MASTER_KEY}` is the value of the `MASTER_KEY` environment variable.
