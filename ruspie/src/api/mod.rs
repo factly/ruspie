@@ -7,13 +7,8 @@ pub mod schema;
 pub mod sql;
 
 use axum::http::HeaderMap;
-use axum::response::IntoResponse;
-use columnq::datafusion::arrow;
-use columnq::encoding::ContentType;
 use columnq::table::TableLoadOption;
 use columnq::table::TableSource;
-use roapi::api::encode_record_batches;
-use roapi::error::ApiErrResp;
 
 pub fn get_table_source(table_name: &str, extension: &str) -> TableSource {
     let mut map = serde_json::Map::new();
@@ -35,17 +30,6 @@ pub fn get_table_source(table_name: &str, extension: &str) -> TableSource {
         ),
     )
     .with_option(opt)
-}
-
-pub fn encode_vec_record_batches(
-    content_type: ContentType,
-    batches: Vec<Vec<arrow::record_batch::RecordBatch>>,
-) -> Result<impl IntoResponse, ApiErrResp> {
-    let mut v = vec![];
-    for mut v1 in batches {
-        v.append(&mut v1)
-    }
-    encode_record_batches(content_type, &v)
 }
 
 pub fn extract_ext_from_headers(headers: &HeaderMap) -> String {

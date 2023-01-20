@@ -1,10 +1,10 @@
 use std::{collections::HashMap, sync::Arc};
 
-use super::{encode_vec_record_batches, extract_ext_from_headers, get_table_source};
+use super::{extract_ext_from_headers, get_table_source};
 use crate::context::api_context::RuspieApiContext;
 use axum::{extract, http::HeaderMap, response::IntoResponse, Extension};
 use columnq::encoding;
-use roapi::{api::encode_type_from_hdr, error::ApiErrResp};
+use roapi::{api::{encode_type_from_hdr, encode_record_batches}, error::ApiErrResp};
 use tokio::sync::Mutex;
 
 pub async fn rest<H: RuspieApiContext>(
@@ -38,5 +38,5 @@ pub async fn rest<H: RuspieApiContext>(
 
     let encode_type = encode_type_from_hdr(headers, encoding::ContentType::default());
     let batches = context.query_rest_table_ruspie(&table, &params).await?;
-    encode_vec_record_batches(encode_type, batches)
+    encode_record_batches(encode_type, &batches)
 }

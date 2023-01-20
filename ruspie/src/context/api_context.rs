@@ -18,15 +18,15 @@ pub trait RuspieApiContext: RoapiContext {
         &self,
         table_name: &str,
         params: &HashMap<String, String>,
-    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError>;
+    ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError>;
     async fn query_graphql_ruspie(
         &self,
         query: &str,
-    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError>;
+    ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError>;
     async fn query_sql_ruspie(
         &self,
         query: &str,
-    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError>;
+    ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError>;
 }
 
 pub struct RawRuspieApiContext {
@@ -60,24 +60,24 @@ impl RuspieApiContext for RawRuspieApiContext {
         &self,
         table_name: &str,
         params: &HashMap<String, String>,
-    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
+    ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError> {
         self.cq
-            .query_rest_table_without_memory(table_name, params)
+            .query_rest_table(table_name, params)
             .await
     }
 
     async fn query_graphql_ruspie(
         &self,
         query: &str,
-    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        self.cq.query_graphql_without_memory(query).await
+    ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError> {
+        self.cq.query_graphql(query).await
     }
 
     async fn query_sql_ruspie(
         &self,
         query: &str,
-    ) -> Result<Vec<Vec<arrow::record_batch::RecordBatch>>, QueryError> {
-        self.cq.query_sql_without_memory(query).await
+    ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError> {
+        self.cq.query_sql(query).await
     }
 }
 

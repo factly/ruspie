@@ -4,8 +4,8 @@ use crate::{api::get_max_limit, context::api_context::RuspieApiContext};
 use axum::{body::Bytes, extract, http::HeaderMap, response::IntoResponse, Extension};
 use columnq::encoding;
 
-use super::{encode_vec_record_batches, extract_ext_from_headers, get_limit, get_table_source};
-use roapi::{api::encode_type_from_hdr, error::ApiErrResp};
+use super::{extract_ext_from_headers, get_limit, get_table_source};
+use roapi::{api::{encode_type_from_hdr, encode_record_batches}, error::ApiErrResp};
 use tokio::sync::Mutex;
 
 pub async fn sql<H: RuspieApiContext>(
@@ -50,5 +50,5 @@ pub async fn sql<H: RuspieApiContext>(
     let encode_type = encode_type_from_hdr(headers, encoding::ContentType::default());
     let batches = context.query_sql_ruspie(query.as_str()).await?;
 
-    encode_vec_record_batches(encode_type, batches)
+    encode_record_batches(encode_type, &batches)
 }
