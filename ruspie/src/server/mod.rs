@@ -1,3 +1,4 @@
+pub mod logger;
 use std::{
     net::{SocketAddr, TcpListener},
     path::Path,
@@ -31,6 +32,9 @@ pub fn build_http_server<H: RuspieApiContext>(
 
     let mut app = routes.layer(Extension(ctx));
 
+    if log::log_enabled!(log::Level::Info) {
+        app = app.layer(logger::HttpLoggerLayer::new());
+    }
     let middleware =
         axum::middleware::from_fn(move |req, next| auth_middleware(req, next, auth.clone()));
     if master_key.is_some() {

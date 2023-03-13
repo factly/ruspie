@@ -10,6 +10,24 @@ use columnq::{
 };
 use roapi::{context::RoapiContext, error::ApiErrResp};
 
+#[derive(Debug)]
+pub enum Source {
+    FILESYSTEM,
+    S3,
+    INVALID,
+}
+
+impl From<String> for Source {
+    fn from(value: String) -> Self {
+        if value == String::from("FILESYSTEM") {
+            return Source::FILESYSTEM;
+        } else if value == String::from("S3") {
+            return Source::S3;
+        }
+        Source::INVALID
+    }
+}
+
 #[async_trait]
 pub trait RuspieApiContext: RoapiContext {
     async fn conf_table(&mut self, table_source: &TableSource) -> Result<(), ColumnQError>;
@@ -32,14 +50,23 @@ pub trait RuspieApiContext: RoapiContext {
 pub struct RawRuspieApiContext {
     pub cq: ColumnQ,
     pub response_format: encoding::ContentType,
+    pub source: Source,
 }
 
 impl RawRuspieApiContext {
     pub fn new() -> Self {
         let cq = ColumnQ::new();
+        let source: Source = std::env::var("SOURCE")
+            .unwrap_or_else(|_| "FILESYSTEM".to_string())
+            .into();
+        match source {
+            Source::INVALID => panic!("unsupported format {:?}", &source),
+            _ => {}
+        }
         Self {
             cq,
             response_format: encoding::ContentType::default(),
+            source,
         }
     }
 }
@@ -61,9 +88,7 @@ impl RuspieApiContext for RawRuspieApiContext {
         table_name: &str,
         params: &HashMap<String, String>,
     ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError> {
-        self.cq
-            .query_rest_table(table_name, params)
-            .await
+        self.cq.query_rest_table(table_name, params).await
     }
 
     async fn query_graphql_ruspie(
