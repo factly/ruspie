@@ -6,13 +6,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-roapi = { git = "https://github.com/roapi/roapi", rev = "bd168d92d8d11f55a37545e7db9ed6e9794d6544" }
-columnq = { git = "https://github.com/roapi/roapi", rev = "bd168d92d8d11f55a37545e7db9ed6e9794d6544" }
+roapi = { git = "https://github.com/roapi/roapi", rev = "51e01ef968bb289c9ab70b7d0a4e2c8ae68b88f1" }
+columnq = { git = "https://github.com/roapi/roapi", rev = "51e01ef968bb289c9ab70b7d0a4e2c8ae68b88f1" }
 anyhow = "1.0.64"
 tokio = { version = "1", features = ["rt-multi-thread"] }
 axum = { version = "0.5", features = ["default", "http2"] }
 serde_json = "1.0.87"
-tower-http = "0"
+tower-http = {version="0.4", features=["full"]} 
 dotenvy = "0"
 config = "0"
 serde = "1.0.147"
