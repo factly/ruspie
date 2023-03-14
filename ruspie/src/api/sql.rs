@@ -4,8 +4,11 @@ use crate::{api::get_max_limit, context::api_context::RuspieApiContext};
 use axum::{body::Bytes, extract, http::HeaderMap, response::IntoResponse, Extension};
 use columnq::encoding;
 
-use super::{extract_ext_from_headers, get_limit, get_table_source};
-use roapi::{api::{encode_type_from_hdr, encode_record_batches}, error::ApiErrResp};
+use super::{extract_ext_from_headers, get_limit, get_table_source_fs};
+use roapi::{
+    api::{encode_record_batches, encode_type_from_hdr},
+    error::ApiErrResp,
+};
 use tokio::sync::Mutex;
 
 pub async fn sql<H: RuspieApiContext>(
@@ -26,7 +29,7 @@ pub async fn sql<H: RuspieApiContext>(
     let table_name = query.split(" ").collect::<Vec<&str>>()[idx + 1];
     if !context.table_exists(table_name).await {
         let extension = extract_ext_from_headers(&headers);
-        let table_source = get_table_source(table_name, &extension);
+        let table_source = get_table_source_fs(table_name, &extension);
         if let Err(e) = context.conf_table(&table_source).await {
             return Err(ApiErrResp::load_table(e));
         }
@@ -37,8 +40,7 @@ pub async fn sql<H: RuspieApiContext>(
             .iter()
             .position(|&x| x == "limit" || x == "LIMIT")
             .unwrap();
-        let mut limit = vec_q[i + 1]
-            .parse::<i64>().unwrap();
+        let mut limit = vec_q[i + 1].parse::<i64>().unwrap();
         if limit > get_max_limit() {
             limit = get_limit();
         }

@@ -2,7 +2,7 @@ use roapi::server::http::HttpApiServer;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-use crate::context::api_context::RawRuspieApiContext;
+use crate::context::api_context::{RawRuspieApiContext, Source};
 use crate::server::build_http_server;
 
 pub struct Application {
@@ -23,7 +23,13 @@ impl Application {
     }
 
     pub async fn run_until_stopped(self) -> anyhow::Result<()> {
-        println!("🚀 Listening on {} for HTTP traffic...", self.http_addr);
+        let source: Source = std::env::var("SOURCE")
+            .unwrap_or_else(|_| "FILESYSTEM".to_string())
+            .into();
+        println!(
+            "🚀 Listening on {} for HTTP traffic from file source `{:?}`...",
+            self.http_addr, source
+        );
         Ok(self.http_server.await?)
     }
 }

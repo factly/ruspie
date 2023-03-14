@@ -1,19 +1,19 @@
 use std::sync::Arc;
 
-use super::get_max_limit;
 use super::get_limit;
-use super::{extract_ext_from_headers, get_table_source};
+use super::get_max_limit;
+use super::{extract_ext_from_headers, get_table_source_fs};
 use crate::context::api_context::RuspieApiContext;
 use axum::{body::Bytes, extract, http::HeaderMap, response::IntoResponse, Extension};
 use columnq::encoding;
 use columnq::error::QueryError;
-use roapi::api::encode_record_batches;
-use roapi::{api::encode_type_from_hdr, error::ApiErrResp};
-use tokio::sync::Mutex;
 use graphql_parser::query::Definition;
 use graphql_parser::query::OperationDefinition;
 use graphql_parser::query::Selection;
 use graphql_parser::schema::Value;
+use roapi::api::encode_record_batches;
+use roapi::{api::encode_type_from_hdr, error::ApiErrResp};
+use tokio::sync::Mutex;
 
 pub async fn graphql<H: RuspieApiContext>(
     Extension(ctx): extract::Extension<Arc<Mutex<H>>>,
@@ -25,7 +25,7 @@ pub async fn graphql<H: RuspieApiContext>(
     let mut context = ctx.lock().await;
     if !context.table_exists(table_name.as_str()).await {
         let extension = extract_ext_from_headers(&headers);
-        let table_source = get_table_source(table_name.as_str(), &extension);
+        let table_source = get_table_source_fs(table_name.as_str(), &extension);
         if let Err(e) = context.conf_table(&table_source).await {
             return Err(ApiErrResp::load_table(e));
         }
@@ -145,7 +145,7 @@ pub fn parse_graphql_query(query: &str) -> Result<(String, String), QueryError> 
     if let Some(limit) = limit {
         let mut limit = limit.to_string().parse::<i64>().unwrap();
         let max_limit = get_max_limit();
-        if limit > max_limit{
+        if limit > max_limit {
             limit = get_limit();
         }
         query = query.to_owned() + "limit:" + limit.to_string().as_str() + ",";
@@ -173,3 +173,4 @@ fn invalid_query(message: String) -> QueryError {
         message,
     }
 }
+

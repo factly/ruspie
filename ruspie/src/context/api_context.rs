@@ -19,9 +19,9 @@ pub enum Source {
 
 impl From<String> for Source {
     fn from(value: String) -> Self {
-        if value == String::from("FILESYSTEM") {
+        if value.to_lowercase() == String::from("filesystem") {
             return Source::FILESYSTEM;
-        } else if value == String::from("S3") {
+        } else if value.to_lowercase() == String::from("s3") {
             return Source::S3;
         }
         Source::INVALID
@@ -45,6 +45,7 @@ pub trait RuspieApiContext: RoapiContext {
         &self,
         query: &str,
     ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError>;
+    fn get_source(&self) -> &Source;
 }
 
 pub struct RawRuspieApiContext {
@@ -60,7 +61,7 @@ impl RawRuspieApiContext {
             .unwrap_or_else(|_| "FILESYSTEM".to_string())
             .into();
         match source {
-            Source::INVALID => panic!("unsupported format {:?}", &source),
+            Source::INVALID => panic!("unsupported source {:?}", &source),
             _ => {}
         }
         Self {
@@ -103,6 +104,9 @@ impl RuspieApiContext for RawRuspieApiContext {
         query: &str,
     ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError> {
         self.cq.query_sql(query).await
+    }
+    fn get_source(&self) -> &Source {
+        &self.source
     }
 }
 

@@ -10,7 +10,7 @@ use axum::http::HeaderMap;
 use columnq::table::TableLoadOption;
 use columnq::table::TableSource;
 
-pub fn get_table_source(table_name: &str, extension: &str) -> TableSource {
+pub fn get_table_source_fs(table_name: &str, extension: &str) -> TableSource {
     let mut map = serde_json::Map::new();
     map.insert(
         String::from("format"),
@@ -21,15 +21,36 @@ pub fn get_table_source(table_name: &str, extension: &str) -> TableSource {
         serde_json::Value::Bool(false),
     );
     let opt: TableLoadOption = serde_json::from_value(serde_json::Value::Object(map)).unwrap();
-    let path =  std::env::var("FILE_PATH").unwrap_or_else(|_| String::from("test"));
+    let path = std::env::var("FILE_PATH").unwrap_or_else(|_| String::from("test"));
     TableSource::new(
         table_name,
         format!(
-            "./{}/{}",path,
+            "./{}/{}",
+            path,
             table_name.clone().trim().to_owned() + "." + extension
         ),
     )
     .with_option(opt)
+}
+
+pub fn get_table_source_s3(path: &str, extension: &str, headers: &HeaderMap) -> TableSource {
+    let mut map = serde_json::Map::new();
+    map.insert(
+        String::from("format"),
+        serde_json::Value::String(extension.to_owned()),
+    );
+    map.insert(
+        String::from("use_memory_table"),
+        serde_json::Value::Bool(false),
+    );
+
+    let opt: TableLoadOption = serde_json::from_value(serde_json::Value::Object(map)).unwrap();
+    let path = "s3://".to_owned() + headers.get("PATH").unwrap().to_str().unwrap() + path;
+    let table_name = {
+        let path: &Vec<&str> = &path.split("/").collect::<Vec<&str>>();
+        path[path.len() - 1]
+    };
+    TableSource::new(table_name, path.to_owned() + "." + extension).with_option(opt)
 }
 
 pub fn extract_ext_from_headers(headers: &HeaderMap) -> String {
