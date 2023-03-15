@@ -12,7 +12,7 @@ description = "Http Query Engine for csv and parquet files"
 
 [dependencies]
 roapi = { git = "https://github.com/elliot14A/roapi", rev = "372162c1f415eff46e5d15e71ffd6112a28c567b", version="0.1.0" }
-columnq = { git = "https://github.com/elliot14A/roapi", rev = "372162c1f415eff46e5d15e71ffd6112a28c567b", version="0.1.0"}
+columnq = { git = "https://github.com/elliot14A/roapi", rev = "372162c1f415eff46e5d15e71ffd6112a28c567b", version="0.1.0", package="columnq"}
 anyhow = "1.0.64"
 tokio = { version = "1", features = ["rt-multi-thread"] }
 axum = { version = "0.5", features = ["default", "http2"] }
