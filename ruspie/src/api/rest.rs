@@ -33,14 +33,14 @@ pub async fn rest<H: RuspieApiContext>(
     if let Some(limit) = params.get("limit") {
         let limit = limit.parse::<u64>().unwrap();
         let max_limit = std::env::var("MAX_LIMIT")
-            .unwrap_or_else(|_| String::from("30"))
+            .unwrap_or_else(|_| String::from("1000"))
             .parse::<u64>()
             .unwrap();
         if limit > max_limit {
             params.insert(String::from("limit"), max_limit.to_string());
         }
     } else {
-        let limit = std::env::var("LIMIT").unwrap_or_else(|_| String::from("10"));
+        let limit = std::env::var("LIMIT").unwrap_or_else(|_| String::from("1000"));
         params.insert(String::from("limit"), limit);
     }
 

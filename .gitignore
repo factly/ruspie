@@ -12,6 +12,7 @@
 # Local History for Visual Studio Code
 .history/
 
+
 # Built Visual Studio Code Extensions
 *.vsix
 
@@ -84,5 +85,8 @@ Cargo.lock
 *.pdb
 
 # End of https://www.toptal.com/developers/gitignore/api/rust
-/auth
-/.idea
+auth/
+.idea/
+volumes/ 
+s3-config.bashrc
+wait-for-it.sh/

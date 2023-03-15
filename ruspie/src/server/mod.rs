@@ -10,7 +10,7 @@ use roapi::server::http::HttpApiServer;
 use tokio::sync::Mutex;
 
 use crate::{
-    api::{self, auth::middleware::auth_middleware},
+    api::{self, auth::middleware::auth_middleware, check_ext_middleware},
     context::{api_context::RuspieApiContext, auth::context::RawAuthContext},
 };
 
@@ -29,8 +29,10 @@ pub fn build_http_server<H: RuspieApiContext>(
 
     let routes: Router = api::routes::register_app_routes::<H>();
     let auth_routes = api::routes::register_auth_api_routes();
+    // check the extension passed
+    let middleware = axum::middleware::from_fn(move |req, next| check_ext_middleware(req, next));
 
-    let mut app = routes.layer(Extension(ctx));
+    let mut app = routes.layer(Extension(ctx)).layer(middleware);
 
     if log::log_enabled!(log::Level::Info) {
         app = app.layer(logger::HttpLoggerLayer::new());

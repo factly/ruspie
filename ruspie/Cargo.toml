@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-roapi = { git = "https://github.com/roapi/roapi", rev = "51e01ef968bb289c9ab70b7d0a4e2c8ae68b88f1" }
-columnq = { git = "https://github.com/roapi/roapi", rev = "51e01ef968bb289c9ab70b7d0a4e2c8ae68b88f1" }
+roapi = { git = "https://github.com/elliot14A/roapi", rev = "372162c1f415eff46e5d15e71ffd6112a28c567b" }
+columnq = { git = "https://github.com/elliot14A/roapi", rev = "372162c1f415eff46e5d15e71ffd6112a28c567b" }
 anyhow = "1.0.64"
 tokio = { version = "1", features = ["rt-multi-thread"] }
 axum = { version = "0.5", features = ["default", "http2"] }

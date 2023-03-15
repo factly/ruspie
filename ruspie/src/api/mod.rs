@@ -7,6 +7,10 @@ pub mod schema;
 pub mod sql;
 
 use axum::http::HeaderMap;
+use axum::http::Request;
+use axum::http::StatusCode;
+use axum::middleware::Next;
+use axum::response::Response;
 use columnq::table::TableLoadOption;
 use columnq::table::TableSource;
 
@@ -78,4 +82,22 @@ pub fn get_max_limit() -> i64 {
         .unwrap_or_else(|_| "40".to_owned())
         .parse::<i64>()
         .unwrap()
+}
+
+pub async fn check_ext_middleware<B>(
+    req: Request<B>,
+    next: Next<B>,
+) -> Result<Response, StatusCode> {
+    match req.headers().get("FILE-EXT") {
+        Some(ext) => {
+            if let Ok(ext) = ext.to_str() {
+                if ext != "csv" && ext != "parquet" {
+                    return Err(StatusCode::BAD_REQUEST);
+                }
+                return Ok(next.run(req).await);
+            }
+            Err(StatusCode::BAD_GATEWAY)
+        }
+        None => Ok(next.run(req).await),
+    }
 }
