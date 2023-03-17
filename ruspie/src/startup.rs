@@ -30,6 +30,7 @@ impl Application {
             "🚀 Listening on {} for HTTP traffic from file source `{:?}`...",
             self.http_addr, source
         );
-        Ok(self.http_server.await?)
+        self.http_server.await?;
+        Ok(())
     }
 }
