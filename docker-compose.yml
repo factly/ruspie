@@ -1,4 +1,4 @@
-version: 0.1.0
+version: "3.7"
 
 services: 
   ruspie-api:
@@ -47,6 +47,12 @@ services:
     - type: bind
       source: ./web
       target: /app
+    - type: bind
+      source: ./web/node_modules
+      target: /app/node_modules
+    environment: 
+      - REACT_APP_RUSPIE_API_URL=http://ruspie-api:8080
+      - WDS_SOCKET_HOST=127.0.0.1 
     networks:
       - ruspie
 networks:

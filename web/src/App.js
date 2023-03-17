@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AppContext } from "./components/AppDataContext";
 
 function App() {
+  console.log("App.js");
   return (
     <AppContext>
       <div className="App">
