@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 let AppDataContext = React.createContext({});
 
@@ -11,7 +11,7 @@ export function AppContext({ children }) {
   const [currentFileSchema, setCurrentFileSchema] = useState({});
 
   // fileName is the file name entered by the user
-  const [currentFileName, setCurrentFileName] = useState('');
+  const [currentFileName, setCurrentFileName] = useState("");
 
   let setSchema = (schemaData) => {
     setCurrentFileSchema(schemaData);
@@ -23,5 +23,7 @@ export function AppContext({ children }) {
 
   let value = { currentFileName, currentFileSchema, setSchema, setFileName };
 
-  return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;
+  return (
+    <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>
+  );
 }

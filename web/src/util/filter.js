@@ -1,5 +1,7 @@
 export function isColumnDatatypeString(schema, columnName) {
-  return schema?.find((column) => column?.name === columnName)?.data_type === 'Utf8';
+  return (
+    schema?.find((column) => column?.name === columnName)?.data_type === "Utf8"
+  );
 }
 
 export const createFilter = (filterInputs, schema) => {

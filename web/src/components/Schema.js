@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import './Util.css';
-import './Rest.css';
-import ResponseTextArea from './ResponseTextArea';
-import { useAppDataContext } from './AppDataContext';
-import LinkGroup from './LinkGroup';
-import { schemaURL } from '../constants/apiEndpoints';
+import React, { useState } from "react";
+import "./Util.css";
+import "./Rest.css";
+import ResponseTextArea from "./ResponseTextArea";
+import { useAppDataContext } from "./AppDataContext";
+import LinkGroup from "./LinkGroup";
+import { schemaURL } from "../constants/apiEndpoints";
 
 function Schema() {
   //getting the global context which has some getters and setters for getting the file name and schema
@@ -12,7 +12,7 @@ function Schema() {
 
   // responseData stores the schema data coming from ruspie api and displays it in the response textarea
   // const [responseData, setResponseData] = useState('' || (JSON.stringify(context?.currentFileSchema, null, 4)) !== '{}' ? JSON.stringify(context?.currentFileSchema): '');
-  const [responseData, setResponseData] = useState('');
+  const [responseData, setResponseData] = useState("");
 
   // linkVisibility manages the visibility of the linkGroup
   const [linkVisibility, setLinkVisibility] = useState(false);
@@ -46,15 +46,15 @@ function Schema() {
   };
 
   React.useEffect(() => {
-    if (context?.currentFileName !== '') {
+    if (context?.currentFileName !== "") {
       setLinkVisibility(true);
     }
 
     if (context?.currentFileSchema) {
       setResponseData(
-        JSON.stringify(context?.currentFileSchema, null, 2) !== '{}'
+        JSON.stringify(context?.currentFileSchema, null, 2) !== "{}"
           ? JSON.stringify(context?.currentFileSchema, null, 2)
-          : '',
+          : ""
       );
     }
   }, []);
@@ -67,14 +67,14 @@ function Schema() {
             <div className="form-input-div">
               <label htmlFor="file_name">File Name</label>
               <input
-                type={'text'}
+                type={"text"}
                 id="file_name"
                 placeholder="please enter file name"
                 onChange={handleChange}
-                defaultValue={context?.currentFileName || ''}
+                defaultValue={context?.currentFileName || ""}
                 required
               ></input>
-              <input type={'submit'} value="Get Schema"></input>
+              <input type={"submit"} value="Get Schema"></input>
             </div>
           </form>
           {linkVisibility ? (

@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import './LinkGroup.css';
-import './Rest.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import "./LinkGroup.css";
+import "./Rest.css";
 
 export function LinkGroup() {
   return (

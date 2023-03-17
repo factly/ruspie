@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { useAppDataContext } from './AppDataContext';
-import ResponseTextArea from './ResponseTextArea';
-import './Util.css';
-import './Rest.css';
+import React, { useState } from "react";
+import { useAppDataContext } from "./AppDataContext";
+import ResponseTextArea from "./ResponseTextArea";
+import "./Util.css";
+import "./Rest.css";
 
 function GraphQL() {
   // responseData stores the search data coming from ruspie after making the graphql request and displays it in the response textarea
-  const [responseData, setResponseData] = useState('');
+  const [responseData, setResponseData] = useState("");
   // getting the global context which has some getters and setters for getting the file name and schema
   let { currentFileSchema, currentFileName } = useAppDataContext();
 
@@ -21,11 +21,11 @@ function GraphQL() {
             <label htmlFor="file_format">File Format</label>
             <input
               name="file_format"
-              type={'text'}
+              type={"text"}
               id="file_format"
               placeholder="please enter file format"
-              onChange={''}
-              defaultValue={'csv'}
+              onChange={""}
+              defaultValue={"csv"}
             />
           </div>
         </div>

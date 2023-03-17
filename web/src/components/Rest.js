@@ -1,41 +1,41 @@
-import React, { useState } from 'react';
-import ResponseTextArea from './ResponseTextArea';
-import './Rest.css';
-import './Util.css';
-import './LinkGroup.css';
-import { useAppDataContext } from './AppDataContext';
-import Select from 'react-select';
-import { Link } from 'react-router-dom';
-import { createFilter, isColumnDatatypeString } from '../util/filter';
-import { restEndpoint } from '../constants/apiEndpoints';
+import React, { useState } from "react";
+import ResponseTextArea from "./ResponseTextArea";
+import "./Rest.css";
+import "./Util.css";
+import "./LinkGroup.css";
+import { useAppDataContext } from "./AppDataContext";
+import Select from "react-select";
+import { Link } from "react-router-dom";
+import { createFilter, isColumnDatatypeString } from "../util/filter";
+import { restEndpoint } from "../constants/apiEndpoints";
 
 function Rest({}) {
   // responseData stores the search data coming from ruspie and displays it in the response textarea
-  const [responseData, setResponseData] = useState('');
+  const [responseData, setResponseData] = useState("");
 
   //getting the global context which has some getters and setters for getting the file name and schema
   let { currentFileSchema, currentFileName } = useAppDataContext();
 
   const operatorList = [
     {
-      label: '>',
-      value: 'gt=',
+      label: ">",
+      value: "gt=",
     },
     {
-      label: '<',
-      value: 'lt=',
+      label: "<",
+      value: "lt=",
     },
     {
-      label: '=',
-      value: '=',
+      label: "=",
+      value: "=",
     },
     {
-      label: '>=',
-      value: 'gte=',
+      label: ">=",
+      value: "gte=",
     },
     {
-      label: '<=',
-      value: 'lte=',
+      label: "<=",
+      value: "lte=",
     },
   ];
 
@@ -45,7 +45,7 @@ function Rest({}) {
   // inputs stores the form data in key value pairs
   const [inputs, setInputs] = useState({
     limit: 20,
-    file_format: 'csv',
+    file_format: "csv",
     columns: [],
   });
   const handleSubmit = (e) => {
@@ -54,7 +54,7 @@ function Rest({}) {
     let queryParam = {};
     queryParam.limit = inputs.limit;
     if (inputs.columns?.length > 0) {
-      queryParam.columns = '';
+      queryParam.columns = "";
       queryParam.columns = inputs.columns[0];
       for (let i = 1; i < inputs.columns.length; i++) {
         queryParam.columns += `,${inputs.columns[i]}`;
@@ -90,7 +90,10 @@ function Rest({}) {
   };
 
   const handleColumnsChange = (selectedValues) => {
-    setInputs({ ...inputs, columns: selectedValues?.map((object) => object?.value) });
+    setInputs({
+      ...inputs,
+      columns: selectedValues?.map((object) => object?.value),
+    });
   };
 
   const addFilterFields = (e) => {
@@ -98,9 +101,9 @@ function Rest({}) {
     setFilterInputFields([
       ...filterInputFields,
       {
-        columnName: '',
-        operator: '',
-        value: '',
+        columnName: "",
+        operator: "",
+        value: "",
       },
     ]);
   };
@@ -115,13 +118,13 @@ function Rest({}) {
 
   const handleFilterFormColumnSelectChange = (index, event) => {
     let data = [...filterInputFields];
-    data[index]['columnName'] = event.value;
+    data[index]["columnName"] = event.value;
     setFilterInputFields(data);
   };
 
   const handleFilterFormOperatorSelectChange = (index, event) => {
     let data = [...filterInputFields];
-    data[index]['operator'] = event.value;
+    data[index]["operator"] = event.value;
     setFilterInputFields(data);
   };
   const handleFilterFormInputChange = (index, event) => {
@@ -141,18 +144,18 @@ function Rest({}) {
                 <label htmlFor="file_format">File Format</label>
                 <input
                   name="file_format"
-                  type={'text'}
+                  type={"text"}
                   id="file_format"
                   placeholder="please enter file format"
                   onChange={handleChange}
-                  defaultValue={'csv'}
+                  defaultValue={"csv"}
                 />
               </div>
               <div className="form-input-div">
                 <label htmlFor="limit">Page Size</label>
                 <input
                   name="limit"
-                  type={'number'}
+                  type={"number"}
                   id="limit"
                   placeholder="please enter limit"
                   min={0}
@@ -182,7 +185,7 @@ function Rest({}) {
                 {filterInputFields.map((input, index) => {
                   const isString = isColumnDatatypeString(
                     currentFileSchema?.fields,
-                    input?.columnName,
+                    input?.columnName
                   );
                   return (
                     <div key={index} className="filterDiv">
@@ -198,9 +201,11 @@ function Rest({}) {
                           };
                         })}
                         styles={{
-                          width: '30%',
+                          width: "30%",
                         }}
-                        onChange={(e) => handleFilterFormColumnSelectChange(index, e)}
+                        onChange={(e) =>
+                          handleFilterFormColumnSelectChange(index, e)
+                        }
                       />
                       <Select
                         name="operator"
@@ -209,34 +214,36 @@ function Rest({}) {
                         required={true}
                         options={isString ? [operatorList[2]] : operatorList}
                         styles={{
-                          width: '20%',
+                          width: "20%",
                         }}
-                        onChange={(e) => handleFilterFormOperatorSelectChange(index, e)}
+                        onChange={(e) =>
+                          handleFilterFormOperatorSelectChange(index, e)
+                        }
                       />
                       <input
                         name="value"
-                        type={'text'}
+                        type={"text"}
                         id="value"
                         placeholder="enter the value"
-                        style={{ width: '20%' }}
+                        style={{ width: "20%" }}
                         onChange={(e) => handleFilterFormInputChange(index, e)}
                       />
                       <button
                         className="close-button"
                         onClick={(e) => removeFilterFields(e, index)}
                       >
-                        {' '}
-                        X{' '}
+                        {" "}
+                        X{" "}
                       </button>
                     </div>
                   );
                 })}
               </div>
               <button className="add-button" onClick={addFilterFields}>
-                {' '}
-                Add{' '}
+                {" "}
+                Add{" "}
               </button>
-              <input type={'submit'} value="Execute Request"></input>
+              <input type={"submit"} value="Execute Request"></input>
               <Link className="backLink" to="/">
                 Back to Schema
               </Link>

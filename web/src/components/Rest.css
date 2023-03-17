@@ -19,7 +19,7 @@
   gap: 6px;
 }
 
-input[type='text'],
+input[type="text"],
 select {
   width: 90%;
   padding: 12px 20px;
@@ -28,10 +28,10 @@ select {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
-input[type='number'],
+input[type="number"],
 select {
   width: 90%;
   padding: 12px 20px;
@@ -42,7 +42,7 @@ select {
   box-sizing: border-box;
 }
 
-input[type='submit'] {
+input[type="submit"] {
   width: 90%;
   background-color: #9b0046;
   color: white;
