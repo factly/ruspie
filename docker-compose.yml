@@ -1,4 +1,4 @@
-version: 0.1.0
+version: 0.3.7
 
 services: 
   ruspie-api:
@@ -47,6 +47,9 @@ services:
     - type: bind
       source: ./web
       target: /app
+    - type: bind
+      source: ./web/node_modules
+      target: /app/node_modules
     networks:
       - ruspie
 networks:
