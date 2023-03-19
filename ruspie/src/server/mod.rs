@@ -17,9 +17,9 @@ use crate::{
 pub fn build_http_server<H: RuspieApiContext>(
     ctx: Arc<Mutex<H>>,
     default_host: String,
+    default_port: String,
 ) -> anyhow::Result<(HttpApiServer, SocketAddr)> {
-    let default_http_port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
-    let http_addr = [default_host, default_http_port].join(":");
+    let http_addr = [default_host, default_port].join(":");
 
     let master_key = match std::env::var("MASTER_KEY") {
         Ok(key) => Some(key),
