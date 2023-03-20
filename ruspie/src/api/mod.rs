@@ -55,8 +55,7 @@ pub fn get_table_source_s3(tablename: &str, extension: &str, headers: &HeaderMap
     } else {
         std::env::var("S3_PATH").unwrap_or_else(|_| "ruspie".to_string())
     };
-    let path = format!("s3://{}{}.{}", path, tablename, extension);
-    println!("{}", path);
+    let path = format!("s3://{}/{}.{}", path, tablename, extension);
     TableSource::new(tablename, path).with_option(opt)
 }
 

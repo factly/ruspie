@@ -1,9 +1,12 @@
 use std::sync::Arc;
 
+use super::extract_ext_from_headers;
 use super::get_limit;
 use super::get_max_limit;
-use super::{extract_ext_from_headers, get_table_source_fs};
+use super::get_table_source_fs;
+use super::get_table_source_s3;
 use crate::context::api_context::RuspieApiContext;
+use crate::context::api_context::Source;
 use axum::{body::Bytes, extract, http::HeaderMap, response::IntoResponse, Extension};
 use columnq::encoding;
 use columnq::error::QueryError;
@@ -25,7 +28,11 @@ pub async fn graphql<H: RuspieApiContext>(
     let mut context = ctx.lock().await;
     if !context.table_exists(table_name.as_str()).await {
         let extension = extract_ext_from_headers(&headers);
-        let table_source = get_table_source_fs(table_name.as_str(), &extension);
+        // let table_source = get_table_source(table_name.as_str(), &extension);
+        let table_source = match context.get_source() {
+            &Source::S3 => get_table_source_s3(table_name.as_str(), &extension, &headers),
+            _ => get_table_source_fs(table_name.as_str(), &extension),
+        };
         if let Err(e) = context.conf_table(&table_source).await {
             return Err(ApiErrResp::load_table(e));
         }
@@ -173,4 +180,3 @@ fn invalid_query(message: String) -> QueryError {
         message,
     }
 }
-

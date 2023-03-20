@@ -1,10 +1,13 @@
 use std::sync::Arc;
 
-use crate::{api::get_max_limit, context::api_context::RuspieApiContext};
+use crate::{
+    api::get_max_limit,
+    context::api_context::{RuspieApiContext, Source},
+};
 use axum::{body::Bytes, extract, http::HeaderMap, response::IntoResponse, Extension};
 use columnq::encoding;
 
-use super::{extract_ext_from_headers, get_limit, get_table_source_fs};
+use super::{extract_ext_from_headers, get_limit, get_table_source_fs, get_table_source_s3};
 use roapi::{
     api::{encode_record_batches, encode_type_from_hdr},
     error::ApiErrResp,
@@ -29,7 +32,11 @@ pub async fn sql<H: RuspieApiContext>(
     let table_name = query.split(" ").collect::<Vec<&str>>()[idx + 1];
     if !context.table_exists(table_name).await {
         let extension = extract_ext_from_headers(&headers);
-        let table_source = get_table_source_fs(table_name, &extension);
+        // let table_source = get_table_source_fs(table_name, &extension);
+        let table_source = match context.get_source() {
+            &Source::S3 => get_table_source_s3(&table_name, &extension, &headers),
+            _ => get_table_source_fs(&table_name, &extension),
+        };
         if let Err(e) = context.conf_table(&table_source).await {
             return Err(ApiErrResp::load_table(e));
         }
