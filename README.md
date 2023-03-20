@@ -28,13 +28,18 @@ You can configure Ruspie using environment variables. The following environment 
 
 `SOURCE`: This specifies the source of the files to be fetched from. It can either be `S3` or `FILESYSTEM`, by default it is set to `FILESYSTEM`.
 
-`S3_PATH`: If the `SOURCE` env variable is to you have to spicify this enviriable. Ex:
+`S3_PATH`: If the `SOURCE` env variable is to you have to spicify this enviriable. `S3_PATH` can also be passed from request headers which overrides the value set in env variable. If the env variable is not set it is defaulted to `ruspie` as path.Ex:
 ```bash
 # if your a have s3 url bucket/path/to/file.csv
-# do not end with trailing slashes
 export SOURCE=S3
 export S3_PATH=bucket/path/to
+cargo run 
+# In this request it will serve from s3://bucket/path/to/blogs.csv
+curl -H "FILE-EXT: csv"  http://localhost:8080/api/tables/blogs
+# In this request it will override env value as serve from s3://newbucket/newpath/to/blogs.csv
+curl -H "S3_PATH:newbucket/newpath/to" http://localhost:8080/api/tables/blogs
 ```
+
 
 `FILE_PATH`: If `SOURCE` is set to `FILESYSTEM` this specifies the path to the dataset files that you want to serve through the API. If not set, the default is the test directory in the root of the project.
 
