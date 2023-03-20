@@ -1,6 +1,6 @@
 [workspace]
 
-members = [ "ruspie"]
+members = [ "ruspie","text_to_sql_service"]
 
 [profile.dev]
 split-debuginfo = "unpacked"
