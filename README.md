@@ -28,7 +28,7 @@ You can configure Ruspie using environment variables. The following environment 
 
 `SOURCE`: This specifies the source of the files to be fetched from. It can either be `S3` or `FILESYSTEM`, by default it is set to `FILESYSTEM`.
 
-`S3_PATH`: If the `SOURCE` env variable is to you have to spicify this enviriable. `S3_PATH` can also be passed from request headers which overrides the value set in env variable. If the env variable is not set it is defaulted to `ruspie` as path.Ex:
+`S3_PATH`: If the `SOURCE` env variable is `S3`, to you have to spicify this env variable. `S3_PATH` can also be passed from request headers which overrides the value set in env variable. If the env variable is not set it is defaulted to `ruspie` as path.Ex:
 ```bash
 # if your a have s3 url bucket/path/to/file.csv
 export SOURCE=S3
