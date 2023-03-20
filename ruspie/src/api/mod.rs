@@ -25,7 +25,7 @@ pub fn get_table_source_fs(table_name: &str, extension: &str) -> TableSource {
         serde_json::Value::Bool(false),
     );
     let opt: TableLoadOption = serde_json::from_value(serde_json::Value::Object(map)).unwrap();
-    let path = std::env::var("FILE_PATH").unwrap_or_else(|_| String::from("test"));
+    let path = std::env::var("FILE_PATH").unwrap_or_else(|_| String::from("./data"));
     TableSource::new(
         table_name,
         format!(
@@ -37,7 +37,7 @@ pub fn get_table_source_fs(table_name: &str, extension: &str) -> TableSource {
     .with_option(opt)
 }
 
-pub fn get_table_source_s3(path: &str, extension: &str, headers: &HeaderMap) -> TableSource {
+pub fn get_table_source_s3(tablename: &str, extension: &str, headers: &HeaderMap) -> TableSource {
     let mut map = serde_json::Map::new();
     map.insert(
         String::from("format"),
@@ -50,22 +50,14 @@ pub fn get_table_source_s3(path: &str, extension: &str, headers: &HeaderMap) -> 
 
     let opt: TableLoadOption = serde_json::from_value(serde_json::Value::Object(map)).unwrap();
 
-    let s3_path = match headers.get("PATH").and_then(|path| path.to_str().ok()) {
-        Some(path) => "s3://".to_owned() + path + path,
-        None => {
-            // Handle the error case here, e.g., by returning a default path or an error
-            // If you want to return an error, you'll need to update the return type of the function
-
-            // CHANGE THIS TO RETURN A DEFAULT PATH
-            "s3://default/path".to_owned()
-        }
+    let path: _ = if let Some(path) = headers.get("S3_PATH").and_then(|path| path.to_str().ok()) {
+        path.to_owned()
+    } else {
+        std::env::var("S3_PATH").unwrap_or_else(|_| "ruspie".to_string())
     };
-
-    let table_name = {
-        let path: &Vec<&str> = &path.split("/").collect::<Vec<&str>>();
-        path[path.len() - 1]
-    };
-    TableSource::new(table_name, path.to_owned() + "." + extension).with_option(opt)
+    let path = format!("s3://{}{}.{}", path, tablename, extension);
+    println!("{}", path);
+    TableSource::new(tablename, path).with_option(opt)
 }
 
 pub fn extract_ext_from_headers(headers: &HeaderMap) -> String {
