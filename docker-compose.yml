@@ -9,8 +9,8 @@ services:
       - 8080:8080
     environment:
       - SOURCE=S3
-      - AWS_SECRET_ACCESS_KEY=miniokey
-      - AWS_ACCESS_KEY_ID=miniosecret
+      - AWS_SECRET_ACCESS_KEY=miniosecret
+      - AWS_ACCESS_KEY_ID=miniokey
       - AWS_REGION=us-east-1
       - AWS_ENDPOINT_URL=minio:9000      
     networks:
