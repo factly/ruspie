@@ -1,6 +1,5 @@
 FROM node:16.14-alpine as development
 
-ENV CI=true
 ENV PORT=3000
 
 WORKDIR /app
