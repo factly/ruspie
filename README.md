@@ -26,7 +26,17 @@ Note: If you want to enable token-based authorization, you will need to set the 
 ## CONFIGURATION
 You can configure Ruspie using environment variables. The following environment variables are available:
 
-`FILE_PATH`: This specifies the path to the dataset files that you want to serve through the API. If not set, the default is the test directory in the root of the project.
+`SOURCE`: This specifies the source of the files to be fetched from. It can either be `S3` or `FILESYSTEM`, by default it is set to `FILESYSTEM`.
+
+`S3_PATH`: If the `SOURCE` env variable is to you have to spicify this enviriable. Ex:
+```bash
+# if your a have s3 url bucket/path/to/file.csv
+# do not end with trailing slashes
+export SOURCE=S3
+export S3_PATH=bucket/path/to
+```
+
+`FILE_PATH`: If `SOURCE` is set to `FILESYSTEM` this specifies the path to the dataset files that you want to serve through the API. If not set, the default is the test directory in the root of the project.
 
 `PORT`: This specifies the port that the Ruspie server will listen on. If not set, the default is 8080.
 
@@ -41,6 +51,7 @@ You can configure Ruspie using environment variables. The following environment 
 To set an environment variable, you can use the export command before starting the Ruspie server. For example, to set the FILE_PATH variable to the data directory and the PORT variable to 8080, you can run the following commands:
 
 ```bash
+export SOURCE=FILESYSTEM
 export FILE_PATH=./data
 export PORT=8080
 cargo run
