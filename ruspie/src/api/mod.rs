@@ -49,7 +49,18 @@ pub fn get_table_source_s3(path: &str, extension: &str, headers: &HeaderMap) -> 
     );
 
     let opt: TableLoadOption = serde_json::from_value(serde_json::Value::Object(map)).unwrap();
-    let path = "s3://".to_owned() + headers.get("PATH").unwrap().to_str().unwrap() + path;
+
+    let s3_path = match headers.get("PATH").and_then(|path| path.to_str().ok()) {
+        Some(path) => "s3://".to_owned() + path + path,
+        None => {
+            // Handle the error case here, e.g., by returning a default path or an error
+            // If you want to return an error, you'll need to update the return type of the function
+
+            // CHANGE THIS TO RETURN A DEFAULT PATH
+            "s3://default/path".to_owned()
+        }
+    };
+
     let table_name = {
         let path: &Vec<&str> = &path.split("/").collect::<Vec<&str>>();
         path[path.len() - 1]
