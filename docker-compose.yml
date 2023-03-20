@@ -7,12 +7,14 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - 8080:8080
-    volumes:
-      - type: bind
-        source: ./ruspie
-        target: /app
+    environment:
+      - SOURCE=S3
+      - AWS_SECRET_ACCESS_KEY=miniokey
+      - AWS_ACCESS_KEY_ID=miniosecret
+      - AWS_REGION=us-east-1
+      - AWS_ENDPOINT_URL=minio:9000      
     networks:
-      - ruspie 
+      - ruspie       
   minio:
     image: minio/minio
     ports:
@@ -22,8 +24,8 @@ services:
       - ./volumes/minio/data:/export
       - ./volumes/minio/config:/root/.minio
     environment:
-      - MINIO_ACCESS_KEY=miniokey
-      - MINIO_SECRET_KEY=miniosecret
+      - MINIO_ROOT_USER=miniokey
+      - MINIO_ROOT_PASSWORD=miniosecret      
     command: server -console-address :9002 /export
     networks:
       - ruspie
@@ -44,12 +46,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-    - type: bind
-      source: ./web
-      target: /app
-    - type: bind
-      source: ./web/node_modules
-      target: /app/node_modules
+      - ./web:/app
     environment: 
       - REACT_APP_RUSPIE_API_URL=http://ruspie-api:8080
       - WDS_SOCKET_HOST=127.0.0.1 
