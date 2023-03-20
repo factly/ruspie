@@ -47,7 +47,7 @@ pub async fn sql<H: RuspieApiContext>(
             .iter()
             .position(|&x| x == "limit" || x == "LIMIT")
             .unwrap();
-        let mut limit = vec_q[i + 1].parse::<i64>().unwrap();
+        let mut limit = vec_q[i + 1].parse::<u64>().unwrap();
         if limit > get_max_limit() {
             limit = get_limit();
         }

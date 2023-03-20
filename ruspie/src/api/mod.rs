@@ -72,17 +72,17 @@ pub fn extract_ext_from_headers(headers: &HeaderMap) -> String {
     extension.to_string()
 }
 
-pub fn get_limit() -> i64 {
+pub fn get_limit() -> u64 {
     std::env::var("LIMIT")
-        .unwrap_or_else(|_| "30".to_owned())
-        .parse::<i64>()
+        .unwrap_or_else(|_| "1000".to_owned())
+        .parse::<u64>()
         .unwrap()
 }
 
-pub fn get_max_limit() -> i64 {
+pub fn get_max_limit() -> u64 {
     std::env::var("MAX_LIMIT")
-        .unwrap_or_else(|_| "40".to_owned())
-        .parse::<i64>()
+        .unwrap_or_else(|_| "1000".to_owned())
+        .parse::<u64>()
         .unwrap()
 }
 

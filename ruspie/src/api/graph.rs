@@ -150,9 +150,8 @@ pub fn parse_graphql_query(query: &str) -> Result<(String, String), QueryError> 
         })
         .collect::<Result<Vec<&str>, _>>()?;
     if let Some(limit) = limit {
-        let mut limit = limit.to_string().parse::<i64>().unwrap();
-        let max_limit = get_max_limit();
-        if limit > max_limit {
+        let mut limit = limit.to_string().parse::<u64>().unwrap();
+        if limit > get_max_limit() {
             limit = get_limit();
         }
         query = query.to_owned() + "limit:" + limit.to_string().as_str() + ",";

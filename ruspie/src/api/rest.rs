@@ -1,6 +1,8 @@
 use std::{collections::HashMap, sync::Arc};
 
-use super::{extract_ext_from_headers, get_table_source_fs, get_table_source_s3};
+use super::{
+    extract_ext_from_headers, get_limit, get_max_limit, get_table_source_fs, get_table_source_s3,
+};
 use crate::context::api_context::{RuspieApiContext, Source};
 use axum::{extract, http::HeaderMap, response::IntoResponse, Extension};
 use columnq::encoding;
@@ -32,16 +34,13 @@ pub async fn rest<H: RuspieApiContext>(
 
     if let Some(limit) = params.get("limit") {
         let limit = limit.parse::<u64>().unwrap();
-        let max_limit = std::env::var("MAX_LIMIT")
-            .unwrap_or_else(|_| String::from("1000"))
-            .parse::<u64>()
-            .unwrap();
+        let max_limit = get_max_limit();
         if limit > max_limit {
             params.insert(String::from("limit"), max_limit.to_string());
         }
     } else {
-        let limit = std::env::var("LIMIT").unwrap_or_else(|_| String::from("1000"));
-        params.insert(String::from("limit"), limit);
+        let limit = get_limit();
+        params.insert(String::from("limit"), limit.to_string());
     }
 
     let encode_type = encode_type_from_hdr(headers, encoding::ContentType::default());
