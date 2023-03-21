@@ -80,7 +80,7 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
                         "Authorization",
                         format!(
                             "Bearer {}",
-                            "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"
+                            "api-key"
                         ),
                     )
                     .json(&openai_request)
