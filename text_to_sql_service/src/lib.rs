@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 use worker::*;
 
@@ -12,7 +13,44 @@ fn log_request(req: &Request) {
         req.cf().region().unwrap_or_else(|| "unknown region".into())
     );
 }
+#[derive(Debug, Serialize, Deserialize)]
+struct OpenAIRequest {
+    model: String,
+    prompt: String,
+    temperature: u64,
+    max_tokens: u64,
+    stop: Vec<String>,
+}
 
+impl Default for OpenAIRequest {
+    fn default() -> Self {
+        let mut stop: Vec<String> = Vec::new();
+        stop.push("#".to_owned());
+        stop.push(";".to_owned());
+        Self {
+            model: String::from("code-davinci-002"),
+            prompt: String::from(""),
+            temperature: 0,
+            max_tokens: 150,
+            stop,
+        }
+    }
+}
+#[derive(Debug, Deserialize)]
+struct HandlerRequest {
+    prompt: String,
+}
+#[derive(Debug, Serialize, Deserialize)]
+struct OpenAIResponse {
+    choices: Vec<Choice>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+struct Choice {
+    text: String,
+    index: u64,
+    finished_reason: String,
+}
 #[event(fetch)]
 pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Response> {
     log_request(&req);
@@ -30,25 +68,29 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
     // Environment bindings like KV Stores, Durable Objects, Secrets, and Variables.
     router
         .get("/", |_, _| Response::ok("Hello from Workers!"))
-        .post_async("/form/:field", |mut req, ctx| async move {
-            if let Some(name) = ctx.param("field") {
-                let form = req.form_data().await?;
-                match form.get(name) {
-                    Some(FormEntry::Field(value)) => {
-                        return Response::from_json(&json!({ name: value }))
-                    }
-                    Some(FormEntry::File(_)) => {
-                        return Response::error("`field` param in form shouldn't be a File", 422);
-                    }
-                    None => return Response::error("Bad Request", 400),
-                }
+        .post_async("/", |mut req, _| async move {
+            let body = req.json::<HandlerRequest>().await;
+            if let Ok(body) = body {
+                let mut openai_request = OpenAIRequest::default();
+                openai_request.prompt = body.prompt;
+                let res = reqwest::Client::new();
+                let res = res
+                    .post("https://api.openai.com/v1/completions")
+                    .header(
+                        "Authorization",
+                        format!(
+                            "Bearer {}",
+                            "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"
+                        ),
+                    )
+                    .json(&openai_request)
+                    .send()
+                    .await
+                    .unwrap();
+                let res = res.text().await.unwrap();
+                return Response::ok(res);
             }
-
-            Response::error("Bad Request", 400)
-        })
-        .get("/worker-version", |_, ctx| {
-            let version = ctx.var("WORKERS_RS_VERSION")?.to_string();
-            Response::ok(version)
+            Response::ok("bad request")
         })
         .run(req, env)
         .await
