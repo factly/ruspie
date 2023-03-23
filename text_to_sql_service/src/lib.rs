@@ -1,10 +1,9 @@
 use context::OpenAIContext;
-use router::build_router;
 use worker::*;
 
 mod context;
+mod handler;
 mod models;
-mod router;
 mod utils;
 
 fn log_request(req: &Request) {
@@ -18,11 +17,16 @@ fn log_request(req: &Request) {
 }
 #[event(fetch)]
 pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Response> {
+    dotenvy::dotenv().ok();
     log_request(&req);
     utils::set_panic_hook();
-    let api_key = std::env::var("OPENAI_API_KEY").unwrap();
-    let endpoint_url = std::env::var("ENDPOINT_URL").unwrap();
+    let api_key = env.var("OPENAI_API_KEY").unwrap().to_string();
+    let endpoint_url = env.var("ENDPOINT_URL").unwrap().to_string();
     let context = OpenAIContext::new(api_key, endpoint_url);
-    let router = build_router(context);
-    router.await.run(req, env).await
+    let router = Router::with_data(context);
+    router
+        .get("/", |_, _| Response::ok("Hello from workers"))
+        .post_async("/generate", handler::handler)
+        .run(req, env)
+        .await
 }

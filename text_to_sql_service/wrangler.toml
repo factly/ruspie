@@ -1,9 +1,13 @@
-name = "" # todo
+name = "text_to_sql_service" # todo
 main = "build/worker/shim.mjs"
 compatibility_date = "2022-01-20"
 
 [vars]
 WORKERS_RS_VERSION = "0.0.11"
+OPENAI_API_KEY = "OPENAI_API_KEY"
+ENDPOINT_URL = "https://api.openai.com/v1/completions"
+# -OPENAI_API_KEY
+# -ENDPOINT_URL
 
 [build]
 command = "cargo install -q worker-build --version 0.0.9 && worker-build --release"

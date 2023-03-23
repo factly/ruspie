@@ -24,12 +24,12 @@ impl From<String> for OpenAIRequest {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OpenAIResponse {
-    choice: Vec<Choice>,
+    pub choices: Vec<Choice>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Choice {
     pub text: String,
     pub index: u64,
-    pub finished_reason: String,
+    pub finish_reason: String,
 }

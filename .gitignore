@@ -91,3 +91,4 @@ volumes/
 s3-config.bashrc
 wait-for-it.sh/
 ruspie/auth/
+*.env

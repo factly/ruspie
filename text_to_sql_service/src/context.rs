@@ -1,8 +1,8 @@
 use crate::models::{OpenAIRequest, OpenAIResponse};
 
 pub struct OpenAIContext {
-    pub api_key: String,
-    pub endpoint_url: String,
+    api_key: String,
+    endpoint_url: String,
 }
 
 impl OpenAIContext {
@@ -13,16 +13,20 @@ impl OpenAIContext {
         }
     }
 
-    pub async fn generate(&self, payload: OpenAIRequest) -> OpenAIResponse {
+    pub async fn generate(
+        &self,
+        payload: OpenAIRequest,
+    ) -> Result<OpenAIResponse, Result<worker::Response, worker::Error>> {
         let client = reqwest::Client::new();
         client
             .post(self.endpoint_url.clone())
             .json(&payload)
+            .header("AUTHORIZATION", format!("Bearer {}", &self.api_key.clone()))
             .send()
             .await
-            .unwrap()
+            .map_err(|e| worker::Response::error(e.to_string(), 500))?
             .json::<OpenAIResponse>()
             .await
-            .unwrap()
+            .map_err(|e| worker::Response::error(e.to_string(), 500))
     }
 }
