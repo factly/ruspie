@@ -20,13 +20,9 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
     dotenvy::dotenv().ok();
     log_request(&req);
     utils::set_panic_hook();
-    let api_key = env.var("OPENAI_API_KEY").unwrap().to_string();
+    let api_key = env.secret("OPENAI_API_KEY").unwrap().to_string();
     let endpoint_url = env.var("ENDPOINT_URL").unwrap().to_string();
     let context = OpenAIContext::new(api_key, endpoint_url);
     let router = Router::with_data(context);
-    router
-        .get("/", |_, _| Response::ok("Hello from workers"))
-        .post_async("/generate", handler::handler)
-        .run(req, env)
-        .await
+    router.post_async("/", handler::handler).run(req, env).await
 }
