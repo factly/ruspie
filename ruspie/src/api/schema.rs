@@ -26,6 +26,5 @@ pub async fn schema<H: RuspieApiContext>(
         }
     }
     let payload = context.table_schema_json_bytes(&table).await?;
-
     Ok(bytes_to_json_resp(payload))
 }

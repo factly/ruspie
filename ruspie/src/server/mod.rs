@@ -5,7 +5,10 @@ use std::{
     sync::Arc,
 };
 
-use axum::{http::Method, Extension, Router};
+use axum::{
+    http::{self, Method},
+    Extension, Router,
+};
 use roapi::server::http::HttpApiServer;
 use tokio::sync::Mutex;
 
@@ -50,6 +53,7 @@ pub fn build_http_server<H: RuspieApiContext>(
     }
 
     let cors = tower_http::cors::CorsLayer::new()
+        .allow_headers(tower_http::cors::Any)
         .allow_methods(vec![Method::GET, Method::POST, Method::OPTIONS])
         .allow_origin(tower_http::cors::Any);
 

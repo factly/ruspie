@@ -24,5 +24,11 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
     let endpoint_url = env.var("ENDPOINT_URL").unwrap().to_string();
     let context = OpenAIContext::new(api_key, endpoint_url);
     let router = Router::with_data(context);
-    router.post_async("/", handler::handler).run(req, env).await
+    router
+        .post_async("/", handler::handler)
+        .options("/", |req, _ctx| {
+            handler::preflight_response(req.headers(), "*")
+        })
+        .run(req, env)
+        .await
 }
