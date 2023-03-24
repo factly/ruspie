@@ -10,9 +10,10 @@ pub async fn handler(mut req: Request, ctx: RouteContext<OpenAIContext>) -> Resu
     let payload = request_payload.unwrap();
     let generate_result = ctx.data.generate(payload.prompt.into()).await;
     if let Err(err) = generate_result {
+        console_log!("{:?}", err);
         return err.into();
     }
-    Response::ok(&generate_result.unwrap().choices[0].text)
+    Response::ok(&generate_result.unwrap().choices[0].message.content)
 }
 
 #[derive(Debug, Deserialize)]
