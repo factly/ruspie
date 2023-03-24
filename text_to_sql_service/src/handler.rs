@@ -20,3 +20,9 @@ pub async fn handler(mut req: Request, ctx: RouteContext<OpenAIContext>) -> Resu
 struct HandlerRequest {
     prompt: String,
 }
+
+impl HandlerRequest {
+    pub fn refactor_prompt(&self) -> String {
+        todo!()
+    }
+}
