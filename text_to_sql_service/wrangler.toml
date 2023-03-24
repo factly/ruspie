@@ -3,7 +3,6 @@ main = "build/worker/shim.mjs"
 compatibility_date = "2022-01-20"
 [vars]
 WORKERS_RS_VERSION = "0.0.11"
-OPENAI_API_KEY = "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"
 ENDPOINT_URL = "https://api.openai.com/v1/chat/completions"
 
 [build]
