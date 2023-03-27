@@ -5,10 +5,7 @@ use std::{
     sync::Arc,
 };
 
-use axum::{
-    http::{self, Method},
-    Extension, Router,
-};
+use axum::{http::Method, Extension, Router};
 use roapi::server::http::HttpApiServer;
 use tokio::sync::Mutex;
 
