@@ -1,5 +1,5 @@
+#![macro_use]
 pub mod auth;
-#[allow(dead_code)]
 pub mod graph;
 pub mod rest;
 pub mod routes;
