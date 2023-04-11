@@ -1,9 +1,9 @@
 use crate::context::api_context::{RawRuspieApiContext, RuspieApiContext, Source};
 use crate::server::build_http_server;
+use columnq::datafusion::prelude::SessionContext;
 use columnq::table::{TableLoadOption, TableSchema, TableSource};
 use log::{error, info};
 use roapi::server::http::HttpApiServer;
-use serde_json::json_internal;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -34,8 +34,7 @@ pub struct Schema {
 impl<H: RuspieApiContext> TableReloader<H> {
     pub async fn run(mut self) -> anyhow::Result<()> {
         let mut interval = tokio::time::interval(self.interval);
-
-        let mut ctx = self.ctx.lock().await;
+        let mut ctx = RawRuspieApiContext::new();
         let _ = ctx.conf_table(&table_source_for_schemas()).await.unwrap();
         let schemas = ctx.query_sql_ruspie("SELECT * FROM schemas").await.unwrap();
         let schemas = columnq::encoding::json::record_batches_to_bytes(&schemas).unwrap();
@@ -68,6 +67,7 @@ impl<H: RuspieApiContext> TableReloader<H> {
                 let source = TableSource::new(name, path)
                     .with_option(opt)
                     .with_schema(schema.clone());
+                let mut ctx = self.ctx.lock().await;
                 match ctx.conf_table(&source).await {
                     Ok(_) => info!("🚀 TableReloader reloaded schema of table {}", name),
                     Err(e) => error!("failed to reload schema for {:?}", e),
@@ -103,7 +103,7 @@ impl Application {
         let ctx = Arc::new(Mutex::new(RawRuspieApiContext::new()));
         let (http_server, http_addr) = build_http_server(ctx.clone(), default_host, default_port)?;
         let table_reloader = TableReloader {
-            interval: std::time::Duration::from_secs(15),
+            interval: std::time::Duration::from_secs(60),
             ctx,
             schemas: Schemas { tables: vec![] },
         };
