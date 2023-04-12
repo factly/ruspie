@@ -1,6 +1,5 @@
 use crate::context::api_context::{RawRuspieApiContext, RuspieApiContext, Source};
 use crate::server::build_http_server;
-use columnq::datafusion::prelude::SessionContext;
 use columnq::table::{TableLoadOption, TableSchema, TableSource};
 use log::{error, info};
 use roapi::server::http::HttpApiServer;
@@ -32,17 +31,21 @@ pub struct Schema {
 }
 
 impl<H: RuspieApiContext> TableReloader<H> {
-    pub async fn run(mut self) -> anyhow::Result<()> {
-        let mut interval = tokio::time::interval(self.interval);
+    async fn fetch_schemas() -> anyhow::Result<Vec<Schemas>> {
         let mut ctx = RawRuspieApiContext::new();
         let _ = ctx.conf_table(&table_source_for_schemas()).await.unwrap();
         let schemas = ctx.query_sql_ruspie("SELECT * FROM schemas").await.unwrap();
         let schemas = columnq::encoding::json::record_batches_to_bytes(&schemas).unwrap();
 
         let schemas: Vec<Schemas> = serde_json::from_slice(&schemas).unwrap();
-        self.schemas = schemas[0].clone();
+        Ok(schemas)
+    }
+
+    pub async fn run(mut self) -> anyhow::Result<()> {
+        let mut interval = tokio::time::interval(self.interval);
 
         loop {
+            self.schemas = Self::fetch_schemas().await.unwrap().pop().unwrap();
             interval.tick().await;
             for Schema {
                 name,
