@@ -83,12 +83,7 @@ impl<H: RuspieApiContext> TableReloader<H> {
 fn table_source_for_schemas() -> TableSource {
     let name = "schemas";
     let extension = "json";
-    let mut map = serde_json::Map::new();
-    map.insert(
-        String::from("format"),
-        serde_json::Value::String(extension.to_owned()),
-    );
-
+    let map = create_serde_map!(extension);
     let opt: TableLoadOption = serde_json::from_value(serde_json::Value::Object(map)).unwrap();
 
     let path = std::env::var("S3_PATH").unwrap_or_else(|_| String::from("ruspie/"));

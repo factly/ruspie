@@ -1,5 +1,6 @@
 use startup::Application;
 
+#[macro_use]
 mod api;
 mod context;
 mod server;

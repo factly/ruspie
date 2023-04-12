@@ -1,4 +1,3 @@
-#![macro_use]
 pub mod auth;
 pub mod graph;
 pub mod rest;
@@ -14,16 +13,29 @@ use axum::response::Response;
 use columnq::table::TableLoadOption;
 use columnq::table::TableSource;
 
+#[macro_export]
+/// creates a new serde_json::Map and inserts format and use_memory_table values into it
+macro_rules! create_serde_map {
+    ($extension: expr) => {{
+        let mut map = serde_json::Map::new();
+        map.insert(
+            String::from("format"),
+            serde_json::Value::String($extension.to_owned()),
+        );
+        map
+    }};
+    ($extension: expr, $use_memory_table: ident) => {{
+        let mut map = create_serde_map!($extension);
+        map.insert(
+            String::from("use_memory_table"),
+            serde_json::Value::Bool(false),
+        );
+        map
+    }};
+}
+
 pub fn get_table_source_fs(table_name: &str, extension: &str) -> TableSource {
-    let mut map = serde_json::Map::new();
-    map.insert(
-        String::from("format"),
-        serde_json::Value::String(extension.to_owned()),
-    );
-    map.insert(
-        String::from("use_memory_table"),
-        serde_json::Value::Bool(false),
-    );
+    let map = create_serde_map!(extension, use_memory_table);
     let opt: TableLoadOption = serde_json::from_value(serde_json::Value::Object(map)).unwrap();
     let path = std::env::var("FILE_PATH").unwrap_or_else(|_| String::from("./data"));
     TableSource::new(
@@ -38,16 +50,7 @@ pub fn get_table_source_fs(table_name: &str, extension: &str) -> TableSource {
 }
 
 pub fn get_table_source_s3(tablename: &str, extension: &str, headers: &HeaderMap) -> TableSource {
-    let mut map = serde_json::Map::new();
-    map.insert(
-        String::from("format"),
-        serde_json::Value::String(extension.to_owned()),
-    );
-    map.insert(
-        String::from("use_memory_table"),
-        serde_json::Value::Bool(false),
-    );
-
+    let map = create_serde_map!(extension, use_memory_table);
     let opt: TableLoadOption = serde_json::from_value(serde_json::Value::Object(map)).unwrap();
 
     let path: _ = if let Some(path) = headers.get("S3_PATH").and_then(|path| path.to_str().ok()) {
