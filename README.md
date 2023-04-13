@@ -176,7 +176,7 @@ To override the `DEFAULT_EXT` use `FILE-EXT` header while querying. For example,
 curl -H "FILE-EXT: parquet" localhost:8080/api/tables/{table_name}
 ```
 
-## PRE-FETCHING
+### PRE-FETCHING
 Enabling pre-fetching loads schemas in advance, improving response times. Setting `PRE_FETCH_ENABLED` to `true` enables pre-fetching, and `S3_PATH` specifies the S3 bucket to fetch schemas from.
 
 `TableReloader` in Ruspie loads all schemas from `schemas.json`, while pre-fetching fetches schemas from CSV and Parquet files. `PRE_FETCH_INTERVAL` specifies the interval in seconds for pre-fetching.
