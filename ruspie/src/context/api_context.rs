@@ -80,8 +80,8 @@ impl RuspieApiContext for RawRuspieApiContext {
 
     async fn table_exists(&self, table_name: &str) -> bool {
         match self.cq.schema_map().get(table_name) {
-            Some(_) => return true,
             None => return false,
+            _ => return true,
         };
     }
     async fn query_rest_table_ruspie(

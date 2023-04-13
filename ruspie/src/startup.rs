@@ -53,15 +53,7 @@ impl<H: RuspieApiContext> TableReloader<H> {
                 schema,
             } in self.schemas.tables.iter()
             {
-                let mut map = serde_json::Map::new();
-                map.insert(
-                    String::from("format"),
-                    serde_json::Value::String(extension.to_owned()),
-                );
-                map.insert(
-                    String::from("use_memory_table"),
-                    serde_json::Value::Bool(false),
-                );
+                let map = create_serde_map!(extension, use_memory_table);
                 let opt: TableLoadOption =
                     serde_json::from_value(serde_json::Value::Object(map)).unwrap();
 
