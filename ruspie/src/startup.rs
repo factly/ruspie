@@ -1,7 +1,8 @@
-use crate::context::api_context::{RawRuspieApiContext, RuspieApiContext, Source};
+use crate::context::api_context::{RawRuspieApiContext, Source};
+use crate::context::loaders::schema::{S3FileSchemaLoader, SchemaFileType};
+use crate::context::loaders::table::TableReloader;
+use crate::context::Schemas;
 use crate::server::build_http_server;
-use columnq::table::{TableLoadOption, TableSchema, TableSource};
-use log::{error, info};
 use roapi::server::http::HttpApiServer;
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -12,89 +13,17 @@ pub struct Application {
     pub table_reloader: TableReloader<RawRuspieApiContext>,
 }
 
-pub struct TableReloader<H: RuspieApiContext> {
-    interval: std::time::Duration,
-    ctx: Arc<Mutex<H>>,
-    schemas: Schemas,
-}
-
-#[derive(serde::Deserialize, Clone)]
-pub struct Schemas {
-    tables: Vec<Schema>,
-}
-
-#[derive(serde::Deserialize, Clone)]
-pub struct Schema {
-    name: String,
-    extension: String,
-    schema: TableSchema,
-}
-
-impl<H: RuspieApiContext> TableReloader<H> {
-    async fn fetch_schemas() -> anyhow::Result<Vec<Schemas>> {
-        let mut ctx = RawRuspieApiContext::new();
-        let _ = ctx.conf_table(&table_source_for_schemas()).await.unwrap();
-        let schemas = ctx.query_sql_ruspie("SELECT * FROM schemas").await.unwrap();
-        let schemas = columnq::encoding::json::record_batches_to_bytes(&schemas).unwrap();
-
-        let schemas: Vec<Schemas> = serde_json::from_slice(&schemas).unwrap();
-        Ok(schemas)
-    }
-
-    pub async fn run(mut self) -> anyhow::Result<()> {
-        let mut interval = tokio::time::interval(self.interval);
-
-        loop {
-            self.schemas = Self::fetch_schemas().await.unwrap().pop().unwrap();
-            interval.tick().await;
-            for Schema {
-                name,
-                extension,
-                schema,
-            } in self.schemas.tables.iter()
-            {
-                let map = create_serde_map!(extension, use_memory_table);
-                let opt: TableLoadOption =
-                    serde_json::from_value(serde_json::Value::Object(map)).unwrap();
-
-                let path = std::env::var("S3_PATH").unwrap_or_else(|_| String::from("ruspie/"));
-                let path = format!("s3://{}/{}.{}", path, name, extension);
-                let source = TableSource::new(name, path)
-                    .with_option(opt)
-                    .with_schema(schema.clone());
-                let mut ctx = self.ctx.lock().await;
-                match ctx.conf_table(&source).await {
-                    Ok(_) => info!("🚀 TableReloader reloaded schema of table {}", name),
-                    Err(e) => error!("failed to reload schema for {:?}", e),
-                }
-            }
-        }
-    }
-}
-
-fn table_source_for_schemas() -> TableSource {
-    let name = "schemas";
-    let extension = "json";
-    let map = create_serde_map!(extension);
-    let opt: TableLoadOption = serde_json::from_value(serde_json::Value::Object(map)).unwrap();
-
-    let path = std::env::var("S3_PATH").unwrap_or_else(|_| String::from("ruspie/"));
-    let path = format!("s3://{}/{}.{}", path, name, extension);
-    {
-        let this: TableSource = TableSource::new(name, path).with_option(opt);
-        this
-    }
-}
-
 impl Application {
     pub async fn build() -> anyhow::Result<Self> {
         let default_host = std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
         let default_port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
         let ctx = Arc::new(Mutex::new(RawRuspieApiContext::new()));
         let (http_server, http_addr) = build_http_server(ctx.clone(), default_host, default_port)?;
+        let loader = S3FileSchemaLoader::new("schemas".to_string(), SchemaFileType::Json);
         let table_reloader = TableReloader {
             interval: std::time::Duration::from_secs(60),
             ctx,
+            loader,
             schemas: Schemas { tables: vec![] },
         };
         Ok(Self {
