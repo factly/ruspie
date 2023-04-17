@@ -18,7 +18,7 @@ impl Application {
         let default_host = std::env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
         let default_port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
         let enable_prefetch =
-            std::env::var("ENABLE_PREFETCH").unwrap_or_else(|_| false.to_string());
+            std::env::var("PRE_FETCH_ENABLED").unwrap_or_else(|_| false.to_string());
         let ctx = Arc::new(Mutex::new(RawRuspieApiContext::new()));
         let (http_server, http_addr) = build_http_server(ctx.clone(), default_host, default_port)?;
         let loader = S3FileSchemaLoader::new("schemas".to_string(), SchemaFileType::Json);
@@ -30,7 +30,7 @@ impl Application {
                 schemas: Schemas { tables: vec![] },
             }),
             "false" => None,
-            _ => panic!("invalid value for ENABLE_PREFETCH (should be true or false)"),
+            _ => panic!("invalid value for PRE_FETCH_ENABLED (should be true or false)"),
         };
 
         Ok(Self {
