@@ -167,10 +167,13 @@ impl<H: object_store::ObjectStore> S3FileContext<H> {
             headers.insert("Content-Type", "application/json".parse().unwrap());
             headers.insert("Accept", "application/json".parse().unwrap());
             headers.insert("FILE-EXTENSION", schema.extension.parse().unwrap());
-
+            println!(
+                "file extension {:?}==============>{:?}",
+                schema.name, schema.extension
+            );
             let client = reqwest::Client::new();
-            let url =
-                std::env::var("RUSPIE_URL").unwrap_or_else(|_| "http://0.0.0.0:8080".to_string());
+            let url = std::env::var("RUSPIE_URL")
+                .unwrap_or_else(|_| "http://ruspie-api:8080".to_string());
             let url = format!("{}/api/schema/{}", url, schema.name);
 
             let response = client.get(&url).headers(headers).send().await;
