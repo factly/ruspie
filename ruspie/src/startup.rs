@@ -23,12 +23,18 @@ impl Application {
         let (http_server, http_addr) = build_http_server(ctx.clone(), default_host, default_port)?;
         let loader = S3FileSchemaLoader::new("schemas".to_string(), SchemaFileType::Json);
         let table_reloader = match enable_prefetch.as_str() {
-            "true" => Some(TableReloader {
-                interval: std::time::Duration::from_secs(60),
-                ctx,
-                loader,
-                schemas: Schemas { tables: vec![] },
-            }),
+            "true" => {
+                let interval = std::env::var("PRE_FETCH_INTERVAL")
+                    .unwrap_or_else(|_| "60".to_string())
+                    .parse::<u64>()
+                    .unwrap();
+                Some(TableReloader {
+                    interval: std::time::Duration::from_secs(interval),
+                    ctx,
+                    loader,
+                    schemas: Schemas { tables: vec![] },
+                })
+            }
             "false" => None,
             _ => panic!("invalid value for PRE_FETCH_ENABLED (should be true or false)"),
         };
