@@ -17,7 +17,7 @@ impl SchemaFileType {
             SchemaFileType::Parquet => "parquet",
         };
 
-        let path = std::env::var("S3_PATH").unwrap();
+        let path = std::env::var("S3_PATH").unwrap_or_else(|_| "ruspie".to_string());
         let path: String = format!("s3://{}/{}.{}", path, name, extension);
         url::Url::parse(&path).unwrap()
     }
@@ -87,7 +87,7 @@ impl<H: object_store::ObjectStore> S3FileContext<H> {
         let mut files: Vec<TableItem> = vec![];
 
         while let Some(file) = list_stream.next().await {
-            let file = file.unwrap();
+            let file = file.map_err(|e| println!("{:?}", e)).unwrap();
             if file.location.extension() == Some("parquet")
                 || file.location.extension() == Some("csv")
             {
