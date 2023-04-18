@@ -1,4 +1,4 @@
-use crate::context::{S3FileContext, SchemaFileType};
+use crate::context::S3FileContext;
 use object_store::aws::{AmazonS3, AmazonS3Builder};
 use std::sync::Arc;
 
@@ -22,13 +22,10 @@ impl Application {
     }
 
     pub async fn run(&self) -> anyhow::Result<()> {
-        let ctx = S3FileContext {
-            schema_file_type: SchemaFileType::Json,
-            schema_file_name: "schemas".to_string(),
-            object_store: Self::build_object_store(),
-        };
+        let mut ctx = S3FileContext::default(Self::build_object_store()).unwrap();
         let mut interval = tokio::time::interval(self.interval);
         loop {
+            ctx.fetch_schemas_from_ruspie().await?;
             interval.tick().await;
         }
     }
