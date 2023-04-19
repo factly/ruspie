@@ -20,7 +20,16 @@ impl<H: RuspieApiContext> TableReloader<H> {
         let mut interval = tokio::time::interval(self.interval);
 
         loop {
-            self.schemas = self.loader.load().await?.pop().unwrap();
+            self.schemas = self
+                .loader
+                .load()
+                .await
+                .unwrap_or_else(|err| {
+                    println!("error occured {:?}", err);
+                    vec![Schemas { tables: vec![] }]
+                })
+                .pop()
+                .unwrap();
 
             interval.tick().await;
 

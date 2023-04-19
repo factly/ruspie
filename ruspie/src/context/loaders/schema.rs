@@ -44,8 +44,7 @@ impl S3FileSchemaLoader {
         let mut ctx = RawRuspieApiContext::new();
         let _ = ctx
             .conf_table(&self.file_type.file_source(self.filename.clone()))
-            .await
-            .unwrap();
+            .await?;
         let schemas = ctx.query_sql_ruspie("SELECT * FROM schemas").await.unwrap();
         let schemas = columnq::encoding::json::record_batches_to_bytes(&schemas).unwrap();
 

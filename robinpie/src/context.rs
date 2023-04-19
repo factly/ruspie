@@ -35,6 +35,11 @@ struct SchemaFile {
     tables: Vec<TableItem>,
 }
 
+#[derive(Deserialize, Debug)]
+struct SchemaResponse {
+    fields: Vec<ColumnItem>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct TableItem {
     name: String,
@@ -64,7 +69,7 @@ struct Schema {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct ColumnItem {
     name: String,
-    data_type: String,
+    data_type: arrow::datatypes::DataType,
     nullable: Option<bool>,
 }
 
@@ -123,7 +128,7 @@ impl<H: object_store::ObjectStore> S3FileContext<H> {
             }
             Err(e) => {
                 println!("cannot read {:?}", e);
-                vec![]
+                vec![SchemaFile { tables: vec![] }]
             }
         };
         self.schemas = schemas;
@@ -168,41 +173,43 @@ impl<H: object_store::ObjectStore> S3FileContext<H> {
             headers.insert("Accept", "application/json".parse().unwrap());
             headers.insert("FILE-EXTENSION", schema.extension.parse().unwrap());
             println!(
-                "file extension {:?}==============>{:?}",
+                "file extension {:?}==============> {:?}",
                 schema.name, schema.extension
             );
             let client = reqwest::Client::new();
-            let url = std::env::var("RUSPIE_URL")
-                .unwrap_or_else(|_| "http://ruspie-api:8080".to_string());
+            let url =
+                std::env::var("RUSPIE_URL").unwrap_or_else(|_| "http://0.0.0.0:8080".to_string());
             let url = format!("{}/api/schema/{}", url, schema.name);
 
             let response = client.get(&url).headers(headers).send().await;
             match response {
                 Ok(d) => {
-                    let schema_resp: SchemaResponse = d.json().await.unwrap();
-                    self.schemas[0].tables.push(TableItem {
-                        name: schema.name,
-                        extension: schema.extension,
-                        schema: Schema {
-                            columns: schema_resp.fields,
-                        },
-                    })
+                    let schema_resp: Result<TableItem, reqwest::Error> =
+                        d.json().await.and_then(|schema_resp: SchemaResponse| {
+                            Ok(TableItem {
+                                name: schema.name,
+                                extension: schema.extension,
+                                schema: Schema {
+                                    columns: schema_resp.fields,
+                                },
+                            })
+                        });
+                    if let Ok(schema) = schema_resp {
+                        self.schemas[0].tables.push(schema);
+                    } else {
+                        println!("Error in fetching schema");
+                    }
                 }
                 Err(e) => println!("error: {:?}", e),
             }
         }
 
         println!(
-            "after fetching ==============>{:?}",
+            "after fetching ==============> {:?}",
             self.schemas[0].tables.len()
         );
         self.write_to_json().await.unwrap();
-        let file = tokio::fs::File::open("schemas.json").await.unwrap();
-        match self.put_object_to_s3(&self.schema_file_name, file).await {
-            Ok(d) => println!("done, {:?}", d),
-            Err(e) => println!("error: {:?}", e),
-        }
-
+        let _ = self.put_object_to_s3(&self.schema_file_name).await;
         Ok(())
     }
     async fn write_to_json(&self) -> anyhow::Result<()> {
@@ -212,21 +219,13 @@ impl<H: object_store::ObjectStore> S3FileContext<H> {
         Ok(())
     }
 
-    async fn put_object_to_s3(
-        &self,
-        path: &str,
-        mut content: tokio::fs::File,
-    ) -> anyhow::Result<()> {
+    async fn put_object_to_s3(&self, path: &str) -> anyhow::Result<()> {
+        let mut file = tokio::fs::File::open("schemas.json").await.unwrap();
         let path = self.schema_file_type.s3_path(path.to_string());
         let mut data = Vec::new();
-        content.read_to_end(&mut data).await?;
+        file.read_to_end(&mut data).await?;
         let location = path.path().try_into().unwrap();
         self.object_store.put(&location, data.into()).await?;
         Ok(())
     }
-}
-
-#[derive(Deserialize, Debug)]
-struct SchemaResponse {
-    fields: Vec<ColumnItem>,
 }
