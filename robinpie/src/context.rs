@@ -212,7 +212,51 @@ impl<H: object_store::ObjectStore> S3FileContext<H> {
         let _ = self.put_object_to_s3(&self.schema_file_name).await;
         Ok(())
     }
-    async fn write_to_json(&self) -> anyhow::Result<()> {
+    async fn write_to_json(&mut self) -> anyhow::Result<()> {
+        // match self.schemas[0]
+        //     .tables
+        //     .pop()
+        //     .unwrap()
+        //     .schema
+        //     .columns
+        //     .pop()
+        //     .unwrap()
+        //     .data_type
+        // {
+        //     arrow::datatypes::DataType::Null => todo!(),
+        //     arrow::datatypes::DataType::Boolean => todo!(),
+        //     arrow::datatypes::DataType::Int8 => todo!(),
+        //     arrow::datatypes::DataType::Int16 => todo!(),
+        //     arrow::datatypes::DataType::Int32 => todo!(),
+        //     arrow::datatypes::DataType::Int64 => todo!(),
+        //     arrow::datatypes::DataType::UInt8 => todo!(),
+        //     arrow::datatypes::DataType::UInt16 => todo!(),
+        //     arrow::datatypes::DataType::UInt32 => todo!(),
+        //     arrow::datatypes::DataType::UInt64 => todo!(),
+        //     arrow::datatypes::DataType::Float16 => todo!(),
+        //     arrow::datatypes::DataType::Float32 => todo!(),
+        //     arrow::datatypes::DataType::Float64 => todo!(),
+        //     arrow::datatypes::DataType::Timestamp(_, _) => todo!(),
+        //     arrow::datatypes::DataType::Date32 => todo!(),
+        //     arrow::datatypes::DataType::Date64 => todo!(),
+        //     arrow::datatypes::DataType::Time32(_) => todo!(),
+        //     arrow::datatypes::DataType::Time64(_) => todo!(),
+        //     arrow::datatypes::DataType::Duration(_) => todo!(),
+        //     arrow::datatypes::DataType::Interval(_) => todo!(),
+        //     arrow::datatypes::DataType::Binary => todo!(),
+        //     arrow::datatypes::DataType::FixedSizeBinary(_) => todo!(),
+        //     arrow::datatypes::DataType::LargeBinary => todo!(),
+        //     arrow::datatypes::DataType::Utf8 => todo!(),
+        //     arrow::datatypes::DataType::LargeUtf8 => todo!(),
+        //     arrow::datatypes::DataType::List(_) => todo!(),
+        //     arrow::datatypes::DataType::FixedSizeList(_, _) => todo!(),
+        //     arrow::datatypes::DataType::LargeList(_) => todo!(),
+        //     arrow::datatypes::DataType::Struct(_) => todo!(),
+        //     arrow::datatypes::DataType::Union(_) => todo!(),
+        //     arrow::datatypes::DataType::Dictionary(_, _) => todo!(),
+        //     arrow::datatypes::DataType::Decimal(_, _) => todo!(),
+        //     arrow::datatypes::DataType::Map(_, _) => todo!(),
+        // }
         let content = serde_json::to_string(&self.schemas).unwrap();
         let mut file = tokio::fs::File::create("schemas.json").await?;
         file.write_all(content.as_bytes()).await?;
