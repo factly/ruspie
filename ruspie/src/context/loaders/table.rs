@@ -45,7 +45,6 @@ impl<H: RuspieApiContext> TableReloader<H> {
 
                 let path = std::env::var("S3_PATH").unwrap_or_else(|_| String::from("ruspie/"));
                 let path = format!("s3://{}/{}.{}", path, name, extension);
-
                 let source = TableSource::new(name, path)
                     .with_option(opt)
                     .with_schema(schema.clone());
