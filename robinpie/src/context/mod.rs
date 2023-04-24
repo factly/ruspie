@@ -1,6 +1,9 @@
 #![allow(dead_code)]
 
+use std::sync::Arc;
+
 use mongodb::{options::ClientOptions, Client};
+use object_store::aws::AmazonS3Builder;
 
 use crate::writer::{mongo, Writer};
 
@@ -52,9 +55,24 @@ impl Application {
                     std::env::var("MONGO_URI").unwrap_or("mongodb://localhost:27017".to_string());
                 let client_option = ClientOptions::parse(mongo_uri).await?;
                 let client = Client::with_options(client_option)?;
-                let database = std::env::var("MONGO_DATABASE").map(Some).unwrap_or(None);
-                let collection = std::env::var("MONGO_COLLECTION").map(Some).unwrap_or(None);
-                mongo::MongoWriter::new(client, database, collection)
+                let database = std::env::var("MONGO_DATABASE").unwrap_or("robinpie".to_string());
+                let collection = std::env::var("MONGO_COLLECTION").unwrap_or("schemas".to_string());
+
+                let collection = client.database(&database).collection(&collection);
+
+                let bucket_name = std::env::var("S3_PATH").unwrap_or_else(|_| "ruspie".to_string());
+
+                mongo::MongoWriter::new(
+                    collection,
+                    Arc::new(
+                        // loads AWS credentials from environment variables
+                        AmazonS3Builder::from_env()
+                            .with_bucket_name(bucket_name)
+                            .with_allow_http(true)
+                            .build()
+                            .unwrap(),
+                    ),
+                )
             }
             _ => unimplemented!(),
         };
@@ -65,5 +83,15 @@ impl Application {
     /// Returns the source to which fetched schemas will be stored
     pub fn source(&self) -> &Source {
         &self.source
+    }
+
+    pub async fn run_until_stopped(self) -> anyhow::Result<()> {
+        println!("🚀 Robinpie started...");
+        let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(10));
+        loop {
+            interval.tick().await;
+            println!("🚀 Robinpie starting to write schemas...");
+            self.writer.write().await?;
+        }
     }
 }

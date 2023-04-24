@@ -2,21 +2,20 @@ use fetcher::SchemaFetcher;
 use object_store::aws::AmazonS3;
 use serde::{Deserialize, Serialize};
 
-use crate::context::Source;
-
 pub mod fetcher;
 pub mod mongo;
 
 #[async_trait::async_trait]
 /// Writer trait for writing schemas to a source
 pub trait Writer {
+    /// Fetches schema from ruspie and converts it to TableItem
+    async fn fetch_from_ruspie(&self, filename: &str, extension: &str)
+        -> anyhow::Result<TableItem>;
     /// Writes a schema to the source
     async fn write(&self) -> anyhow::Result<()>;
-    /// Source to which the schema will be written
-    fn source(&self) -> &Source;
     /// SchemaFetcher from which the schema will be fetched and list of files exist on S3 is
     /// fetched
-    fn schema_fetch(&self) -> &SchemaFetcher<AmazonS3>;
+    fn schema_fetcher(&self) -> &SchemaFetcher<AmazonS3>;
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -51,8 +50,21 @@ struct Schema {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct ColumnItem {
+pub struct ColumnItem {
     name: String,
     data_type: arrow::datatypes::DataType,
     nullable: Option<bool>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SchemaResponse {
+    pub fields: Vec<ColumnItem>,
+}
+
+impl From<SchemaResponse> for Schema {
+    fn from(schema_resp: SchemaResponse) -> Self {
+        Schema {
+            columns: schema_resp.fields,
+        }
+    }
 }
