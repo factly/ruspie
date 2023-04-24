@@ -60,6 +60,7 @@ services:
       - ruspie
     depends_on:
       - minio
+
   robinpie-api:
     build:
       context: ./robinpie/
@@ -75,5 +76,15 @@ services:
       - ruspie
     depends_on:
       - minio
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27071:27071"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    volumes:
+      - ./mongo-data:/data/db
 networks:
   ruspie:
