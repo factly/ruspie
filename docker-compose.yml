@@ -27,24 +27,24 @@ services:
     entrypoint: >
       /bin/sh -c " apk add --no-cache bash; wait-for-it.sh minio:9000 -- echo 'Minio is up. Creating the bucket!!'; /usr/bin/mc config host add myminio http://minio:9000 miniokey miniosecret; /usr/bin/mc mb myminio/ruspie; /usr/bin/mc policy set download myminio/ruspie; exit 0; "
 
-  # ruspie-web:
-  #   build:
-  #     context: ./web
-  #     dockerfile: Dockerfile.dev
-  #   ports:
-  #     - 3000:3000
-  #   volumes:
-  #     - ./web:/app
-  #   environment:
-  #     - REACT_APP_RUSPIE_API_URL=http://ruspie-api:8080
-  #     - WDS_SOCKET_HOST=127.0.0.1
-  #   networks:
-  #     - ruspie
+  ruspie-web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+    volumes:
+      - ./web:/app
+    environment:
+      - REACT_APP_RUSPIE_API_URL=http://ruspie-api:8080
+      - WDS_SOCKET_HOST=127.0.0.1
+    networks:
+      - ruspie
 
   ruspie-api:
     build:
       context: ./ruspie
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - 8080:8080
     environment:
@@ -60,6 +60,7 @@ services:
       - ruspie
     depends_on:
       - minio
+      - mongodb
 
   robinpie-api:
     build:
@@ -76,6 +77,7 @@ services:
       - ruspie
     depends_on:
       - minio
+      - mongodb
 
   mongodb:
     image: mongo
