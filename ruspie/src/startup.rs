@@ -24,8 +24,8 @@ impl Application {
         let ctx = Arc::new(Mutex::new(RawRuspieApiContext::new()));
         let (http_server, http_addr) = build_http_server(ctx.clone(), default_host, default_port)?;
         // TODO: implement for other sources
-        let mongo_uri =
-            std::env::var("MONGO_URI").unwrap_or("mongodb://localhost:27017".to_string());
+        let mongo_uri = std::env::var("MONGO_URI")
+            .unwrap_or("mongodb://mongo:mongo@localhost:27017".to_string());
         let client_option = ClientOptions::parse(mongo_uri).await?;
         let client = Client::with_options(client_option)?;
         let database = std::env::var("MONGO_DATABASE").unwrap_or("robinpie".to_string());
