@@ -1,8 +1,10 @@
 use crate::context::api_context::{RawRuspieApiContext, Source};
-use crate::context::loaders::schema::{S3FileSchemaLoader, SchemaFileType};
+use crate::context::loaders::fetcher::mongo::MongoFetcher;
 use crate::context::loaders::table::TableReloader;
 use crate::context::Schemas;
 use crate::server::build_http_server;
+use mongodb::options::ClientOptions;
+use mongodb::Client;
 use roapi::server::http::HttpApiServer;
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -21,7 +23,16 @@ impl Application {
             std::env::var("PRE_FETCH_ENABLED").unwrap_or_else(|_| false.to_string());
         let ctx = Arc::new(Mutex::new(RawRuspieApiContext::new()));
         let (http_server, http_addr) = build_http_server(ctx.clone(), default_host, default_port)?;
-        let loader = S3FileSchemaLoader::new("schemas".to_string(), SchemaFileType::Json);
+        // TODO: implement for other sources
+        let mongo_uri =
+            std::env::var("MONGO_URI").unwrap_or("mongodb://localhost:27017".to_string());
+        let client_option = ClientOptions::parse(mongo_uri).await?;
+        let client = Client::with_options(client_option)?;
+        let database = std::env::var("MONGO_DATABASE").unwrap_or("robinpie".to_string());
+        let collection = std::env::var("MONGO_COLLECTION").unwrap_or("schemas".to_string());
+
+        let collection = client.database(&database).collection(&collection);
+        let fetcher = Box::new(MongoFetcher::new(collection));
         let table_reloader = match enable_prefetch.as_str() {
             "true" => {
                 let interval = std::env::var("PRE_FETCH_INTERVAL")
@@ -31,7 +42,7 @@ impl Application {
                 Some(TableReloader {
                     interval: std::time::Duration::from_secs(interval),
                     ctx,
-                    loader,
+                    fetcher,
                     schemas: Schemas { tables: vec![] },
                 })
             }

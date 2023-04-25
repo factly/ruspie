@@ -6,13 +6,13 @@ use tokio::sync::Mutex;
 
 use crate::context::{api_context::RuspieApiContext, Schema, Schemas};
 
-use super::schema::S3FileSchemaLoader;
+use super::fetcher::Fetcher;
 
 pub struct TableReloader<H: RuspieApiContext> {
     pub schemas: Schemas,
     pub ctx: Arc<Mutex<H>>,
     pub interval: Duration,
-    pub loader: S3FileSchemaLoader,
+    pub fetcher: Box<dyn Fetcher>,
 }
 
 impl<H: RuspieApiContext> TableReloader<H> {
@@ -20,18 +20,9 @@ impl<H: RuspieApiContext> TableReloader<H> {
         let mut interval = tokio::time::interval(self.interval);
 
         loop {
-            self.schemas = self
-                .loader
-                .load()
-                .await
-                .unwrap_or_else(|err| {
-                    println!("error occured {:?}", err);
-                    vec![Schemas { tables: vec![] }]
-                })
-                .pop()
-                .unwrap();
-
             interval.tick().await;
+            let schemas = self.fetcher.fetch().await.unwrap();
+            self.schemas = Schemas { tables: schemas };
 
             for Schema {
                 name,
