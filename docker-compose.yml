@@ -60,5 +60,31 @@ services:
       - ruspie
     depends_on:
       - minio
+
+  robinpie-api:
+    build:
+      context: ./robinpie/
+      dockerfile: Dockerfile
+    environment:
+      - AWS_SECRET_ACCESS_KEY=miniosecret
+      - AWS_ACCESS_KEY_ID=miniokey
+      - AWS_REGION=us-east-1
+      - AWS_ENDPOINT_URL=http://minio:9000
+      - PRE_FETCH_INTERVAL=30
+      - RUSPIE_URL=http://ruspie-api:8080
+    networks:
+      - ruspie
+    depends_on:
+      - minio
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    volumes:
+      - ./mongo-data:/data/db
 networks:
   ruspie:

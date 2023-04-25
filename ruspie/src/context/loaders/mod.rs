@@ -1,2 +1,2 @@
-pub mod schema;
+pub mod fetcher;
 pub mod table;
