@@ -1,8 +1,11 @@
 #![allow(dead_code)]
 use futures::stream::StreamExt;
+use object_store::path::Path;
 use std::sync::Arc;
 
-use super::{SchemaErrorResponse, SchemaResponse, TableItem};
+use crate::context::FileType;
+
+use super::{SchemaErrorResponse, SchemaFile, SchemaResponse, TableItem};
 
 /// SchemaFetcher
 /// Fetches list of list of file from S3 bucket
@@ -18,7 +21,9 @@ impl<H: object_store::ObjectStore> SchemaFetcher<H> {
         SchemaFetcher { object_store }
     }
 
-    #[inline]
+    /// Fetches schema from ruspie
+    /// Takes filename and extension as an argument
+    /// Returns Option<TableItem>
     pub async fn fetch_from_ruspie(
         &self,
         filename: &str,
@@ -86,5 +91,36 @@ impl<H: object_store::ObjectStore> SchemaFetcher<H> {
             }
         }
         Ok(files)
+    }
+
+    /// Fetches schemas file from S3 bucket
+    /// returns a list of SchemaFile
+    pub async fn fetch_file_from_s3(&self, filetype: &FileType) -> anyhow::Result<Vec<SchemaFile>> {
+        let path = filetype.s3_path();
+        let schemas = match self
+            .object_store
+            .get(&path.path().try_into().unwrap())
+            .await
+        {
+            Ok(data) => {
+                let data: Vec<u8> = data.bytes().await?.to_vec();
+                let contents = String::from_utf8(data)?;
+                serde_json::from_str(&contents).unwrap_or_else(|e| {
+                    println!("{:?}", e);
+                    vec![SchemaFile { tables: vec![] }]
+                })
+            }
+            Err(e) => {
+                println!("File not found, creating new file, Error: {:?}", e);
+                vec![SchemaFile { tables: vec![] }]
+            }
+        };
+        Ok(schemas)
+    }
+
+    /// Pushes file to S3 bucket
+    pub async fn push_file_to_s3(&self, location: Path, data: Vec<u8>) -> anyhow::Result<()> {
+        self.object_store.put(&location, data.into()).await?;
+        Ok(())
     }
 }

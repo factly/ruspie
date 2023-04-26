@@ -5,7 +5,7 @@ use context::Application;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let app = Application::build(None).await?;
+    let app = Application::build().await?;
     app.run_until_stopped().await?;
     Ok(())
 }

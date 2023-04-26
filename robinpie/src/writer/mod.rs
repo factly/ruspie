@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 pub mod fetcher;
 pub mod mongo;
+pub mod s3;
 
 #[async_trait::async_trait]
 /// Writer trait for writing schemas to a source
@@ -16,7 +17,7 @@ pub trait Writer {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct SchemaFile {
+pub struct SchemaFile {
     tables: Vec<TableItem>,
 }
 
