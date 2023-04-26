@@ -8,9 +8,6 @@ pub mod mongo;
 #[async_trait::async_trait]
 /// Writer trait for writing schemas to a source
 pub trait Writer {
-    /// Fetches schema from ruspie and converts it to TableItem
-    async fn fetch_from_ruspie(&self, filename: &str, extension: &str)
-        -> anyhow::Result<TableItem>;
     /// Writes a schema to the source
     async fn write(&self) -> anyhow::Result<()>;
     /// SchemaFetcher from which the schema will be fetched and list of files exist on S3 is
@@ -59,6 +56,13 @@ pub struct ColumnItem {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SchemaResponse {
     pub fields: Vec<ColumnItem>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SchemaErrorResponse {
+    pub error: String,
+    pub code: u16,
+    pub message: String,
 }
 
 impl From<SchemaResponse> for Schema {

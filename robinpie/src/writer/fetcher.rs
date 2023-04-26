@@ -2,7 +2,7 @@
 use futures::stream::StreamExt;
 use std::sync::Arc;
 
-use super::TableItem;
+use super::{SchemaErrorResponse, SchemaResponse, TableItem};
 
 /// SchemaFetcher
 /// Fetches list of list of file from S3 bucket
@@ -18,6 +18,45 @@ impl<H: object_store::ObjectStore> SchemaFetcher<H> {
         SchemaFetcher { object_store }
     }
 
+    #[inline]
+    pub async fn fetch_from_ruspie(
+        &self,
+        filename: &str,
+        extension: &str,
+    ) -> anyhow::Result<Option<TableItem>> {
+        // set headers
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert("Content-Type", "application/json".parse().unwrap());
+        headers.insert("Accept", "application/json".parse().unwrap());
+        headers.insert("FILE-EXT", extension.parse().unwrap());
+
+        // create new reqwest client
+        let client = reqwest::Client::new();
+        let url = std::env::var("RUSPIE_URL").unwrap_or_else(|_| "http://0.0.0.0:8080".to_string());
+        let url = format!("{}/api/schema/{}", url, filename);
+
+        // send request
+        let response = client.get(&url).headers(headers).send().await?;
+
+        if response.status() != 200 {
+            // Deserialize the response body into an `SchemaErrorResponse`.
+            let error = response.json::<SchemaErrorResponse>().await?;
+            println!("{:?}", error);
+            return Ok(None);
+        }
+        // parse response to TableItem
+        let table_item = response
+            .json()
+            .await
+            .and_then(|schema_resp: SchemaResponse| {
+                Ok(TableItem {
+                    name: filename.to_string(),
+                    extension: extension.to_string(),
+                    schema: schema_resp.into(),
+                })
+            })?;
+        Ok(Some(table_item))
+    }
     /// Fetches list of list of files from S3 bucket
     /// converts them to TableItem and returns a list of TableItem
     /// returns only files with extension parquet or csv
@@ -43,7 +82,6 @@ impl<H: object_store::ObjectStore> SchemaFetcher<H> {
                     .next()
                     .unwrap()
                     .to_string();
-                println!("{:?}", table_item);
                 files.push(table_item);
             }
         }
