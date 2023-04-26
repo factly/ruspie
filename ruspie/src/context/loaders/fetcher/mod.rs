@@ -2,6 +2,7 @@
 
 use crate::context::Schema;
 pub mod mongo;
+pub mod s3;
 
 /// FileType is the type of file to be fetched where schemas are stored.
 /// Defaulted to Json
@@ -10,6 +11,20 @@ pub enum FileType {
     #[default]
     Json,
     Parquet,
+}
+
+impl FileType {
+    // returns the path to which fetched schemas will be stored
+    pub fn s3_path(&self) -> url::Url {
+        let extension = match self {
+            FileType::Parquet => "parquet".to_string(),
+            FileType::Json => "json".to_string(),
+        };
+
+        let bucket_name = std::env::var("S3_PATH").unwrap_or_else(|_| "ruspie".to_string());
+        let path = format!("s3://{}/schemas.{}", bucket_name, extension);
+        url::Url::parse(&path).unwrap()
+    }
 }
 
 /// Source is the type of source where schemas are stored.

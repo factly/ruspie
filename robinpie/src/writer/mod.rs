@@ -17,7 +17,7 @@ pub trait Writer {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SchemaFile {
+pub struct Schemas {
     tables: Vec<TableItem>,
 }
 

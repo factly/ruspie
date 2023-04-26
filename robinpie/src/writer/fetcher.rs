@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use crate::context::FileType;
 
-use super::{SchemaErrorResponse, SchemaFile, SchemaResponse, TableItem};
+use super::{SchemaErrorResponse, SchemaResponse, Schemas, TableItem};
 
 /// SchemaFetcher
 /// Fetches list of list of file from S3 bucket
@@ -95,7 +95,7 @@ impl<H: object_store::ObjectStore> SchemaFetcher<H> {
 
     /// Fetches schemas file from S3 bucket
     /// returns a list of SchemaFile
-    pub async fn fetch_file_from_s3(&self, filetype: &FileType) -> anyhow::Result<Vec<SchemaFile>> {
+    pub async fn fetch_file_from_s3(&self, filetype: &FileType) -> anyhow::Result<Vec<Schemas>> {
         let path = filetype.s3_path();
         let schemas = match self
             .object_store
@@ -107,12 +107,12 @@ impl<H: object_store::ObjectStore> SchemaFetcher<H> {
                 let contents = String::from_utf8(data)?;
                 serde_json::from_str(&contents).unwrap_or_else(|e| {
                     println!("{:?}", e);
-                    vec![SchemaFile { tables: vec![] }]
+                    vec![Schemas { tables: vec![] }]
                 })
             }
             Err(e) => {
                 println!("File not found, creating new file, Error: {:?}", e);
-                vec![SchemaFile { tables: vec![] }]
+                vec![Schemas { tables: vec![] }]
             }
         };
         Ok(schemas)

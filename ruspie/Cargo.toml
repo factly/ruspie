@@ -44,3 +44,5 @@ arrow = "6.5.0"
 async-trait = "0.1.53"
 mongodb = "2.5.0"
 futures = "0.3.28"
+object_store = { version = "0.5", features = ["aws"] }
+url = "2.2.2"
