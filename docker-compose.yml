@@ -57,6 +57,7 @@ services:
       - PRE_FETCH_ENABLED=true
       - PRE_FETCH_INTERVAL=60
       - MONGO_URI=mongodb://mongo:mongo@mongodb:27017
+      - PRE_FETCH_SOURCE=s3
     networks:
       - ruspie
     depends_on:
@@ -75,6 +76,7 @@ services:
       - PRE_FETCH_INTERVAL=30
       - RUSPIE_URL=http://ruspie-api:8080
       - MONGO_URI=mongodb://mongo:mongo@mongodb:27017
+      - PRE_FETCH_SOURCE=s3
     networks:
       - ruspie
     depends_on:
