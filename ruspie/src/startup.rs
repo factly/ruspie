@@ -71,7 +71,7 @@ impl Application {
         let ctx = Arc::new(Mutex::new(RawRuspieApiContext::new()));
         let (http_server, http_addr) = build_http_server(ctx.clone(), default_host, default_port)?;
         let table_reloader = get_fetcher().await.and_then(|fetcher| {
-            let interval = std::env::var("PRE_FETCH_INTERVAL")
+            let interval = std::env::var("RUPSIE_PRE_FETCH_INTERVAL")
                 .unwrap_or_else(|_| "60".to_string())
                 .parse::<u64>()
                 .unwrap();

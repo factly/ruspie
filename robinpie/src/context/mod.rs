@@ -108,7 +108,11 @@ impl Application {
 
     pub async fn run_until_stopped(&self) -> anyhow::Result<()> {
         println!("🚀 Robinpie started from source {:?}...", self.source);
-        let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(10));
+        let interval = std::env::var("ROBINPIE_PRE_FETCH_INTERVAL")
+            .unwrap_or("30".to_string())
+            .parse::<u64>()
+            .unwrap_or(30);
+        let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(interval));
         loop {
             interval.tick().await;
             println!("🚀 Robinpie starting to write schemas...");

@@ -186,7 +186,7 @@ Prefetching is a technique used in Ruspie to optimize schema infereing process. 
 - `PRE_FETCH_ENABLE`: set to true to enable prefetching (Default is false).
 - `RUSPIE_PREFETCH_INTERVAL`: specifies how often Ruspie should fetch schemas from Source(Default is 60s).
 - `ROBINPIE_PREFETCH_INTERVAL`: specifies how often Robinpie should fetch schemas from the Ruspie(Default is 30s).
-- `PREF_FETCH_SOURCE`: specifies the source for fetching schemas (S3, Mongo, or the filesystem) (Default is Mongo).
+- `PRE_FETCH_SOURCE`: specifies the source for fetching schemas (S3, Mongo, or the filesystem) (Default is Mongo).
 - `MONGO_URI`: specifies the URI for MongoDB when using it as the source.
 
 #### Working of Robinpie
