@@ -176,7 +176,7 @@ To override the `DEFAULT_EXT` use `FILE-EXT` header while querying. For example,
 curl -H "FILE-EXT: parquet" localhost:8080/api/tables/{table_name}
 ```
 
-### Prefetching with Robinpie
+### PREFETCHING WITH ROBINPIE
 
 
 Prefetching is a technique used in Ruspie to optimize schema infereing process. Robinpie is a component that prefetches dataset file schemas from ruspie and then stores them in a specified source. This is only when the `SOURCE` env is set to `S3`. 
