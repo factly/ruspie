@@ -176,18 +176,22 @@ To override the `DEFAULT_EXT` use `FILE-EXT` header while querying. For example,
 curl -H "FILE-EXT: parquet" localhost:8080/api/tables/{table_name}
 ```
 
-### PRE-FETCHING
-Enabling pre-fetching loads schemas in advance, improving response times. Setting `PRE_FETCH_ENABLED` to `true` enables pre-fetching, and `S3_PATH` specifies the S3 bucket to fetch schemas from.
+### Prefetching with Robinpie
 
-`TableReloader` in Ruspie loads all schemas from `schemas.json`, while pre-fetching fetches schemas from CSV and Parquet files. `PRE_FETCH_INTERVAL` specifies the interval in seconds for pre-fetching.
 
-A Rust service writes to `schemas.json` by fetching file names from S3 and making GET requests to schema endpoints. Support for MongoDB may be added in the future.
+Prefetching is a technique used in Ruspie to optimize schema infereing process. Robinpie is a component that prefetches dataset file schemas from ruspie and then stores them in a specified source. This is only when the `SOURCE` env is set to `S3`. 
 
-## Examples
-- Enable pre-fetching: `PRE_FETCH_ENABLED=true`
-- Set S3 bucket path: `S3_PATH=s3://my-bucket/data`
-- Set pre-fetch interval: `PRE_FETCH_INTERVAL=3600`
+#### Environment Variables
 
+- `PRE_FETCH_ENABLE`: set to true to enable prefetching (Default is false).
+- `RUSPIE_PREFETCH_INTERVAL`: specifies how often Ruspie should fetch schemas from Source(Default is 60s).
+- `ROBINPIE_PREFETCH_INTERVAL`: specifies how often Robinpie should fetch schemas from the Ruspie(Default is 30s).
+- `PREF_FETCH_SOURCE`: specifies the source for fetching schemas (S3, Mongo, or the filesystem) (Default is Mongo).
+- `MONGO_URI`: specifies the URI for MongoDB when using it as the source.
+
+#### Working of Robinpie
+
+Robinpie fetches all dataset file schemas and stores them in the specified source, creating `schemas.json/schemas.parquet` when set to `S3` it uses same `S3_PATH` . On restart, Ruspie loads schemas from the source instead of inferring them. Robinpie also periodically fetches schemas from Ruspie and updates the source for new files.
 
 ## AUTHORIZATION
 In Ruspie, authorization is enabled by setting the `MASTER_KEY` environment variable. Once this variable is set, users must provide a valid key in the `AUTHORIZATION` header of their request in order to access the Ruspie APIs.
