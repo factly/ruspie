@@ -40,6 +40,7 @@ impl<H: object_store::ObjectStore> SchemaFetcher<H> {
         let url = std::env::var("RUSPIE_URL").unwrap_or_else(|_| "http://0.0.0.0:8080".to_string());
         let url = format!("{}/api/schema/{}", url, filename);
 
+        println!("fetching from {}", url);
         // send request
         let response = client.get(&url).headers(headers).send().await?;
 
