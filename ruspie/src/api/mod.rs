@@ -53,10 +53,13 @@ pub fn get_table_source_s3(tablename: &str, extension: &str, headers: &HeaderMap
     let map = create_serde_map!(extension, use_memory_table);
     let opt: TableLoadOption = serde_json::from_value(serde_json::Value::Object(map)).unwrap();
 
-    let path: _ = if let Some(path) = headers.get("S3_PATH").and_then(|path| path.to_str().ok()) {
+    let path: _ = if let Some(path) = headers
+        .get("BUCKET_NAME")
+        .and_then(|path| path.to_str().ok())
+    {
         path.to_owned()
     } else {
-        std::env::var("S3_PATH").unwrap_or_else(|_| "ruspie".to_string())
+        std::env::var("BUCKET_NAME").unwrap_or_else(|_| "ruspie".to_string())
     };
     let path = format!("s3://{}/{}.{}", path, tablename, extension);
     TableSource::new(tablename, path).with_option(opt)
