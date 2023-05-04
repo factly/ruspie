@@ -1,5 +1,6 @@
 pub mod auth;
 pub mod graph;
+pub mod kavach;
 pub mod rest;
 pub mod routes;
 pub mod schema;

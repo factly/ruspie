@@ -105,7 +105,7 @@ services:
       - kavach-migrate
     ports:
       - 5001:8000
-    image: factly/kavach-server:0.31.0
+    image: factly/kavach-server:0.31.3
     volumes:
       - type: bind
         source: ./volumes/kavach-server/data
@@ -140,6 +140,8 @@ services:
       - KAVACH_ENABLE_IMGPROXY=false
       - KAVACH_DYNAMIC_EMAIL_ENABLED=true
       - KAVACH_BUCKET_NAME=login.factly.in
+      - KAVACH_SENDGRID_FROM_EMAIL=kavach@factly.in
+      - KAVACH_SENDGRID_FROM_NAME=kavach
     restart: unless-stopped
     networks:
       - ruspie
@@ -149,7 +151,7 @@ services:
       - postgres
       - keto
       - kratos
-    image: factly/kavach-server:0.31.0
+    image: factly/kavach-server:0.31.3
     volumes:
       - type: bind
         source: ./volumes/kavach-server/data
@@ -184,6 +186,8 @@ services:
       - KAVACH_ENABLE_IMGPROXY=false
       - KAVACH_DYNAMIC_EMAIL_ENABLED=true
       - KAVACH_BUCKET_NAME=login.factly.in
+      - KAVACH_SENDGRID_FROM_EMAIL=kavach@factly.in
+      - KAVACH_SENDGRID_FROM_NAME=kavach
     entrypoint: ["/bin/sh", "-c" , "/app/kavach-server migrate && /app/kavach-server create-super-org"]
     networks:
       - ruspie
