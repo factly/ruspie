@@ -6,7 +6,7 @@ use object_store::{aws::AmazonS3, path::Path, ObjectStore};
 
 use crate::context::FileType;
 
-use super::{fetcher::SchemaFetcher, Writer};
+use super::{fetcher::SchemaFetcher, Schemas, Writer};
 
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 /// S3Writer is a writer that writes schemas to S3
@@ -30,30 +30,16 @@ impl Writer for S3Writer<AmazonS3> {
     async fn write(&self) -> anyhow::Result<()> {
         // get list of files from S3
         let files = self.fetcher.list_files().await?;
-        let mut schemas = self
-            .fetcher
-            .fetch_file_from_s3(&self.filetype)
-            .await?
-            .pop()
-            .unwrap();
-        // iterate over files if file_name exists in schemas then skip
-        // other wise fetch schema from ruspie and append it to schemas
+        // fetch schema for all files
+        let mut schemas = Schemas { tables: vec![] };
+
         for file in files {
-            let mut found = false;
-            for schema in schemas.tables.iter() {
-                if schema.name == file.name {
-                    found = true;
-                    break;
-                }
-            }
-            if !found {
-                let schema = self
-                    .fetcher
-                    .fetch_from_ruspie(&file.name, &file.extension)
-                    .await?;
-                if let Some(schema) = schema {
-                    schemas.tables.push(schema);
-                }
+            let schema = self
+                .fetcher
+                .fetch_from_ruspie(&file.name, &file.extension)
+                .await?;
+            if let Some(schema) = schema {
+                schemas.tables.push(schema);
             }
         }
 

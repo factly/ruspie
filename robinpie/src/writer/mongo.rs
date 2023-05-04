@@ -1,8 +1,10 @@
 #![allow(dead_code)]
 use std::sync::Arc;
 
-use futures::stream::TryStreamExt;
-use mongodb::bson::doc;
+use mongodb::{
+    bson::{doc, to_bson},
+    options::UpdateModifications,
+};
 use object_store::aws::AmazonS3;
 
 type Collection = mongodb::Collection<TableItem>;
@@ -36,25 +38,22 @@ impl Writer for MongoWriter<AmazonS3> {
         let list_of_files = self.schema_fetcher().list_files().await?;
 
         // iter over list of files
-        // if file is not in database, fetch schema from ruspie and insert into database
         for file in list_of_files.iter() {
             let filter = doc! { "name": &file.name, "extension": &file.extension };
-            let mut result = self.collection.find(filter, None).await?;
-            // TODO: change this to a more efficient way of checking if the file is in the database
-            let mut list = vec![];
-            while let Some(e) = result.try_next().await? {
-                list.push(e)
+            let table_item = self
+                .fetcher
+                .fetch_from_ruspie(&file.name, &file.extension)
+                .await?;
+            if let Some(table_item) = table_item {
+                let update = UpdateModifications::Document(doc! { "$set": to_bson(&table_item)? });
+                let options = mongodb::options::UpdateOptions::builder()
+                    .upsert(true)
+                    .build();
+
+                self.collection.update_one(filter, update, options).await?;
+                println!("fetched schema for {}.{}", file.name, file.extension);
             }
-            if list.len() == 0 {
-                let table_item = self
-                    .fetcher
-                    .fetch_from_ruspie(&file.name, &file.extension)
-                    .await?;
-                if let Some(table_item) = table_item {
-                    self.collection.insert_one(table_item, None).await?;
-                }
-                // self.collection.insert_one(table_item, None).await?;
-            }
+            // self.collection.insert_one(table_item, None).await?;
         }
         Ok(())
     }

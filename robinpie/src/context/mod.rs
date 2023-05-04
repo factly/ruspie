@@ -24,7 +24,7 @@ impl FileType {
             FileType::Json => "json".to_string(),
         };
 
-        let bucket_name = std::env::var("S3_PATH").unwrap_or_else(|_| "ruspie".to_string());
+        let bucket_name = std::env::var("BUCKET_NAME").unwrap_or_else(|_| "ruspie".to_string());
         let path = format!("s3://{}/schemas.{}", bucket_name, extension);
         url::Url::parse(&path).unwrap()
     }
@@ -73,7 +73,7 @@ impl Application {
         });
 
         let source = source.unwrap_or_default();
-        let bucket_name = std::env::var("S3_PATH").unwrap_or_else(|_| "ruspie".to_string());
+        let bucket_name = std::env::var("BUCKET_NAME").unwrap_or_else(|_| "ruspie".to_string());
         let object_store = Arc::new(
             // loads AWS credentials from environment variables
             AmazonS3Builder::from_env()
