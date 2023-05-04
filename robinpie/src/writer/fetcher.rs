@@ -28,10 +28,17 @@ impl<H: object_store::ObjectStore> SchemaFetcher<H> {
         extension: &str,
     ) -> anyhow::Result<Option<TableItem>> {
         // set headers
+        let kavach_auth_token = std::env::var("KAVACH_AUTH_TOKEN");
         let mut headers = reqwest::header::HeaderMap::new();
         headers.insert("Content-Type", "application/json".parse().unwrap());
         headers.insert("Accept", "application/json".parse().unwrap());
         headers.insert("FILE-EXT", extension.parse().unwrap());
+        if let Ok(token) = kavach_auth_token {
+            headers.insert(
+                "Authorization",
+                format!("Bearer {}", token).parse().unwrap(),
+            );
+        }
 
         // create new reqwest client
         let client = reqwest::Client::new();

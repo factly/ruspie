@@ -10,9 +10,31 @@ use roapi::server::http::HttpApiServer;
 use tokio::sync::Mutex;
 
 use crate::{
-    api::{self, auth::middleware::auth_middleware, check_ext_middleware},
+    api::{
+        self,
+        auth::middleware::auth_middleware,
+        check_ext_middleware,
+        kavach::{middleware::kavach_middleware, KavachValidateToken},
+    },
     context::{api_context::RuspieApiContext, auth::context::RawAuthContext},
 };
+
+enum AuthType {
+    Kavach,
+    MasterKey(String),
+    NoAuth,
+}
+
+impl From<String> for AuthType {
+    fn from(value: String) -> Self {
+        let master_key = std::env::var("MASTER_KEY").unwrap_or_else(|_| "".to_string());
+        match value.to_owned().as_str() {
+            "kavach" => AuthType::Kavach,
+            "masterkey" => AuthType::MasterKey(master_key),
+            _ => Self::NoAuth,
+        }
+    }
+}
 
 pub fn build_http_server<H: RuspieApiContext>(
     ctx: Arc<Mutex<H>>,
@@ -21,14 +43,7 @@ pub fn build_http_server<H: RuspieApiContext>(
 ) -> anyhow::Result<(HttpApiServer, SocketAddr)> {
     let http_addr = [default_host, default_port].join(":");
 
-    let master_key = match std::env::var("MASTER_KEY") {
-        Ok(key) => Some(key),
-        Err(_) => None,
-    };
-    let auth = RawAuthContext::new(&Path::new("./"), &master_key)?;
-
     let routes: Router = api::routes::register_app_routes::<H>();
-    let auth_routes = api::routes::register_auth_api_routes();
     // check the extension passed
     let middleware = axum::middleware::from_fn(move |req, next| check_ext_middleware(req, next));
 
@@ -37,16 +52,34 @@ pub fn build_http_server<H: RuspieApiContext>(
     if log::log_enabled!(log::Level::Info) {
         app = app.layer(logger::HttpLoggerLayer::new());
     }
-    let middleware =
-        axum::middleware::from_fn(move |req, next| auth_middleware(req, next, auth.clone()));
-    if master_key.is_some() {
-        app = app
-            .nest("/auth", auth_routes)
-            .layer(middleware)
-            .layer(Extension(RawAuthContext::new(
-                &Path::new("./"),
-                &master_key,
-            )?));
+
+    let auth_type: AuthType = std::env::var("AUTH_TYPE")
+        .unwrap_or(String::from(""))
+        .into();
+    match auth_type {
+        AuthType::MasterKey(master_key) => {
+            let auth = RawAuthContext::new(&Path::new("./"), &Some(master_key.clone()))?;
+            let auth_middleware = axum::middleware::from_fn(move |req, next| {
+                auth_middleware(req, next, auth.clone())
+            });
+            let auth_routes = api::routes::register_auth_api_routes();
+            app = app
+                .nest("/auth", auth_routes)
+                .layer(auth_middleware)
+                .layer(Extension(RawAuthContext::new(
+                    &Path::new("./"),
+                    &Some(master_key),
+                )?));
+        }
+        AuthType::Kavach => {
+            let client = reqwest::Client::new();
+            let auth = KavachValidateToken::new(client);
+            let kavach_middleware = axum::middleware::from_fn(move |req, next| {
+                kavach_middleware(req, next, auth.clone())
+            });
+            app = app.layer(kavach_middleware);
+        }
+        AuthType::NoAuth => {}
     }
 
     let cors = tower_http::cors::CorsLayer::new()
