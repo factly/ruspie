@@ -51,10 +51,10 @@ impl Writer for MongoWriter<AmazonS3> {
                     .build();
 
                 self.collection.update_one(filter, update, options).await?;
-                println!("fetched schema for {}.{}", file.name, file.extension);
             }
             // self.collection.insert_one(table_item, None).await?;
         }
+        log::info!("writing schemas writing to successful");
         Ok(())
     }
 

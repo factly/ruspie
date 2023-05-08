@@ -56,8 +56,8 @@ impl Writer for S3Writer<AmazonS3> {
         file.read_to_end(&mut data).await?;
         let location: Path = path.path().try_into().unwrap();
         match self.fetcher.push_file_to_s3(location, data).await {
-            Ok(_) => println!("Successfully wrote to S3"),
-            Err(e) => println!("Error writing to S3: {:?}", e),
+            Ok(_) => {}
+            Err(e) => log::error!("Error writing to S3: {:?}", e),
         };
 
         Ok(())

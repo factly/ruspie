@@ -28,6 +28,7 @@ impl<H: object_store::ObjectStore> SchemaFetcher<H> {
         extension: &str,
     ) -> anyhow::Result<Option<TableItem>> {
         // set headers
+        log::info!("Fetching schema from ruspie for {}.{}", filename, extension);
         let kavach_auth_token = std::env::var("KAVACH_AUTH_TOKEN");
         let mut headers = reqwest::header::HeaderMap::new();
         headers.insert("Content-Type", "application/json".parse().unwrap());
@@ -52,7 +53,7 @@ impl<H: object_store::ObjectStore> SchemaFetcher<H> {
         if response.status() != 200 {
             // Deserialize the response body into an `SchemaErrorResponse`.
             let error = response.json::<SchemaErrorResponse>().await?;
-            println!("{:?}", error);
+            log::error!("{:?}", error);
             return Ok(None);
         }
         // parse response to TableItem
@@ -66,12 +67,14 @@ impl<H: object_store::ObjectStore> SchemaFetcher<H> {
                     schema: schema_resp.into(),
                 })
             })?;
+        log::info!("Successfully fetched schema for {}.{}", filename, extension);
         Ok(Some(table_item))
     }
     /// Fetches list of list of files from S3 bucket
     /// converts them to TableItem and returns a list of TableItem
     /// returns only files with extension parquet or csv
     pub async fn list_files(&self) -> anyhow::Result<Vec<TableItem>> {
+        log::info!("fetching list of files from S3");
         let mut list_stream = self.object_store.list(None).await?;
         let mut files: Vec<TableItem> = Vec::new();
         while let Some(file) = list_stream.next().await {
@@ -96,12 +99,14 @@ impl<H: object_store::ObjectStore> SchemaFetcher<H> {
                 files.push(table_item);
             }
         }
+        log::info!("Successfully fetched!");
         Ok(files)
     }
 
     /// Pushes file to S3 bucket
     /// TODO: this is anti pattern, should be removed and moved to writer
     pub async fn push_file_to_s3(&self, location: Path, data: Vec<u8>) -> anyhow::Result<()> {
+        log::info!("Pushing schemas.json file to S3");
         self.object_store.put(&location, data.into()).await?;
         Ok(())
     }
