@@ -301,26 +301,30 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_MULTIPLE_DATABASES=kratos,keto,kavach,ruspie,hukz
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: "pg_isready -U \"$$POSTGRES_USER\" -d \"kavach\""
+      timeout: 2s
     networks:
       - ruspie
 
   ##########################################################################
   ######                  APP SERVICES                               #######
   ##########################################################################
-  # ruspie-migrate:
-  #   build:
-  #     context: ./server
-  #     dockerfile: Dockerfile.migrate
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #   environment:
-  #     - wait_hosts=postgres:5432
-  #   volumes:
-  #     - ./server:/app
-  #   networks:
-  #     - ruspie 
-
+  ruspie-migrate:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - wait_hosts=postgres:5432
+    volumes:
+      - ./server:/app
+    networks:
+      - ruspie
 
   ruspie-server:
     build:
@@ -330,8 +334,8 @@ services:
       - 8800:8800
     volumes:
       - ./server:/app
-    # depends_on:
-    #   - ruspie-migrate
+    depends_on:
+      - ruspie-migrate
     networks:
         - ruspie
 

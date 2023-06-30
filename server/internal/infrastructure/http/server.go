@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/factly/ruspie/server/app"
+	"github.com/factly/ruspie/server/internal/domain/repositories"
+	"github.com/factly/ruspie/server/internal/infrastructure/http/organisations"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
@@ -13,7 +15,7 @@ import (
 func RunHttpServer(app *app.App) {
 	logger := app.GetLogger()
 	cfg := app.GetConfig()
-	_ = app.GetDatabase()
+	db := app.GetDatabase()
 	logger.Info("Starting HTTP server on PORT: " + cfg.GetServerConfig().Port)
 
 	router := chi.NewRouter()
@@ -31,12 +33,19 @@ func RunHttpServer(app *app.App) {
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
 	router.Use(logger.GetHTTPMiddleWare())
+	// test route
 	router.Get("/hello", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Welcome to Ruspie!"))
 		return
 	})
 
-	err := http.ListenAndServe(fmt.Sprintf(":%s", cfg.GetServerConfig().Port), router)
+	// get all repositories
+	orgRepository, err := repositories.NewOrganisationRepository(db)
+
+	// intialise routes
+	organisations.InitRoutes(router, orgRepository, logger)
+
+	err = http.ListenAndServe(fmt.Sprintf(":%s", cfg.GetServerConfig().Port), router)
 	if err != nil {
 		logger.Fatal(fmt.Sprintf("error starting HTTP server: %s", err.Error()))
 	}

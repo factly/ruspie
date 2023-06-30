@@ -1,4 +1,4 @@
-FROM instrumentisto/rust:nightly-bullseye-2022-09-24 AS builder
+FROM instrumentisto/rust:nightly-bullseye AS builder
 WORKDIR /ruspie
 COPY ./ /ruspie
 RUN apt-get update && apt-get install -y cmake && cargo +nightly install --locked --git https://github.com/factly/ruspie --bins ruspie
