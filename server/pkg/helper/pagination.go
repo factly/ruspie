@@ -52,5 +52,10 @@ func GetPagination(r *http.Request) (*Pagination, error) {
 		pagination.Queries["sort"] = "desc"
 	}
 
+	org_id := r.URL.Query().Get("org_id")
+	if org_id != "" {
+		pagination.Queries["org_id"] = org_id
+	}
+
 	return pagination, nil
 }

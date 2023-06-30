@@ -28,8 +28,8 @@ func (h *httpHandler) update(w http.ResponseWriter, r *http.Request) {
 	o_id := helper.GetPathParamByName(r, "org_id")
 	org_id, err := helper.StringToInt(o_id)
 	if err != nil {
-		h.logger.Error("error in parsing prompt template id", "error", err.Error())
-		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid prompt template id", http.StatusBadRequest)))
+		h.logger.Error("error in parsing org_id", "error", err.Error())
+		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid org_id", http.StatusBadRequest)))
 		return
 	}
 

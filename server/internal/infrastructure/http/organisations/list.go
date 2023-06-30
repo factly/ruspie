@@ -11,7 +11,7 @@ import (
 
 type listOrgs struct {
 	Count         uint                  `json:"count"`
-	Organisations []models.Organisation `json:"prompt_templates"`
+	Organisations []models.Organisation `json:"organisations"`
 	Message       string                `json:"message"`
 }
 

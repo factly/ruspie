@@ -7,6 +7,7 @@ import (
 	"github.com/factly/ruspie/server/app"
 	"github.com/factly/ruspie/server/internal/domain/repositories"
 	"github.com/factly/ruspie/server/internal/infrastructure/http/organisations"
+	"github.com/factly/ruspie/server/internal/infrastructure/http/projects"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
@@ -41,9 +42,11 @@ func RunHttpServer(app *app.App) {
 
 	// get all repositories
 	orgRepository, err := repositories.NewOrganisationRepository(db)
+	projectRepository, err := repositories.NewProjectRepository(db)
 
 	// intialise routes
 	organisations.InitRoutes(router, orgRepository, logger)
+	projects.InitRoutes(router, projectRepository, logger)
 
 	err = http.ListenAndServe(fmt.Sprintf(":%s", cfg.GetServerConfig().Port), router)
 	if err != nil {
