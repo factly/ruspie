@@ -49,7 +49,7 @@ func buildSchema() error {
 		return errors.New("error getting database client")
 	}
 
-	err = db.AutoMigrate(&models.Organisation{}, &models.Project{})
+	err = db.AutoMigrate(&models.Organisation{}, &models.Project{}, &models.File{})
 	if err != nil {
 		return err
 	}

@@ -57,5 +57,10 @@ func GetPagination(r *http.Request) (*Pagination, error) {
 		pagination.Queries["org_id"] = org_id
 	}
 
+	p_id := r.URL.Query().Get("p_id")
+	if p_id != "" {
+		pagination.Queries["p_id"] = p_id
+	}
+
 	return pagination, nil
 }
