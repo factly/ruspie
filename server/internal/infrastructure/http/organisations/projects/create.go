@@ -11,10 +11,9 @@ import (
 )
 
 type createProjectRequest struct {
-	Title          string `json:"title" validate:"required"`
-	Description    string `json:"description,omitempty"`
-	Logo           string `json:"logo,omitempty"`
-	OrganisationID uint   `json:"organisation_id" validate:"required"`
+	Title       string `json:"title" validate:"required"`
+	Description string `json:"description,omitempty"`
+	Logo        string `json:"logo,omitempty"`
 }
 
 func (h *httpHandler) create(w http.ResponseWriter, r *http.Request) {
@@ -22,6 +21,13 @@ func (h *httpHandler) create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.logger.Error("error in parsing X-User header", "error", err.Error())
 		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid X-User Header", http.StatusUnauthorized)))
+		return
+	}
+	o_id := helper.GetPathParamByName(r, "organisation_id")
+	org_id, err := helper.StringToInt(o_id)
+	if err != nil {
+		h.logger.Error("error in parsing org_id", "error", err.Error())
+		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid organisation_id", http.StatusBadRequest)))
 		return
 	}
 
@@ -33,7 +39,7 @@ func (h *httpHandler) create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	project, err := h.projectRepository.Create(user_id, requestBody.OrganisationID, requestBody.Title, requestBody.Description, requestBody.Logo)
+	project, err := h.projectRepository.Create(user_id, uint(org_id), requestBody.Title, requestBody.Description, requestBody.Logo)
 
 	if err != nil {
 		h.logger.Error("error in creating project", "error", err.Error())

@@ -7,5 +7,5 @@ type Project struct {
 	Logo           string        `gorm:"column:logo" json:"logo,omitempty"`
 	OrganisationID uint          `gorm:"column:organisation_id" json:"organisation_id"`
 	Organisation   *Organisation `gorm:"foreignKey:OrganisationID" json:"organisation"`
-	File           []File        `gorm:"foreignKey:ProjectID" json:"projects"`
+	Files          *[]File       `gorm:"foreignKey:ProjectID" json:"files"`
 }

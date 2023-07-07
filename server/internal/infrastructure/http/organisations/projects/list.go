@@ -50,6 +50,7 @@ func (h *httpHandler) list(w http.ResponseWriter, r *http.Request) {
 		errorx.Render(w, errorx.Parser(errorx.GetMessage("cannot list projects", http.StatusInternalServerError)))
 		return
 	}
+	response.Message = "projects fetched successfully"
 
 	renderx.JSON(w, http.StatusOK, response)
 	return

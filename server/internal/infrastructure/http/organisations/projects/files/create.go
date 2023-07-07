@@ -14,7 +14,6 @@ type request struct {
 	Name      string `json:"name"`
 	Extension string `json:"extension"`
 	S3Url     string `json:"s3_url"`
-	ProjectId uint   `json:"project_id"`
 }
 
 func (h *httpHandler) create(w http.ResponseWriter, r *http.Request) {
@@ -22,6 +21,14 @@ func (h *httpHandler) create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.logger.Error("error in parsing X-User header", "error", err.Error())
 		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid X-User Header", http.StatusUnauthorized)))
+		return
+	}
+
+	p_id := helper.GetPathParamByName(r, "project_id")
+	project_id, err := helper.StringToInt(p_id)
+	if err != nil {
+		h.logger.Error("error in parsing org_id", "error", err.Error())
+		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid project_id", http.StatusBadRequest)))
 		return
 	}
 
@@ -33,7 +40,7 @@ func (h *httpHandler) create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	file, err := h.fileRepository.Create(user_id, requestBody.ProjectId, requestBody.Name, requestBody.Extension, requestBody.S3Url)
+	file, err := h.fileRepository.Create(user_id, uint(project_id), requestBody.Name, requestBody.Extension, requestBody.S3Url)
 
 	if err != nil {
 		h.logger.Error("error in creating project", "error", err.Error())

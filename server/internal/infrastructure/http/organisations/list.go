@@ -37,7 +37,7 @@ func (h *httpHandler) list(w http.ResponseWriter, r *http.Request) {
 		errorx.Render(w, errorx.Parser(errorx.GetMessage("cannot list organisations", http.StatusInternalServerError)))
 		return
 	}
-
+	response.Message = "organisations fetched successfully"
 	renderx.JSON(w, http.StatusOK, response)
 	return
 }
