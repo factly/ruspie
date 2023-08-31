@@ -44,7 +44,7 @@ pub fn get_table_source_fs(table_name: &str, extension: &str) -> TableSource {
         format!(
             "./{}/{}",
             path,
-            table_name.clone().trim().to_owned() + "." + extension
+            table_name.trim().to_owned() + "." + extension
         ),
     )
     .with_option(opt)
