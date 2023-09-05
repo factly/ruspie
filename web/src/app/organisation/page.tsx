@@ -4,86 +4,10 @@ import { SearchBar } from '@/components/ui/SearchBar'
 import { Organisation } from '@/components/ui/Organisation';
 import { Button } from '@/components/ui/button';
 import Icons from '@/components/icons';
-import { Niconne } from 'next/font/google';
+import { data } from '@/lib/data';
 
 function Page() {
-	const [data, setData] = React.useState([
-		{
-			id: '1',
-			title: 'new',
-			logo: '',
-			createdAt: "May 1, 2021",
-			updatedAt: "May 1, 2021",
-			projects: [{
-				id: '1',
-				title: 'Project 1',
-				createdAt: "May 1, 2021",
-				updatedAt: "May 1, 2021",
-			},
-			{
-				id: '2',
-				title: 'Project 2',
-				createdAt: "May 1, 2021",
-				updatedAt: "May 1, 2021",
-			},
-			{
-				id: '3',
-				title: 'Project 3',
-				createdAt: "May 1, 2021",
-				updatedAt: "May 1, 2021",
-			},],
-		},
-		{
-			id: '2',
-			title: 'Organization 1',
-			logo: '',
-			createdAt: "May 1, 2021",
-			updatedAt: "May 1, 2021",
-			projects: [{
-				id: '1',
-				title: 'Project 1',
-				createdAt: "May 1, 2021",
-				updatedAt: "May 1, 2021",
-			},
-			{
-				id: '2',
-				title: 'Project 2',
-				createdAt: "May 1, 2021",
-				updatedAt: "May 1, 2021",
-			},
-			{
-				id: '3',
-				title: 'Project 3',
-				createdAt: "May 1, 2021",
-				updatedAt: "May 1, 2021",
-			},],
-		},
-		{
-			id: '3',
-			title: 'Organization 1',
-			logo: '',
-			createdAt: "May 1, 2021",
-			updatedAt: "May 1, 2021",
-			projects: [{
-				id: '1',
-				title: 'Project 1',
-				createdAt: "May 1, 2021",
-				updatedAt: "May 1, 2021",
-			},
-			{
-				id: '2',
-				title: 'Project 2',
-				createdAt: "May 1, 2021",
-				updatedAt: "May 1, 2021",
-			},
-			{
-				id: '3',
-				title: 'Project 3',
-				createdAt: "May 1, 2021",
-				updatedAt: "May 1, 2021",
-			},],
-		}
-	])
+	const [organisations, setOrganisations] = React.useState(data)
 
 	// useEffect(() => {
 	// 	fetch('/api/organisation')
@@ -105,16 +29,16 @@ function Page() {
 
 
 	return (
-		<main className='flex flex-col mt-10'>
+		<main className='flex flex-col mt-10 bg-transparent'>
 			<div className='flex flex-row justify-around items-start'>
-				<h1 className='text-xl font-semibold'> Organization </h1>
+				<h1 className='text-xl font-semibold'> Organizations </h1>
 				<div className='flex flex-col w-2/5 justify-around gap-10'>
 					<SearchBar
 						placeholder='Search Organisation'
 						callback={handleFilterOrg}
 					/>
 					<div className='flex flex-col items-center gap-6'>
-						{data.map((org) => (
+						{organisations.map((org) => (
 							<Organisation
 								org={org}
 								key={org.id}

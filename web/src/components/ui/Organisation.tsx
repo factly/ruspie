@@ -3,6 +3,7 @@ import { FC } from "react";
 import Avatar from "./Avatar";
 import { Button } from "./button";
 import Icons from "../icons";
+import Link from "next/link";
 
 interface OrganisationProps {
   org: Org;
@@ -78,8 +79,10 @@ export const Organisation: FC<OrganisationProps> = ({ org, isOpen, setIsOpen }) 
             </div>
           ))
         }
-        <Button className='rounded-md py-3 px-5 bg-[#666666] text-white' variant='secondary' onClick={handleProjectClick}>
-          View All Projects
+        <Button className='rounded-md py-3 px-5 bg-[#666666] text-white' variant='secondary' asChild>
+          <Link href={`/organisation/${org.id}`} className="w-full">
+            View All Projects
+          </Link>
         </Button>
       </div>
     </div>
