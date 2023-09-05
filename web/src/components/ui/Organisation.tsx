@@ -13,6 +13,11 @@ export const Organisation: FC<{ org: Org }> = ({ org }) => {
     console.log("delete clicked");
   };
 
+  const handleProjectClick = () => {
+    console.log("project clicked");
+  };
+
+
   return (
     <div className="flex flex-col bg-[#EFF5F9] items-center p-4 w-full rounded-md">
       <div className="flex flex-row justify-between w-full">
@@ -47,6 +52,11 @@ export const Organisation: FC<{ org: Org }> = ({ org }) => {
                 </span>
               </p>
             </div>
+            <Button variant="outline" size="icon" className="rounded border border-[#E6E6E6]"
+            onClick={handleProjectClick}
+          >
+            <Icons.ChevronRightIcon />
+          </Button>
           </div>
         ))
       }
