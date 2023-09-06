@@ -1,9 +1,9 @@
 'use client';
 import React, { useEffect } from 'react'
 import { SearchBar } from '@/components/ui/SearchBar'
-import { Organisation } from '@/components/ui/Organisation';
-import { Button } from '@/components/ui/button';
-import Icons from '@/components/icons';
+import { Organisation } from '../../components/ui/Organisation';
+import { Button } from '../../components/ui/Button';
+import Icons from '../../components/icons';
 import { data } from '@/lib/data';
 
 function Page() {

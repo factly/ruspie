@@ -3,10 +3,10 @@ import React, { useEffect } from 'react'
 import { data } from '@/lib/data'
 import { Organisation } from '@/types/organisation'
 import { SearchBar } from '@/components/ui/SearchBar'
-import Icons from '@/components/icons'
-import { Button } from '@/components/ui/button'
-import Projects from '@/components/ui/Projects'
-import Avatar from '@/components/ui/Avatar'
+import Icons from '../../../components/icons'
+import { Button } from '../../../components/ui/Button'
+import Projects from '../../../components/ui/Projects'
+import Avatar from '../../../components/ui/Avatar'
 
 async function getData(id: string) {
 	// get org data from api

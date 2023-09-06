@@ -1,5 +1,5 @@
 "use client";
-import { Organisation } from "@/components/ui/Organisation";
+import { Organisation } from "../../components/ui/Organisation";
 import { SearchBar } from "@/components/ui/SearchBar";
 import { Organisation as Org } from "@/types/organisation";
 

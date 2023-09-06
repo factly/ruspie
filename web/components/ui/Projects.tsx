@@ -1,8 +1,8 @@
 "use client";
 import React, { FC } from 'react'
 import { SearchBar } from '@/components/ui/SearchBar'
-import { Button } from '@/components/ui/button';
-import Icons from '@/components/icons';
+import { Button } from './Button';
+import Icons from '../icons';
 import { Organisation } from '@/types/organisation';
 
 interface OrganisationProps {

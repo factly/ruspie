@@ -1,7 +1,7 @@
 import { Organisation as Org } from "@/types/organisation";
 import { FC } from "react";
 import Avatar from "./Avatar";
-import { Button } from "./button";
+import { Button } from "./Button";
 import Icons from "../icons";
 import Link from "next/link";
 
