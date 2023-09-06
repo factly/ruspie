@@ -80,7 +80,7 @@ export const Organisation: FC<OrganisationProps> = ({ org, isOpen, setIsOpen }) 
           ))
         }
         <Button className='rounded-md py-3 px-5 bg-[#666666] text-white' variant='secondary' asChild>
-          <Link href={`/organisation/${org.id}`} className="w-full">
+          <Link href={`home/organisation/${org.id}`} className="w-full">
             View All Projects
           </Link>
         </Button>

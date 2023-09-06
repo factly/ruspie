@@ -16,7 +16,7 @@ import {
 import Link from "next/link";
 import { usePathname } from 'next/navigation'
 
-function Page() {
+export default function Page() {
 	const pathname = usePathname()
 	const orgId = pathname.split("/")[3];
 
@@ -122,4 +122,4 @@ function Page() {
 	);
 }
 
-export default Page;
+;

@@ -7,7 +7,7 @@ import Icons from "../../../components/icons";
 import { data } from "@/lib/data";
 import Link from "next/link";
 
-function Page() {
+export default function Page() {
 	const [organisations, setOrganisations] = React.useState(data);
 
 	// useEffect(() => {
@@ -60,4 +60,4 @@ function Page() {
 	);
 }
 
-export default Page;
+;
