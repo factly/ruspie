@@ -8,7 +8,6 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'prefix
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
 	({ className, type, prefix, ...props }, ref) => {
 
-
 		return (
 			<div className="relative">
 				{
