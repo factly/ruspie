@@ -5,6 +5,7 @@ import { Organisation } from "../../../components/ui/Organisation";
 import { Button } from "../../../components/ui/Button";
 import Icons from "../../../components/icons";
 import { data } from "@/lib/data";
+import Link from "next/link";
 
 function Page() {
 	const [organisations, setOrganisations] = React.useState(data);
@@ -49,8 +50,10 @@ function Page() {
 						))}
 					</div>
 				</div>
-				<Button className="rounded-md bg-[#376789] text-white">
-					<Icons.PlusIcon /> Add Organization
+				<Button className="rounded-md bg-[#376789] text-white" asChild>
+					<Link href="/home/organisations/new">
+						<Icons.PlusIcon /> Add Organization
+					</Link>
 				</Button>
 			</div>
 		</main>

@@ -4,6 +4,7 @@ import Icons from "../../../../components/icons";
 import { Button } from "../../../../components/ui/Button";
 import Projects from "../../../../components/ui/Projects";
 import Avatar from "../../../../components/ui/Avatar";
+import Link from "next/link";
 
 async function getData(id: string) {
 	// get org data from api
@@ -32,8 +33,10 @@ export default async function Page({ params }: { params: { id: string } }) {
 				<div className="flex flex-col w-2/5 justify-around gap-10">
 					<Projects org={org || null} />
 				</div>
-				<Button className="rounded-md bg-[#376789] text-white">
-					<Icons.PlusIcon /> Add Organization
+				<Button className="rounded-md bg-[#376789] text-white" asChild>
+					<Link href={`/home/organisations/${org?.id}/projects/new`}>
+						<Icons.PlusIcon /> Add Projects
+					</Link>
 				</Button>
 			</div>
 		</main>
