@@ -12,12 +12,12 @@ import {
 	SelectLabel,
 	SelectTrigger,
 	SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import Link from "next/link";
-import { usePathname } from 'next/navigation'
+import { usePathname } from "next/navigation";
 
 export default function Page() {
-	const pathname = usePathname()
+	const pathname = usePathname();
 	const orgId = pathname.split("/")[3];
 
 	const [formData, setFormData] = React.useState({
@@ -31,12 +31,11 @@ export default function Page() {
 		name: string;
 	};
 
-
 	const handleChange = (
 		e:
 			| React.ChangeEvent<HTMLInputElement>
 			| React.ChangeEvent<HTMLTextAreaElement>
-			| SelectOption
+			| SelectOption,
 	) => {
 		if (typeof e === "object" && "value" in e) {
 			setFormData({
@@ -63,18 +62,26 @@ export default function Page() {
 						<Label htmlFor="title" className="font-normal">
 							Title
 						</Label>
-						<Select onValueChange={(value) => handleChange({
-							name: "organisation",
-							value
-						})}>
+						<Select
+							onValueChange={(value) =>
+								handleChange({
+									name: "organisation",
+									value,
+								})
+							}
+						>
 							<SelectTrigger className="w-full">
 								<SelectValue placeholder="Select a Organisation" />
 							</SelectTrigger>
 							<SelectContent>
 								<SelectGroup>
 									<SelectLabel>Organisations</SelectLabel>
-									<SelectItem value="new">TODO: Render organisations</SelectItem>
-									<SelectItem value="new2">TODO: Render organisations</SelectItem>
+									<SelectItem value="new">
+										TODO: Render organisations
+									</SelectItem>
+									<SelectItem value="new2">
+										TODO: Render organisations
+									</SelectItem>
 								</SelectGroup>
 							</SelectContent>
 						</Select>
@@ -114,12 +121,10 @@ export default function Page() {
 						<Link href={`/home/organisations/${orgId}`}>Cancel</Link>
 					</Button>
 					<Button className="rounded-md bg-[#376789] text-white">
-						Create Organization
+						Create Project
 					</Button>
 				</div>
 			</div>
 		</main>
 	);
 }
-
-;
