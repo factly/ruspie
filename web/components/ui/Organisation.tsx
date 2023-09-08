@@ -37,7 +37,7 @@ export const Organisation: FC<OrganisationProps> = ({
     >
       <div className="flex flex-row justify-between w-full">
         <div className="flex gap-2 items-center">
-          <Avatar src={org.logo || ""} alt={`logo of ${org.title}`} />
+          <Avatar src={org.logo || "https://api.dicebear.com/7.x/bottts/jpg"} alt={`logo of ${org.title}`} />
           <h2 className="text-lg">{org.title}</h2>
         </div>
         <div className="flex gap-2">

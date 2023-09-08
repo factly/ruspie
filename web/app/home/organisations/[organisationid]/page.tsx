@@ -27,9 +27,11 @@ export default async function Page({ params }: { params: { organisationid: strin
 	return (
 		<main className="flex flex-col mt-10 bg-transparent">
 			<div className="flex flex-row justify-around items-start">
-				<div className="flex flex-row gap-3">
-					{/* <Avatar src={org?.logo || ""} alt={`logo of ${org?.title}`} /> */}
-					<h1 className="text-xl font-semibold"> {org?.title} </h1>
+				<div className="flex flex-row gap-3 items-center">
+					<Avatar src={org?.logo || "https://api.dicebear.com/7.x/bottts/jpg"} alt={`logo of ${org?.title}`} />
+					<Link href={`/home/organisations`}>
+						<h1 className="text-xl font-semibold"> {org?.title} </h1>
+					</Link>
 				</div>
 				<div className="flex flex-col w-2/5 justify-around gap-10">
 					{
