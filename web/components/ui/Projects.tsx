@@ -4,6 +4,7 @@ import { Button } from "./Button";
 import Icons from "../icons";
 import { Organisation } from "@/types/organisation";
 import { SearchBar } from "./searchBar";
+import DeleteButttonWithConfimModal from "./DeleteButttonWithConfimModal";
 
 interface OrganisationProps {
 	org: Organisation | null;
@@ -65,14 +66,11 @@ const Project: FC<OrganisationProps> = ({ org }) => {
 							>
 								<Icons.EditIcon />
 							</Button>
-							<Button
-								variant="outline"
-								size="icon"
-								className="rounded border border-[#E6E6E6]"
-								onClick={handleDeleteClick}
-							>
-								<Icons.TrashIcon />
-							</Button>
+							<DeleteButttonWithConfimModal
+								onButtonClick={handleDeleteClick}
+								onConfirm={() => { }}
+								onCancel={() => { }}
+							/>
 						</div>
 					</div>
 				))}

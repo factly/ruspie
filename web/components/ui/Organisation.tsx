@@ -4,7 +4,7 @@ import Avatar from "./Avatar";
 import { Button } from "./Button";
 import Icons from "../icons";
 import Link from "next/link";
-
+import DeleteButttonWithConfimModal from "./DeleteButttonWithConfimModal";
 interface OrganisationProps {
   org: Org;
   isOpen: Boolean;
@@ -20,8 +20,10 @@ export const Organisation: FC<OrganisationProps> = ({
     console.log("edit clicked");
   };
 
-  const handleDeleteClick = () => {
-    console.log("delete clicked");
+  const handleDeleteClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+
+
   };
 
   const handleProjectClick = () => {
@@ -47,14 +49,11 @@ export const Organisation: FC<OrganisationProps> = ({
           >
             <Icons.EditIcon />
           </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded border border-[#E6E6E6]"
-            onClick={handleDeleteClick}
-          >
-            <Icons.TrashIcon />
-          </Button>
+          <DeleteButttonWithConfimModal
+            onButtonClick={handleDeleteClick}
+            onConfirm={() => { }}
+            onCancel={() => { }}
+          />
         </div>
       </div>
       <div

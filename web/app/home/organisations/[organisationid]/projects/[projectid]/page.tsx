@@ -45,7 +45,18 @@ export default function Page() {
 					</Link>
 				</Button>
 			</div>
-			<DatasetTable org={org} project={project} datasets={datasets} />
+			{
+				datasets.length === 0 ? (
+					<div className="flex flex-col items-center gap-4 my-auto w-full">
+						<Icons.NotFound />
+						<p className="text-xl w-fit font-medium">
+							Oops! nothing found. Get started by creating new Dataset
+						</p>
+					</div>
+				) : (
+					<DatasetTable org={org} project={project} datasets={datasets} />
+				)
+			}
 		</main>
 	)
 }

@@ -5,6 +5,7 @@ import { PlusIcon } from './plus'
 import { ChevronRightIcon } from './chevronRight'
 import { ArrowRight } from './arrowRight'
 import { UploadClould } from './uploadCloud';
+import { NotFound } from './NotFound';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -15,6 +16,7 @@ export default {
 	ChevronRightIcon,
 	ArrowRight,
 	UploadClould,
+	NotFound
 }
 
 

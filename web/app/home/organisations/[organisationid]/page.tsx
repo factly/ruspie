@@ -32,7 +32,11 @@ export default async function Page({ params }: { params: { organisationid: strin
 					<h1 className="text-xl font-semibold"> {org?.title} </h1>
 				</div>
 				<div className="flex flex-col w-2/5 justify-around gap-10">
-					<Projects org={org || null} />
+					{
+						org?.projects.length !== 0 && (
+							<Projects org={org || null} />
+						)
+					}
 				</div>
 				<Button className="rounded-md bg-[#376789] text-white" asChild>
 					<Link href={`/home/organisations/${org?.id}/projects/new`}>
@@ -40,6 +44,16 @@ export default async function Page({ params }: { params: { organisationid: strin
 					</Link>
 				</Button>
 			</div>
+			{
+				org?.projects.length === 0 && (
+					<div className="flex flex-col items-center gap-4 my-auto w-full">
+						<Icons.NotFound />
+						<p className="text-xl w-fit font-medium">
+							Oops! nothing found. Get started by creating new Project
+						</p>
+					</div>
+				)
+			}
 		</main>
 	);
 }

@@ -11,9 +11,16 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table"
+import DeleteButttonWithConfimModal from './DeleteButttonWithConfimModal';
 
 // Todo: add props type
 function DatasetTable({ org, project, datasets }: { org: any, project: any, datasets: any[] }) {
+
+	const handleDeleteClick = () => {
+		console.log('delete clicked')
+	}
+
+
 	return (
 		<Table className='mx-auto mt-10 w-9/10 md:w-4/5'>
 			<TableHeader>
@@ -43,14 +50,11 @@ function DatasetTable({ org, project, datasets }: { org: any, project: any, data
 											<Icons.ArrowRight />
 										</Link>
 									</Button>
-									<Button
-										variant="outline"
-										size="icon"
-										className="rounded border border-[#E6E6E6]"
-										onClick={() => console.log('delete')}
-									>
-										<Icons.TrashIcon />
-									</Button>
+									<DeleteButttonWithConfimModal
+										onButtonClick={handleDeleteClick}
+										onConfirm={() => { }}
+										onCancel={() => { }}
+									/>
 								</div>
 							</TableCell>
 						</TableRow>
