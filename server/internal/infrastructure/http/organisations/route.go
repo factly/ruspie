@@ -21,7 +21,7 @@ func (h *httpHandler) routes(server_context repositories.ServerRepoContext, logg
 	router.Post("/", h.create)
 	router.Route("/{org_id}/", func(r chi.Router) {
 		r.Mount("/projects", projects.InitRoutes(server_context, logger))
-		r.Mount("/hello", some())
+		r.Mount("/hello", hello())
 		r.Get("/", h.details)
 		r.Delete("/", h.delete)
 		r.Put("/", h.update)
@@ -34,7 +34,7 @@ func InitRoutes(r *chi.Mux, server_context repositories.ServerRepoContext, logge
 	r.Mount("/organisations", httpHandler.routes(server_context, logger))
 }
 
-func some() chi.Router {
+func hello() chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		renderx.JSON(w, http.StatusOK, "Hello")
