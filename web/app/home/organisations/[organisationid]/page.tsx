@@ -1,7 +1,13 @@
 import React from "react";
-import Icons from "../../../../components/icons";
-import { Button } from "../../../../components/ui/Button";
-import Projects from "../../../../components/ui/Projects";
+import { data } from "@/lib/data";
+import Icons from "@/components/icons";
+import { Button } from "@/components/ui/Button";
+import Projects from "@/components/ui/Projects";
+import {
+	Avatar,
+	AvatarFallback,
+	AvatarImage,
+} from "@/components/ui/Avatar"
 import Link from "next/link";
 
 export default async function Page({
@@ -20,8 +26,16 @@ export default async function Page({
 	return (
 		<main className="flex flex-col mt-10 bg-transparent">
 			<div className="flex flex-row justify-around items-start">
-				<div className="flex flex-row gap-3">
-					<h1 className="text-xl font-semibold"> {org?.title} </h1>
+				<div className="flex flex-row gap-3 items-center">
+					<Avatar>
+						<AvatarImage src={org?.logo} alt={`logo of organisation`} />
+						<AvatarFallback>
+							<Icons.DefaultOrganisation />
+						</AvatarFallback>
+					</Avatar>
+					<Link href={`/home/organisations`}>
+						<h1 className="text-xl font-semibold"> {org?.title} </h1>
+					</Link>
 				</div>
 				<div className="flex flex-col w-2/5 justify-around gap-10">
 					{org?.projects.length !== 0 && <Projects org={org || null} />}

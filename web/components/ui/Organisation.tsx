@@ -1,10 +1,16 @@
 import { Organisation as Org } from "@/types/organisation";
 import { FC } from "react";
-import Avatar from "./Avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "./Avatar"
 import { Button } from "./Button";
 import Icons from "../icons";
 import Link from "next/link";
 import DeleteButttonWithConfimModal from "./DeleteButttonWithConfimModal";
+
+
 interface OrganisationProps {
   org: Org;
   isOpen: Boolean;
@@ -22,13 +28,8 @@ export const Organisation: FC<OrganisationProps> = ({
 
   const handleDeleteClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
-
-
   };
 
-  const handleProjectClick = () => {
-    console.log("project clicked");
-  };
 
   return (
     <div
@@ -37,7 +38,12 @@ export const Organisation: FC<OrganisationProps> = ({
     >
       <div className="flex flex-row justify-between w-full">
         <div className="flex gap-2 items-center">
-          <Avatar src={org.logo || ""} alt={`logo of ${org.title}`} />
+          <Avatar>
+            <AvatarImage src={org.logo} alt={`logo of organisation`} />
+            <AvatarFallback>
+              <Icons.DefaultOrganisation />
+            </AvatarFallback>
+          </Avatar>
           <h2 className="text-lg">{org.title}</h2>
         </div>
         <div className="flex gap-2">
@@ -62,8 +68,9 @@ export const Organisation: FC<OrganisationProps> = ({
       >
         {org.projects?.map((project) => (
           <div
-            className="flex flex-row justify-between items-center bg-white w-full p-4"
+            className="flex flex-row justify-between items-center bg-white w-full p-4 cursor-default"
             key={org.id + "_" + project.id + "_" + project.title}
+            onClick={(event) => { event.stopPropagation(); }}
           >
             <div className="flex flex-col gap-2">
               <h3 className="text-md">{project.title}</h3>
@@ -78,9 +85,11 @@ export const Organisation: FC<OrganisationProps> = ({
               variant="outline"
               size="icon"
               className="rounded border border-[#E6E6E6]"
-              onClick={handleProjectClick}
+              asChild
             >
-              <Icons.ChevronRightIcon />
+              <Link href={`/home/organisations/${org.id}/projects/${project.id}`}>
+                <Icons.ChevronRightIcon />
+              </Link>
             </Button>
           </div>
         ))}

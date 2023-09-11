@@ -1,9 +1,12 @@
 import Icons from '@/components/icons'
-import Avatar from '@/components/ui/Avatar'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/Avatar"
 import { Button } from '@/components/ui/Button'
 import Link from 'next/link'
 import DatasetTable from '@/components/ui/DatasetTable'
-
 
 export default function Page() {
 	const org = {
@@ -34,8 +37,15 @@ export default function Page() {
 		<main className="flex flex-col mt-10 bg-transparent px-8">
 			<div className="flex flex-row justify-between items-start">
 				<div className="flex flex-row gap-3 items-center">
-					<Avatar src={org?.logo || ""} alt={`logo of ${org?.title}`} />
-					<h1 className="text-xl font-semibold text-gray-600 hover:text-black cursor-pointer"> {org?.title} </h1>
+					<Avatar>
+						<AvatarImage src={org.logo} alt={`logo of organisation`} />
+						<AvatarFallback>
+							<Icons.DefaultOrganisation />
+						</AvatarFallback>
+					</Avatar>
+					<Link href={`/home/organisations/${org?.id}`}>
+						<h1 className="text-xl font-semibold text-gray-600 hover:text-black cursor-pointer"> {org?.title} </h1>
+					</Link>
 					{">"}
 					<h1 className="text-xl font-semibold"> Project Title </h1>
 				</div>

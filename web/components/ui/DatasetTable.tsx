@@ -16,9 +16,9 @@ import DeleteButttonWithConfimModal from './DeleteButttonWithConfimModal';
 // Todo: add props type
 function DatasetTable({ org, project, datasets }: { org: any, project: any, datasets: any[] }) {
 
-	const handleDeleteClick = () => {
-		console.log('delete clicked')
-	}
+	const handleDeleteClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+  };
 
 
 	return (
