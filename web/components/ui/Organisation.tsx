@@ -28,8 +28,6 @@ export const Organisation: FC<OrganisationProps> = ({
 
   const handleDeleteClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
-
-
   };
 
 

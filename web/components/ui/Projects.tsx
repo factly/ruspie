@@ -17,16 +17,14 @@ const Project: FC<OrganisationProps> = ({ org }) => {
 		console.log(query);
 	};
 
-	const handleProjectClick = () => {
-		console.log("project clicked");
-	};
 
 	const handleEditClick = () => {
 		console.log("edit clicked");
 	};
 
-	const handleDeleteClick = () => {
-		console.log("delete clicked");
+	const handleDeleteClick = (event: React.MouseEvent<HTMLElement>) => {
+		event.stopPropagation();
+		event.nativeEvent.preventDefault();
 	};
 
 	return (
