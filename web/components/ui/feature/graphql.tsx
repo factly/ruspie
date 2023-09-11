@@ -22,10 +22,20 @@ function Graphql() {
 					<h2 className='text-lg font-semibold'> Results </h2>
 					<Button variant='outline' className='rounded-md border-[#376789] px-4 py-2'
 						onClick={() => setShowSchema(!showSchema)}>
-						{showSchema ? 'Hide Schema' : 'Show Schema'} <Icons.ChevronRightIcon />
+						{showSchema ?
+							<div className='flex gap-2 items-center'>
+								{'Hide Schema'}
+								<Icons.ArrowRight2 />
+							</div>
+							:
+							<div className='flex gap-2 items-center'>
+								{'Show Schema'}
+								<Icons.ArrowLeft2 />
+							</div>
+						}
 					</Button>
 				</div>
-				<Textarea className='w-full bg-[#fff] min-h-[65vh] border-none mt-3' placeholder='Enter Query here...' readOnly/>
+				<Textarea className='w-full bg-[#fff] min-h-[65vh] border-none mt-3' placeholder='Enter Query here...' readOnly />
 			</div>
 			<div className={`bg-[#fff] transition-all duration-300 ease-linear ${showSchema ? 'w-4/5 px-5 py-8 ' : 'h-0 overflow-hidden w-0'}`}>
 				{
@@ -34,7 +44,7 @@ function Graphql() {
 							<div className='flex flex-row justify-between items-center'>
 								<h2 className='text-lg font-semibold'> Schema </h2>
 							</div>
-							<Textarea className='w-full bg-[#fff] min-h-[65vh] border-none mt-3' placeholder='Enter Query here...' readOnly/>
+							<Textarea className='w-full bg-[#fff] min-h-[65vh] border-none mt-3' placeholder='Enter Query here...' readOnly />
 						</>
 					)
 				}
