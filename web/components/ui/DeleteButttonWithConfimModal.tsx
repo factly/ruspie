@@ -31,7 +31,7 @@ function DeleteButttonWithConfimModal(props: any) {
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Are you sure absolutely sure?</DialogTitle>
-					<DialogDescription>
+					<DialogDescription className="text-sm !mt-4 text-red-500 bg-red-200 p-2 rounded">
 						This action cannot be undone. This will permanently delete your account
 						and remove your data from our servers.
 					</DialogDescription>

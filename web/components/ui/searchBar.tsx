@@ -5,8 +5,11 @@ import Icons from "../icons";
 interface SearchBarProps {
   placeholder: string;
   callback: (value: string) => void;
+  withoutPrefixIcon?: boolean;
+  inputClassName?: string;
+  wrapperClassName?: string;
 }
-export const SearchBar: FC<SearchBarProps> = ({ placeholder, callback }) => {
+export const SearchBar: FC<SearchBarProps> = ({ placeholder, callback, withoutPrefixIcon, inputClassName, wrapperClassName }) => {
   const [value, setSearchValue] = useState("")
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
@@ -14,12 +17,12 @@ export const SearchBar: FC<SearchBarProps> = ({ placeholder, callback }) => {
   };
 
   return (
-    <div>
+    <div className={"relative "+ wrapperClassName}>
       <Input
         type="text"
-        className="text-center"
+        className={"text-center " + inputClassName}
         placeholder={placeholder}
-        prefix={<Icons.SearchIcon />}
+        prefix={withoutPrefixIcon ? null : <Icons.SearchIcon />}
         onChange={handleChange}
         value={value}
       />

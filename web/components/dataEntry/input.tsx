@@ -9,7 +9,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 	({ className, type, prefix, ...props }, ref) => {
 
 		return (
-			<div className="relative">
+			<>
 				{
 					prefix && (
 						<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -25,7 +25,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 					ref={ref}
 					{...props}
 				/>
-			</div>
+			</>
 		)
 	}
 )

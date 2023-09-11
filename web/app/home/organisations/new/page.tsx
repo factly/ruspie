@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/dataEntry/input";
 import { Label } from "@/components/dataEntry/label";
 import { Textarea } from "@/components/dataEntry/textarea";
+import Link from "next/link";
 import Image from "next/image";
 import UploadImage from "@/assets/uploadImage.png";
 
@@ -68,11 +69,12 @@ export default function Page() {
 					</div>
 				</form>
 				<div className="flex gap-3">
-					<Button
+				<Button
 						variant="outline"
 						className="rounded-md text-[#376789] border-[#376789]"
+						asChild
 					>
-						Cancel
+						<Link href={`/home/organisations/`}>Cancel</Link>
 					</Button>
 					<Button className="rounded-md bg-[#376789] text-white">
 						Create Organization
