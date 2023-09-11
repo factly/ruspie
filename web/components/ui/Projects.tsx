@@ -5,6 +5,7 @@ import Icons from "../icons";
 import { Organisation } from "@/types/organisation";
 import { SearchBar } from "./searchBar";
 import DeleteButttonWithConfimModal from "./DeleteButttonWithConfimModal";
+import Link from "next/link";
 
 interface OrganisationProps {
 	org: Organisation | null;
@@ -36,7 +37,7 @@ const Project: FC<OrganisationProps> = ({ org }) => {
 			/>
 			<div className="flex flex-col items-center">
 				{org?.projects?.map((project, index) => (
-					<div
+					<Link href={`/home/organisations/${org?.id}/projects/${project.id}`}
 						className={`flex flex-row justify-between items-center bg-white w-full p-4 border-b border-[#EAECF0]
 								${index === 0 ? "rounded-t-md" : ""}
 								${org !== null &&
@@ -72,7 +73,7 @@ const Project: FC<OrganisationProps> = ({ org }) => {
 								onCancel={() => { }}
 							/>
 						</div>
-					</div>
+					</Link>
 				))}
 			</div>
 		</>

@@ -5,6 +5,7 @@ import { Button } from "../../../../components/ui/Button";
 import Projects from "../../../../components/ui/Projects";
 import Avatar from "../../../../components/ui/Avatar";
 import Link from "next/link";
+import defaultOrgLogo from "@/assets/defaultOrg.svg";
 
 async function getData(id: string) {
 	// get org data from api
@@ -28,7 +29,7 @@ export default async function Page({ params }: { params: { organisationid: strin
 		<main className="flex flex-col mt-10 bg-transparent">
 			<div className="flex flex-row justify-around items-start">
 				<div className="flex flex-row gap-3 items-center">
-					<Avatar src={org?.logo || "https://api.dicebear.com/7.x/bottts/jpg"} alt={`logo of ${org?.title}`} />
+					<Avatar src={org?.logo || defaultOrgLogo} alt={`logo of ${org?.title}`} />
 					<Link href={`/home/organisations`}>
 						<h1 className="text-xl font-semibold"> {org?.title} </h1>
 					</Link>

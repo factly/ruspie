@@ -1,9 +1,17 @@
 import Image from 'next/image';
 import React from 'react'
-import { FC } from "react";
+import { FC } from 'react';
+export interface StaticImageData {
+	src: string;
+	height: number;
+	width: number;
+	blurDataURL?: string;
+	blurWidth?: number;
+	blurHeight?: number;
+}
 
 export interface AvatarProps {
-	src: string;
+	src: string | StaticImageData;
 	alt: string;
 }
 

@@ -6,6 +6,7 @@ import { ChevronRightIcon } from './chevronRight'
 import { ArrowRight } from './arrowRight'
 import { UploadClould } from './uploadCloud';
 import { NotFound } from './NotFound';
+import { ChevronDownIcon } from './chevronDown';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -14,9 +15,10 @@ export default {
 	TrashIcon,
 	PlusIcon,
 	ChevronRightIcon,
+	ChevronDownIcon,
 	ArrowRight,
 	UploadClould,
-	NotFound
+	NotFound,
 }
 
 
