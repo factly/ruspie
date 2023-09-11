@@ -18,7 +18,7 @@ export interface AvatarProps {
 export const Avatar: FC<AvatarProps> = ({ src, alt }) => {
 	return (
 		<Image
-			className="w-10 h-10 rounded-full" src={src} alt={alt}
+			className="w-10 h-10 rounded-full bg-white" src={src} alt={alt}
 			width={40}
 			height={40}
 		/>

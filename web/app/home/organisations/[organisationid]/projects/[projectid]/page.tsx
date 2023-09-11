@@ -34,7 +34,7 @@ export default function Page() {
 		<main className="flex flex-col mt-10 bg-transparent px-8">
 			<div className="flex flex-row justify-between items-start">
 				<div className="flex flex-row gap-3 items-center">
-					<Avatar src={org?.logo || defaultOrgLogo} alt={`logo of ${org?.title}`} />
+					<Avatar src={org?.logo || defaultOrgLogo} alt={`logo of ${org?.title}`}/>
 					<Link href={`/home/organisations/${org?.id}`}>
 					<h1 className="text-xl font-semibold text-gray-600 hover:text-black cursor-pointer"> {org?.title} </h1>
 					</Link>

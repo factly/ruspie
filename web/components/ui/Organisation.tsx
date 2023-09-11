@@ -28,9 +28,6 @@ export const Organisation: FC<OrganisationProps> = ({
 
   };
 
-  const handleProjectClick = () => {
-    console.log("project clicked");
-  };
 
   return (
     <div
@@ -64,8 +61,9 @@ export const Organisation: FC<OrganisationProps> = ({
       >
         {org.projects?.map((project) => (
           <div
-            className="flex flex-row justify-between items-center bg-white w-full p-4"
+            className="flex flex-row justify-between items-center bg-white w-full p-4 cursor-default"
             key={org.id + "_" + project.id + "_" + project.title}
+            onClick={(event) => { event.stopPropagation(); }}
           >
             <div className="flex flex-col gap-2">
               <h3 className="text-md">{project.title}</h3>
@@ -80,9 +78,11 @@ export const Organisation: FC<OrganisationProps> = ({
               variant="outline"
               size="icon"
               className="rounded border border-[#E6E6E6]"
-              onClick={handleProjectClick}
+              asChild
             >
-              <Icons.ChevronRightIcon />
+              <Link href={`/home/organisations/${org.id}/projects/${project.id}`}>
+                <Icons.ChevronRightIcon />
+              </Link>
             </Button>
           </div>
         ))}
