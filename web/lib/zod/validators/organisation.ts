@@ -11,6 +11,18 @@ export const createOrganisationSchema = z.object({
   description,
 });
 
+export const updateOrganisationSchema = z
+  .object({
+    title: title.optional(),
+    logo,
+    description,
+  })
+  .refine((data) => !data.title || !data.logo || !data.description);
+
 export type CreateOrganisationSchema = z.TypeOf<
   typeof createOrganisationSchema
+>;
+
+export type UpdateOrganisationSchema = z.TypeOf<
+  typeof updateOrganisationSchema
 >;

@@ -9,4 +9,10 @@ export const createProjectSchema = z.object({
   description,
 });
 
+export const updateProjectSchema = z.object({
+  title: title.optional(),
+  description: description.optional(),
+});
+
 export type CreateProjectSchema = z.TypeOf<typeof createProjectSchema>;
+export type UpdateProjectSchema = z.TypeOf<typeof updateProjectSchema>;

@@ -1,18 +1,18 @@
 import { errorToResp } from "@/lib/utils/error_to_resp";
 import { getServerUrl } from "@/lib/utils/serverUrl";
-import { updateOrganisationSchema } from "@/lib/zod/validators/organisation";
+import { updateProjectSchema } from "@/lib/zod/validators/projects";
 import { APIError } from "@/types/api_error";
-import { Organisation } from "@/types/organisation";
-import { OrgaisationParams } from "@/types/params/oragnisation_param";
+import { Project } from "@/types/organisation";
+import { ProjectParam } from "@/types/params/project_params";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ZodError } from "zod";
 
 export async function GET(
   _req: Request,
-  { params: { organisationId } }: OrgaisationParams,
+  { params: { projectId, organisationId } }: ProjectParam,
 ) {
   const errorResp: APIError = { message: "", status: 500 };
-  if (!organisationId) {
+  if (!organisationId || !projectId) {
     errorResp.message = "Internal Server Error";
     return new Response(...errorToResp(errorResp));
   }
@@ -24,15 +24,10 @@ export async function GET(
   }
 
   try {
-    const resp: AxiosResponse<Organisation> = await axios(
-      `${serverUrl}/organisations/${organisationId}/`,
-      {
-        headers: {
-          "X-User": "1",
-        },
-      },
+    const res: AxiosResponse<Project> = await axios.get(
+      serverUrl + `/organisations/${organisationId}/projects/${projectId}/`,
     );
-    return new Response(JSON.stringify(resp.data), { status: 200 });
+    return new Response(JSON.stringify(res.data));
   } catch (err) {
     if (err instanceof AxiosError) {
       const resp = err.response!;
@@ -49,10 +44,10 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params: { organisationId } }: OrgaisationParams,
+  { params: { organisationId, projectId } }: ProjectParam,
 ) {
   const errorResp: APIError = { message: "", status: 500 };
-  if (!organisationId) {
+  if (!organisationId || !projectId) {
     errorResp.message = "Internal Server Error";
     return new Response(...errorToResp(errorResp));
   }
@@ -65,10 +60,10 @@ export async function PATCH(
 
   try {
     const body = await req.json();
-    const oragnisation = updateOrganisationSchema.parse(body);
-    const res: AxiosResponse<Organisation> = await axios.patch(
-      serverUrl + `/orgaisations/${organisationId}`,
-      oragnisation,
+    const project = updateProjectSchema.parse(body);
+    const res: AxiosResponse<Project> = await axios.patch(
+      serverUrl + `/organisations/${organisationId}/projects/${projectId}/`,
+      project,
       {
         headers: {
           "X-User": "1",
@@ -107,10 +102,10 @@ export async function PATCH(
 
 export const DELETE = async (
   _req: Request,
-  { params: { organisationId } }: OrgaisationParams,
+  { params: { organisationId, projectId } }: ProjectParam,
 ) => {
   const errorResp: APIError = { message: "", status: 500 };
-  if (!organisationId) {
+  if (!organisationId || !projectId) {
     errorResp.message = "Internal Server Error";
     return new Response(...errorToResp(errorResp));
   }
@@ -122,11 +117,9 @@ export const DELETE = async (
   }
 
   try {
-    await axios.delete(serverUrl + `/organisations/${organisationId}`, {
-      headers: {
-        "X-User": "1",
-      },
-    });
+    await axios.delete(
+      serverUrl + `organisations/${organisationId}/projects/${projectId}/`,
+    );
     return new Response("Successfully deleted the organisation");
   } catch (err) {
     if (err instanceof AxiosError) {

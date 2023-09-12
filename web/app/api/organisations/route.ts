@@ -65,10 +65,20 @@ export async function GET() {
     return new Response(JSON.stringify(res.data));
   } catch (err) {
     if (err instanceof AxiosError) {
-      if (err.status === 400) {
-        return new Response(err.message, { status: 400 });
+      const response = err.response;
+      if (!response) {
+        errorResp.message = "Internal Server Error";
+        errorResp.status = 500;
+        return new Response(...errorToResp(errorResp));
+      }
+      if (response.status === 400 || response.status === 401) {
+        errorResp.message = JSON.stringify(response.data);
+        errorResp.status = response.status;
+        return new Response(...errorToResp(errorResp));
       }
     }
-    return new Response("Internal Server Error", { status: 500 });
+    errorResp.message = "Internal Server Error";
+    errorResp.status = 500;
+    return new Response(...errorToResp(errorResp));
   }
 }
