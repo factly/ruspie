@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/dataEntry/input";
 import { Label } from "@/components/dataEntry/label";
 import { Textarea } from "@/components/dataEntry/textarea";
-import Link from "next/link";
 import Image from "next/image";
 import UploadImage from "@/assets/uploadImage.png";
 import { useForm } from "react-hook-form";

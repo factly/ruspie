@@ -44,3 +44,24 @@ export async function GET(
     return new Response(...errorToResp(errorResp));
   }
 }
+
+export async function PUT(
+  _req: Request,
+  { params }: { params: { organisationId: string } },
+) {
+  const { organisationId } = params;
+  const errorResp: APIError = { message: "", status: 500 };
+  if (!organisationId) {
+    errorResp.message = "Internal Server Error";
+    return new Response(...errorToResp(errorResp));
+  }
+
+  const serverUrl = getServerUrl();
+  if (!serverUrl) {
+    errorResp.message = "Internal Server Error";
+    return new Response(...errorToResp(errorResp));
+  }
+
+  try {
+  } catch (err) { }
+}

@@ -24,7 +24,6 @@ export default function Page() {
 					code: number;
 					organisations: OrganisationType[];
 				}> = await axios.get("/api/organisations");
-				console.log(resp.data);
 				setOrganisations(resp.data.organisations);
 			} catch (err) {
 				toast.error("Error getting organisations");

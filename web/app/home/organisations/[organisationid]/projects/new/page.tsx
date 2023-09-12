@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/dataEntry/input";
 import { Label } from "@/components/dataEntry/label";
@@ -14,11 +14,18 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useForm } from "react-hook-form";
 
-export default function Page() {
-	const pathname = usePathname();
-	const orgId = pathname.split("/")[3];
+interface PageProps {
+	params: {
+		organisationId: string;
+	};
+}
+
+export default function Page({ params }: PageProps) {
+	const { organisationId: orgId } = params;
+
+	const { } = useForm({});
 
 	const [formData, setFormData] = React.useState({
 		title: "",
@@ -60,7 +67,7 @@ export default function Page() {
 				<form className="flex flex-col items-center w-2/5 mt-20 gap-10">
 					<div className="grid w-full items-center gap-3">
 						<Label htmlFor="title" className="font-normal">
-							Title
+							Organisation
 						</Label>
 						<Select
 							onValueChange={(value) =>
@@ -113,7 +120,7 @@ export default function Page() {
 					</div>
 				</form>
 				<div className="flex gap-3">
-				<Button
+					<Button
 						variant="outline"
 						className="rounded-md text-[#376789] border-[#376789]"
 						asChild
