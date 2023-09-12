@@ -46,7 +46,7 @@ function DatasetTable({ org, project, datasets }: { org: any, project: any, data
 										className="rounded border border-[#E6E6E6]"
 										asChild
 									>
-										<Link href={`/home/organisations/${org?.id}/projects/${project.id}/dataset/1/edit`}>
+										<Link href={`/home/organisations/${org?.id}/projects/${project.id}/dataset/1`}>
 											<Icons.ArrowRight />
 										</Link>
 									</Button>

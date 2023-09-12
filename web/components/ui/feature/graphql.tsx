@@ -7,7 +7,6 @@ function Graphql() {
 	const [showSchema, setShowSchema] = React.useState(false)
 
 
-
 	return (
 		<div className='w-full flex flex-row gap-6 h-full'>
 			<div className='w-full bg-[#fff] px-5 py-8 transition-all duration-300 ease-linear'>

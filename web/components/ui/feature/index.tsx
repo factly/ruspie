@@ -2,6 +2,7 @@ import React from 'react'
 import { FeatureType } from '@/types/feature'
 import SearchSql from './searchSql'
 import Graphql from './graphql'
+import RestApi from './restApi'
 
 type Props = {
 	feature: FeatureType
@@ -15,7 +16,7 @@ function Feature({ feature }: Props) {
 	}
 
 	if(feature.value	=== "rest"){
-		return (<h2>Rest</h2>)
+		return (<RestApi />)
 	}
 
 	if(feature.value	=== "graphql"){

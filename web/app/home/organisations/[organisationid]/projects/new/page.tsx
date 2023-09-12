@@ -59,8 +59,8 @@ export default function Page() {
 				<h1 className="text-xl font-semibold">Create New Project </h1>
 				<form className="flex flex-col items-center w-2/5 mt-20 gap-10">
 					<div className="grid w-full items-center gap-3">
-						<Label htmlFor="title" className="font-normal">
-							Title
+						<Label htmlFor="organisation" className="font-normal">
+							Organisation
 						</Label>
 						<Select
 							onValueChange={(value) =>
