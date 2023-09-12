@@ -14,40 +14,14 @@ import React from 'react'
 import { Button } from '../Button';
 import Icons from '@/components/icons';
 
-export default function RestApi() {
+export default function Schema() {
 	return (
 		<div className='w-full flex flex-row justify-end gap-16 h-full'>
 			<div className='px-4 w-2/5'>
 				<form className="flex flex-col items-center w-4/5 gap-6">
 					<div className="grid w-full items-center gap-3">
-						<Label htmlFor="fileFormat" className="font-normal">
-							File Format
-						</Label>
-						<Input
-							name="fileFormat"
-							type="text"
-							id="fileFormat"
-							placeholder="Enter file format here"
-						// onChange={handleChange}
-						// value={formData.title}
-						/>
-					</div>
-					<div className="grid w-full items-center gap-3">
-						<Label htmlFor="pageSize" className="font-normal">
-							Page Size
-						</Label>
-						<Input
-							name="pageSize"
-							type="text"
-							id="pageSize"
-							placeholder="Enter page size here"
-						// onChange={handleChange}
-						// value={formData.title}
-						/>
-					</div>
-					<div className="grid w-full items-center gap-3">
-						<Label htmlFor="columns_to_retrieve" className="font-normal">
-							Columns to retrieve
+						<Label htmlFor="feature" className="font-normal">
+							Feature
 						</Label>
 						<Select
 						// onValueChange={(value) =>
@@ -62,16 +36,29 @@ export default function RestApi() {
 							</SelectTrigger>
 							<SelectContent>
 								<SelectGroup>
-									<SelectLabel>columns_to_retrieve</SelectLabel>
+									<SelectLabel>Rest Api</SelectLabel>
 									<SelectItem value="new">
-										TODO: Render organisations
+										item 1
 									</SelectItem>
 									<SelectItem value="new2">
-										TODO: Render organisations
+										item 2
 									</SelectItem>
 								</SelectGroup>
 							</SelectContent>
 						</Select>
+						<div className="grid w-full items-center gap-3">
+						<Label htmlFor="fileName" className="font-normal">
+							File Name
+						</Label>
+						<Input
+							name="fileName"
+							type="text"
+							id="fileName"
+							placeholder="Enter file name here"
+						// onChange={handleChange}
+						// value={formData.title}
+						/>
+					</div>
 					</div>
 					<div className="flex w-full items-center justify-between">
 						<Button className='rounded-md bg-[#376789] text-white px-4 py-2'> Execute </Button>

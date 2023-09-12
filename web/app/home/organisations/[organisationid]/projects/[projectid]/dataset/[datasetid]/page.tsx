@@ -17,6 +17,7 @@ export default function Page() {
 		{ label: 'Search query', value: 'search' },
 		{ label: 'REST API', value: 'rest' },
 		{ label: 'GraphQL', value: 'graphql' },
+		{ label: 'Schema', value: 'schema' },
 	];
 
 	const [selectedFeature, setSelectedFeature] = useState(features[0]);
