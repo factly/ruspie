@@ -3,7 +3,7 @@ import { getServerUrl } from "@/lib/utils/serverUrl";
 import { updateProjectSchema } from "@/lib/zod/validators/projects";
 import { APIError } from "@/types/api_error";
 import { Project } from "@/types/organisation";
-import { ProjectParam } from "@/types/params/project_params";
+import { ProjectParam } from "@/types/params/project_param";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ZodError } from "zod";
 

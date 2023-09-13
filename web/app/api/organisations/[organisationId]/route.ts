@@ -3,13 +3,13 @@ import { getServerUrl } from "@/lib/utils/serverUrl";
 import { updateOrganisationSchema } from "@/lib/zod/validators/organisation";
 import { APIError } from "@/types/api_error";
 import { Organisation } from "@/types/organisation";
-import { OrgaisationParams } from "@/types/params/oragnisation_param";
+import { OrgaisationParam } from "@/types/params/oragnisation_param";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ZodError } from "zod";
 
 export async function GET(
   _req: Request,
-  { params: { organisationId } }: OrgaisationParams,
+  { params: { organisationId } }: OrgaisationParam,
 ) {
   const errorResp: APIError = { message: "", status: 500 };
   if (!organisationId) {
@@ -49,7 +49,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params: { organisationId } }: OrgaisationParams,
+  { params: { organisationId } }: OrgaisationParam,
 ) {
   const errorResp: APIError = { message: "", status: 500 };
   if (!organisationId) {
@@ -107,7 +107,7 @@ export async function PATCH(
 
 export const DELETE = async (
   _req: Request,
-  { params: { organisationId } }: OrgaisationParams,
+  { params: { organisationId } }: OrgaisationParam,
 ) => {
   const errorResp: APIError = { message: "", status: 500 };
   if (!organisationId) {

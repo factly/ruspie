@@ -17,7 +17,7 @@ export const updateOrganisationSchema = z
     logo,
     description,
   })
-  .refine((data) => !data.title || !data.logo || !data.description);
+  .refine((data) => data.title || data.logo || data.description);
 
 export type CreateOrganisationSchema = z.TypeOf<
   typeof createOrganisationSchema

@@ -1,4 +1,4 @@
-export interface OrgaisationParams {
+export interface OrgaisationParam {
   params: {
     organisationId: string;
   };

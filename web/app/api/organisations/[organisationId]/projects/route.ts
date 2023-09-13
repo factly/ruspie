@@ -3,13 +3,13 @@ import { getServerUrl } from "@/lib/utils/serverUrl";
 import { createProjectSchema } from "@/lib/zod/validators/projects";
 import { APIError } from "@/types/api_error";
 import { Project } from "@/types/organisation";
-import { OrgaisationParams } from "@/types/params/oragnisation_param";
+import { OrgaisationParam } from "@/types/params/oragnisation_param";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ZodError } from "zod";
 
 export const GET = async (
   _req: Request,
-  { params: { organisationId } }: OrgaisationParams,
+  { params: { organisationId } }: OrgaisationParam,
 ) => {
   const errorResp: APIError = { message: "", status: 500 };
   if (!organisationId) {
@@ -50,7 +50,7 @@ export const GET = async (
 
 export const POST = async (
   req: Request,
-  { params: { organisationId } }: OrgaisationParams,
+  { params: { organisationId } }: OrgaisationParam,
 ) => {
   const errorResp: APIError = { message: "", status: 500 };
   if (!organisationId) {
@@ -63,8 +63,8 @@ export const POST = async (
     errorResp.message = "Internal Server Error";
     return new Response(...errorToResp(errorResp));
   }
-  const body = await req.json();
   try {
+    const body = await req.json();
     const project = createProjectSchema.parse(body);
     const res: AxiosResponse<Project> = await axios.post(
       serverUrl + `/organisatoins/${organisationId}/projects`,
