@@ -19,12 +19,9 @@ import { toast } from "react-hot-toast";
 import { ZodError } from "zod";
 import { useRouter } from "next/navigation";
 import { Loader } from "lucide-react";
+import { OrgaisationParam } from "@/types/params/oragnisation_param";
 
-export default function Page({
-  params: { organisationid },
-}: {
-  params: { organisationid: string };
-}) {
+export default function Page({ params: { organisationId } }: OrgaisationParam) {
   const [organisation, setOrganisation] = React.useState<Organisation | null>(
     null,
   );
@@ -34,7 +31,7 @@ export default function Page({
       setLoading(true);
       try {
         const res: AxiosResponse<Organisation> = await axios(
-          "/api/organisations/" + organisationid,
+          "/api/organisations/" + organisationId,
         );
         if (!res.data.projects) {
           res.data.projects = [
@@ -76,7 +73,7 @@ export default function Page({
     payload.description = data.description;
     payload.logo = data.description;
     const res: AxiosResponse<Organisation> = await axios.put(
-      `/api/organisations/${organisationid}`,
+      `/api/organisations/${organisationId}`,
       payload,
     );
     return res.data;
