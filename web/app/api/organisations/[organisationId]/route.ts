@@ -65,10 +65,11 @@ export async function PUT(
 
   try {
     const body = await req.json();
-    const oragnisation = updateOrganisationSchema.parse(body);
+    const organisation = updateOrganisationSchema.parse(body);
+    console.log(organisation);
     const res: AxiosResponse<Organisation> = await axios.put(
       serverUrl + `/organisations/${organisationId}/`,
-      oragnisation,
+      organisation,
       {
         headers: {
           "X-User": "1",
@@ -92,7 +93,8 @@ export async function PUT(
       if (
         response.status === 400 ||
         response.status === 404 ||
-        response.status === 401
+        response.status === 401 ||
+        response.status === 409
       ) {
         errorResp.message = JSON.stringify(response.data);
         errorResp.status = response.status;

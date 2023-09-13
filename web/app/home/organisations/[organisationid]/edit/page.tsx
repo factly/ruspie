@@ -69,9 +69,15 @@ export default function Page({
     resolver: zodResolver(updateOrganisationSchema),
   });
   const updateOrganisation = async (data: UpdateOrganisationSchema) => {
+    let payload: UpdateOrganisationSchema = {};
+    if (data.title !== organisation?.title) {
+      payload.title = data.title;
+    }
+    payload.description = data.description;
+    payload.logo = data.description;
     const res: AxiosResponse<Organisation> = await axios.put(
       `/api/organisations/${organisationid}`,
-      data,
+      payload,
     );
     return res.data;
   };
@@ -150,8 +156,8 @@ export default function Page({
               } catch (err) {
                 if (err instanceof AxiosError) {
                   const { response } = err;
-                  if (response?.status === 409 || response?.status === 400) {
-                    toast.error(response?.data.message);
+                  if (response?.status === 409) {
+                    toast.error("Organisation title already exists");
                     return;
                   }
                   toast.error("Something went wrong");
