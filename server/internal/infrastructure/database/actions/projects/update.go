@@ -8,8 +8,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func (pg *PgProjectRepository) Update(user_id, p_id uint, title, description, logo string) (*models.Project, error) {
-	exists := pg.ProjectTitleExists(title, &user_id)
+func (pg *PgProjectRepository) Update(user_id, o_id, p_id uint, title, description, logo string) (*models.Project, error) {
+	exists := pg.ProjectTitleExists(title, &user_id, o_id)
 	if exists {
 		return nil, &custom_errors.CustomError{Context: custom_errors.NameOrTitleAlreadyExists, Err: errors.New("project title already exists")}
 	}

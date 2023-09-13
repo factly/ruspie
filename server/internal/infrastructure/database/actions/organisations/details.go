@@ -14,7 +14,7 @@ func (pg *PgOrganisationRepository) Details(user_id, id uint) (*models.Organisat
 			CreatedByID: user_id,
 		},
 	}
-	err := pg.client.First(&organisation, id).Error
+	err := pg.client.Preload("Projects").First(&organisation, id).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, &custom_errors.CustomError{Context: custom_errors.NotFound, Err: errors.New("organisation not found")}

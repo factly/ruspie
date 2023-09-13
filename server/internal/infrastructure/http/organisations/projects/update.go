@@ -32,6 +32,13 @@ func (h *httpHandler) update(w http.ResponseWriter, r *http.Request) {
 		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid project_id", http.StatusBadRequest)))
 		return
 	}
+	o_id := helper.GetPathParamByName(r, "org_id")
+	org_id, err := helper.StringToInt(o_id)
+	if err != nil {
+		h.logger.Error("error in parsing project_id", "error", err.Error())
+		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid project_id", http.StatusBadRequest)))
+		return
+	}
 
 	var updateReq updateRequest
 	err = json.NewDecoder(r.Body).Decode(&updateReq)
@@ -42,7 +49,7 @@ func (h *httpHandler) update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updatedProject, err := h.projectRepository.Update(uint(userID), uint(project_id), updateReq.Title, updateReq.Description, updateReq.Logo)
+	updatedProject, err := h.projectRepository.Update(uint(userID), uint(org_id), uint(project_id), updateReq.Title, updateReq.Description, updateReq.Logo)
 	if err != nil {
 		h.logger.Error("error in updating project", "error", err.Error())
 		if customErr, ok := err.(*custom_errors.CustomError); ok {
