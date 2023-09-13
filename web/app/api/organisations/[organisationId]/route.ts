@@ -67,7 +67,7 @@ export async function PATCH(
     const body = await req.json();
     const oragnisation = updateOrganisationSchema.parse(body);
     const res: AxiosResponse<Organisation> = await axios.patch(
-      serverUrl + `/orgaisations/${organisationId}`,
+      serverUrl + `/orgaisations/${organisationId}/`,
       oragnisation,
       {
         headers: {
@@ -122,7 +122,7 @@ export const DELETE = async (
   }
 
   try {
-    await axios.delete(serverUrl + `/organisations/${organisationId}`, {
+    await axios.delete(serverUrl + `/organisations/${organisationId}/`, {
       headers: {
         "X-User": "1",
       },

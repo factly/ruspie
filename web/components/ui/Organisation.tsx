@@ -1,15 +1,12 @@
 import { Organisation as Org } from "@/types/organisation";
 import { FC } from "react";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "./Avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "./Avatar";
 import { Button } from "./Button";
 import Icons from "../icons";
 import Link from "next/link";
-import DeleteButttonWithConfimModal from "./DeleteButttonWithConfimModal";
-
+import DeleteButttonWithConfirmModal from "./DeleteButttonWithConfimModal";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 interface OrganisationProps {
   org: Org;
@@ -30,6 +27,16 @@ export const Organisation: FC<OrganisationProps> = ({
     event.stopPropagation();
   };
 
+  const handleDelete = async () => {
+    console.log("clicked");
+    try {
+      const res = await axios.delete(`/api/organisations/${org.id}`);
+      toast.success(res.data);
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong");
+    }
+  };
 
   return (
     <div
@@ -55,9 +62,11 @@ export const Organisation: FC<OrganisationProps> = ({
           >
             <Icons.EditIcon />
           </Button>
-          <DeleteButttonWithConfimModal
+          <DeleteButttonWithConfirmModal
             onButtonClick={handleDeleteClick}
-            onConfirm={() => { }}
+            onConfirm={async () => {
+              await handleDelete();
+            }}
             onCancel={() => { }}
           />
         </div>
@@ -70,7 +79,9 @@ export const Organisation: FC<OrganisationProps> = ({
           <div
             className="flex flex-row justify-between items-center bg-white w-full p-4 cursor-default"
             key={org.id + "_" + project.id + "_" + project.title}
-            onClick={(event) => { event.stopPropagation(); }}
+            onClick={(event) => {
+              event.stopPropagation();
+            }}
           >
             <div className="flex flex-col gap-2">
               <h3 className="text-md">{project.title}</h3>
@@ -87,7 +98,9 @@ export const Organisation: FC<OrganisationProps> = ({
               className="rounded border border-[#E6E6E6]"
               asChild
             >
-              <Link href={`/home/organisations/${org.id}/projects/${project.id}`}>
+              <Link
+                href={`/home/organisations/${org.id}/projects/${project.id}`}
+              >
                 <Icons.ChevronRightIcon />
               </Link>
             </Button>

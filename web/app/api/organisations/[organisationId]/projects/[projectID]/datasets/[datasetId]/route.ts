@@ -93,7 +93,7 @@ export async function PATCH(
 }
 
 export const DELETE = async (
-  req: Request,
+  _req: Request,
   { params: { organisationId, projectId, datasetId: fileId } }: FileParam,
 ) => {
   const errorResp: APIError = { message: "", status: 500 };
