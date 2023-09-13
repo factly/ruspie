@@ -47,7 +47,7 @@ export async function GET(
   }
 }
 
-export async function PATCH(
+export async function PUT(
   req: Request,
   { params: { organisationId } }: OrgaisationParam,
 ) {
@@ -66,8 +66,8 @@ export async function PATCH(
   try {
     const body = await req.json();
     const oragnisation = updateOrganisationSchema.parse(body);
-    const res: AxiosResponse<Organisation> = await axios.patch(
-      serverUrl + `/orgaisations/${organisationId}/`,
+    const res: AxiosResponse<Organisation> = await axios.put(
+      serverUrl + `/organisations/${organisationId}/`,
       oragnisation,
       {
         headers: {

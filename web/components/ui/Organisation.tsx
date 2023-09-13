@@ -19,10 +19,6 @@ export const Organisation: FC<OrganisationProps> = ({
   isOpen,
   setIsOpen,
 }) => {
-  const handleEditClick = () => {
-    console.log("edit clicked");
-  };
-
   const handleDeleteClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
   };
@@ -58,9 +54,10 @@ export const Organisation: FC<OrganisationProps> = ({
             variant="outline"
             size="icon"
             className="rounded border border-[#E6E6E6]"
-            onClick={handleEditClick}
           >
-            <Icons.EditIcon />
+            <Link href={`/home/organisations/${org.id}/edit`}>
+              <Icons.EditIcon />
+            </Link>
           </Button>
           <DeleteButttonWithConfirmModal
             onButtonClick={handleDeleteClick}
@@ -68,6 +65,7 @@ export const Organisation: FC<OrganisationProps> = ({
               await handleDelete();
             }}
             onCancel={() => { }}
+            id={org.id}
           />
         </div>
       </div>
@@ -112,7 +110,7 @@ export const Organisation: FC<OrganisationProps> = ({
           asChild
         >
           <Link href={`/home/organisations/${org.id}`} className="w-full">
-            View All Projects
+            {org.projects?.length === 0 ? "Add a project" : "View all projects"}
           </Link>
         </Button>
       </div>

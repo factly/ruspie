@@ -9,10 +9,6 @@ import (
 )
 
 func (pg *PgOrganisationRepository) Update(user_id, org_id uint, title, description, logo string) (*models.Organisation, error) {
-	exists := pg.OrganisationTitleExists(title, &user_id)
-	if exists {
-		return nil, &custom_errors.CustomError{Context: custom_errors.NameOrTitleAlreadyExists, Err: errors.New("organisation title already exists")}
-	}
 
 	updateMap := map[string]interface{}{}
 

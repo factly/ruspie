@@ -9,12 +9,11 @@ import Link from "next/link";
 import axios, { AxiosResponse } from "axios";
 import { toast } from "react-hot-toast";
 import { Loader } from "lucide-react";
+import { useOrganisationsStore } from "@/lib/zustand/organisation";
 
 export default function Page() {
-	const [organisations, setOrganisations] = React.useState<OrganisationType[]>(
-		[],
-	);
 	const [loading, setLoading] = React.useState(true);
+	const { organisations, setOrganisations } = useOrganisationsStore();
 
 	useEffect(() => {
 		async function getOrganisations() {
