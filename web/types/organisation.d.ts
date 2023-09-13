@@ -1,3 +1,4 @@
+import { File } from "./file";
 export interface Organisation {
   id: string;
   createdAt: string;
@@ -14,4 +15,5 @@ export interface Project {
   updatedAt: string;
   title: string;
   description?: string;
+  files?: File[];
 }

@@ -1,15 +1,12 @@
 import { Organisation as Org } from "@/types/organisation";
 import { FC } from "react";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "./Avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "./Avatar";
 import { Button } from "./Button";
 import Icons from "../icons";
 import Link from "next/link";
-import DeleteButttonWithConfimModal from "./DeleteButttonWithConfimModal";
-
+import DeleteButttonWithConfirmModal from "./DeleteButttonWithConfimModal";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 interface OrganisationProps {
   org: Org;
@@ -22,14 +19,20 @@ export const Organisation: FC<OrganisationProps> = ({
   isOpen,
   setIsOpen,
 }) => {
-  const handleEditClick = () => {
-    console.log("edit clicked");
-  };
-
   const handleDeleteClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
   };
 
+  const handleDelete = async () => {
+    console.log("clicked");
+    try {
+      const res = await axios.delete(`/api/organisations/${org.id}`);
+      toast.success(res.data);
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong");
+    }
+  };
 
   return (
     <div
@@ -51,14 +54,18 @@ export const Organisation: FC<OrganisationProps> = ({
             variant="outline"
             size="icon"
             className="rounded border border-[#E6E6E6]"
-            onClick={handleEditClick}
           >
-            <Icons.EditIcon />
+            <Link href={`/home/organisations/${org.id}/edit`}>
+              <Icons.EditIcon />
+            </Link>
           </Button>
-          <DeleteButttonWithConfimModal
+          <DeleteButttonWithConfirmModal
             onButtonClick={handleDeleteClick}
-            onConfirm={() => { }}
+            onConfirm={async () => {
+              await handleDelete();
+            }}
             onCancel={() => { }}
+            id={org.id}
           />
         </div>
       </div>
@@ -70,7 +77,9 @@ export const Organisation: FC<OrganisationProps> = ({
           <div
             className="flex flex-row justify-between items-center bg-white w-full p-4 cursor-default"
             key={org.id + "_" + project.id + "_" + project.title}
-            onClick={(event) => { event.stopPropagation(); }}
+            onClick={(event) => {
+              event.stopPropagation();
+            }}
           >
             <div className="flex flex-col gap-2">
               <h3 className="text-md">{project.title}</h3>
@@ -87,7 +96,9 @@ export const Organisation: FC<OrganisationProps> = ({
               className="rounded border border-[#E6E6E6]"
               asChild
             >
-              <Link href={`/home/organisations/${org.id}/projects/${project.id}`}>
+              <Link
+                href={`/home/organisations/${org.id}/projects/${project.id}`}
+              >
                 <Icons.ChevronRightIcon />
               </Link>
             </Button>
@@ -99,7 +110,7 @@ export const Organisation: FC<OrganisationProps> = ({
           asChild
         >
           <Link href={`/home/organisations/${org.id}`} className="w-full">
-            View All Projects
+            {org.projects?.length === 0 ? "Add a project" : "View all projects"}
           </Link>
         </Button>
       </div>

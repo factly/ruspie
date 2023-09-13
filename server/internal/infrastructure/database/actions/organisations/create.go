@@ -8,7 +8,7 @@ import (
 )
 
 func (pg *PgOrganisationRepository) Create(user_id uint, title string, description string, logo string) (*models.Organisation, error) {
-	exists := pg.OrganisationTitleExists(title, nil)
+	exists := pg.OrganisationTitleExists(title, &user_id)
 	if exists {
 		return nil, &custom_errors.CustomError{Context: custom_errors.NameOrTitleAlreadyExists, Err: errors.New("organisation title already exists")}
 	}

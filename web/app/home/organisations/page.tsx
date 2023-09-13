@@ -2,25 +2,36 @@
 import React, { useEffect } from "react";
 import { SearchBar } from "@/components/ui/searchBar";
 import { Organisation } from "../../../components/ui/Organisation";
+import { Organisation as OrganisationType } from "@/types/organisation";
 import { Button } from "../../../components/ui/Button";
 import Icons from "../../../components/icons";
-import { data } from "@/lib/data";
 import Link from "next/link";
+import axios, { AxiosResponse } from "axios";
+import { toast } from "react-hot-toast";
+import { Loader } from "lucide-react";
+import { useOrganisationsStore } from "@/lib/zustand/organisation";
 
 export default function Page() {
-	const [organisations, setOrganisations] = React.useState(data);
+	const [loading, setLoading] = React.useState(true);
+	const { organisations, setOrganisations } = useOrganisationsStore();
 
-	// useEffect(() => {
-	// 	fetch('/api/organisation')
-	// 		.then((res) => {
-	// 			if (res.ok) {
-	// 				return res.json()
-	// 			}
-	// 			throw new Error('Network response was not ok.')
-	// 			// TODO: handle error toasts
-	// 		})
-	// 		.then((data) => setData(data))
-	// }, [])
+	useEffect(() => {
+		async function getOrganisations() {
+			try {
+				setLoading(true);
+				const resp: AxiosResponse<{
+					code: number;
+					organisations: OrganisationType[];
+				}> = await axios.get("/api/organisations");
+				setOrganisations(resp.data.organisations);
+			} catch (err) {
+				toast.error("Error getting organisations");
+			} finally {
+				setLoading(false);
+			}
+		}
+		getOrganisations();
+	}, []);
 	const [selectedOrg, setSelectedOrg] = React.useState<string | null>(null);
 
 	const handleFilterOrg = (query: string) => {
@@ -33,25 +44,34 @@ export default function Page() {
 			<div className="flex flex-row justify-around items-start">
 				<h1 className="text-xl font-semibold"> Organizations </h1>
 				<div className="flex flex-col w-2/5 justify-around gap-10">
-					{
+					{loading ? (
+						<div className="h-screen flex items-center justify-center -mt-28">
+							<Loader className="h-10 w-10 animate-spin text-gray-400" />
+						</div>
+					) : (
 						organisations.length !== 0 && (
 							<>
 								<SearchBar
 									placeholder="Search Organisation"
-									callback={handleFilterOrg} /><div className="flex flex-col items-center gap-6">
+									callback={handleFilterOrg}
+								/>
+								<div className="flex flex-col items-center gap-6">
 									{organisations.map((org) => (
 										<Organisation
 											org={org}
 											key={org.id}
 											isOpen={selectedOrg === org.id}
 											setIsOpen={() => {
-												setSelectedOrg(prev => prev === org.id ? null : org.id)
-											}} />
+												setSelectedOrg((prev) =>
+													prev === org.id ? null : org.id,
+												);
+											}}
+										/>
 									))}
 								</div>
 							</>
 						)
-					}
+					)}
 				</div>
 				<Button className="rounded-md bg-[#376789] text-white" asChild>
 					<Link href="/home/organisations/new">
@@ -59,18 +79,14 @@ export default function Page() {
 					</Link>
 				</Button>
 			</div>
-			{
-				organisations.length === 0 && (
-					<div className="flex flex-col items-center gap-4 my-auto w-full">
-						<Icons.NotFound />
-						<p className="text-xl w-fit font-medium">
-							Oops! nothing found. Get started by creating new organization
-						</p>
-					</div>
-				)
-			}
+			{organisations.length === 0 && !loading && (
+				<div className="flex flex-col items-center gap-4 my-auto w-full">
+					<Icons.NotFound />
+					<p className="text-xl w-fit font-medium">
+						Oops! nothing found. Get started by creating new organization
+					</p>
+				</div>
+			)}
 		</main>
 	);
 }
-
-;
