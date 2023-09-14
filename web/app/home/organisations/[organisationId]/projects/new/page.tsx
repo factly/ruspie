@@ -78,13 +78,7 @@ export default function Page({ params }: PageProps) {
 							}}
 						>
 							<SelectTrigger className="w-full">
-								<SelectValue
-									placeholder={
-										organisations[parseInt(orgId) - 1]
-											? organisations[parseInt(orgId) - 1].title
-											: "Select Organisation"
-									}
-								></SelectValue>
+								<SelectValue placeholder={"Select Organisation"}></SelectValue>
 							</SelectTrigger>
 							<SelectContent>
 								<SelectGroup>
