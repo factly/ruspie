@@ -32,7 +32,7 @@ interface PageProps {
 }
 
 export default function Page({ params }: PageProps) {
-	const { organisationId: orgId } = params;
+	let { organisationId: orgId } = params;
 	const router = useRouter();
 
 	const {
@@ -68,7 +68,15 @@ export default function Page({ params }: PageProps) {
 						<Label htmlFor="organisation" className="font-normal">
 							Organisation
 						</Label>
-						<Select>
+						<Select
+							onValueChange={(value) => {
+								organisations.map((org) => {
+									if (org.title === value) {
+										orgId = org.id;
+									}
+								});
+							}}
+						>
 							<SelectTrigger className="w-full">
 								<SelectValue
 									placeholder={
@@ -82,7 +90,9 @@ export default function Page({ params }: PageProps) {
 								<SelectGroup>
 									{organisations.map((org) => {
 										return (
-											<SelectItem value={org.title}>{org.title}</SelectItem>
+											<SelectItem key={org.id} value={org.title}>
+												{org.title}
+											</SelectItem>
 										);
 									})}
 								</SelectGroup>
