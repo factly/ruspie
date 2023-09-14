@@ -14,5 +14,10 @@ export const updateProjectSchema = z.object({
   description: description,
 });
 
+export const changeOrgProjectSchema = z.object({
+  new_org_id: z.number(),
+});
+
 export type CreateProjectSchema = z.TypeOf<typeof createProjectSchema>;
 export type UpdateProjectSchema = z.TypeOf<typeof updateProjectSchema>;
+export type ChangeOrgProjectSchema = z.TypeOf<typeof changeOrgProjectSchema>;

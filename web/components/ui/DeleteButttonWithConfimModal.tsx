@@ -12,7 +12,6 @@ import {
 import { Button } from "@/components/ui/Button";
 import Icons from "@/components/icons";
 import { Loader } from "lucide-react";
-import { useOrganisationsStore } from "@/lib/zustand/organisation";
 
 interface DeleteButtonWithConfirmModalProps {
 	onConfirm: () => Promise<void>;
@@ -66,10 +65,6 @@ function DeleteButttonWithConfirmModal(
 							} finally {
 								setOpen(false);
 								setLoading(false);
-								// const newOrgs = organisations.filter(
-								// 	(org) => org.id !== props.id,
-								// );
-								// setOrganisations(newOrgs);
 								if (props.onConfirmFinish) {
 									props.onConfirmFinish();
 								}

@@ -47,7 +47,6 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
       </div>
     );
   }
-
   return (
     <main className="flex flex-col mt-10 bg-transparent">
       <div className="flex flex-row justify-around items-start">
@@ -66,7 +65,7 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
           </Link>
         </div>
         <div className="flex flex-col w-2/5 justify-around gap-10">
-          {projects.length !== 0 && <Projects org={organisation || null} />}
+          {projects.length !== 0 && <Projects orgId={organisationId} />}
         </div>
         <Button className="rounded-md bg-[#376789] text-white" asChild>
           <Link href={`/home/organisations/${organisation?.id}/projects/new`}>

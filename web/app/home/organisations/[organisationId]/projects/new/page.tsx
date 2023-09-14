@@ -24,15 +24,11 @@ import {
 	createProjectSchema,
 } from "@/lib/zod/validators/projects";
 import { useRouter } from "next/navigation";
+import { OrgaisationParam } from "@/types/params/oragnisation_param";
 
-interface PageProps {
-	params: {
-		organisationId: string;
-	};
-}
-
-export default function Page({ params }: PageProps) {
-	let { organisationId: orgId } = params;
+export default function Page({
+	params: { organisationId: orgId },
+}: OrgaisationParam) {
 	const router = useRouter();
 
 	const {
