@@ -40,3 +40,30 @@ func (pg *PgProjectRepository) Update(user_id, o_id, p_id uint, title, descripti
 
 	return project, nil
 }
+
+func (pg *PgProjectRepository) ChangeOrganisation(
+	user_id, project_id, new_org_id, old_org_id uint,
+) (*models.Project, error) {
+	exists := pg.OrganisationExists(new_org_id)
+
+	if !exists {
+		return nil, &custom_errors.CustomError{Context: custom_errors.InnerEntityNotFound, Err: errors.New("new organisation id not found")}
+	}
+
+	project := models.Project{}
+	err := pg.client.Model(&models.Project{}).Where("created_by_id = ? AND id = ? AND organisation_id = ?", user_id, project_id, old_org_id).First(&project).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, &custom_errors.CustomError{Context: custom_errors.NotFound, Err: errors.New("project not found")}
+		}
+		return nil, err
+	}
+	project.OrganisationID = new_org_id
+
+	err = pg.client.Save(&project).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &project, nil
+}
