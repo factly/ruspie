@@ -118,12 +118,19 @@ export const DELETE = async (
 
   try {
     await axios.delete(
-      serverUrl + `organisations/${organisationId}/projects/${projectId}/`,
+      serverUrl + `/organisations/${organisationId}/projects/${projectId}/`,
+      {
+        headers: {
+          "X-User": "1",
+        },
+      },
     );
     return new Response("Successfully deleted the organisation");
   } catch (err) {
+    console.log(err);
     if (err instanceof AxiosError) {
       const response = err.response;
+      console.log(response?.data);
       if (!response) {
         errorResp.message = "Unhandled Error occured";
         errorResp.status = 500;

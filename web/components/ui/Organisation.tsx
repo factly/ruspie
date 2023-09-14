@@ -8,6 +8,7 @@ import DeleteButttonWithConfirmModal from "./DeleteButttonWithConfimModal";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { formatTimestamp } from "@/lib/utils/formatDate";
+import { useOrganisationsStore } from "@/lib/zustand/organisation";
 
 interface OrganisationProps {
   org: Org;
@@ -35,6 +36,7 @@ export const Organisation: FC<OrganisationProps> = ({
     }
   };
 
+  const { organisations, setOrganisations } = useOrganisationsStore();
   return (
     <div
       className="flex flex-col bg-[#EFF5F9] items-center p-4 w-full rounded-md gap-4 cursor-pointer"
@@ -66,6 +68,10 @@ export const Organisation: FC<OrganisationProps> = ({
               await handleDelete();
             }}
             onCancel={() => { }}
+            onConfirmFinish={() => {
+              const newOrgs = organisations.filter((o) => org.id !== o.id);
+              setOrganisations(newOrgs);
+            }}
             id={org.id}
           />
         </div>
