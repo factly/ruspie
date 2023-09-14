@@ -11,7 +11,7 @@ export const createProjectSchema = z.object({
 
 export const updateProjectSchema = z.object({
   title: title.optional(),
-  description: description.optional(),
+  description: description,
 });
 
 export type CreateProjectSchema = z.TypeOf<typeof createProjectSchema>;

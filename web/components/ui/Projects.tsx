@@ -6,6 +6,8 @@ import { Organisation } from "@/types/organisation";
 import { SearchBar } from "./searchBar";
 import DeleteButttonWithConfirmModal from "./DeleteButttonWithConfimModal";
 import Link from "next/link";
+import { parseISO, format } from "date-fns";
+import { formatTimestamp } from "@/lib/utils/formatDate";
 
 interface OrganisationProps {
 	org: Organisation | null;
@@ -51,8 +53,8 @@ const Project: FC<OrganisationProps> = ({ org }) => {
 							<h3 className="text-md">{project.title}</h3>
 							<p className="text-sm text-[#6B7280]">
 								Created at:{" "}
-								<span className="text-[#6B7280] font-semibold">
-									{project.createdAt}
+								<span className="text-[#6B7280] font-semibold text-xs">
+									{formatTimestamp(project.createdAt)}
 								</span>
 							</p>
 						</div>

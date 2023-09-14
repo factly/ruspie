@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/dataEntry/input";
 import { Label } from "@/components/dataEntry/label";
@@ -9,12 +9,21 @@ import {
 	SelectContent,
 	SelectGroup,
 	SelectItem,
-	SelectLabel,
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { useOrganisationsStore } from "@/lib/zustand/organisation";
+import { Organisation } from "@/types/organisation";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import toast from "react-hot-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+	CreateProjectSchema,
+	createProjectSchema,
+} from "@/lib/zod/validators/projects";
+import { useRouter } from "next/navigation";
 
 interface PageProps {
 	params: {
@@ -23,42 +32,32 @@ interface PageProps {
 }
 
 export default function Page({ params }: PageProps) {
-	const { organisationId: orgId } = params;
+	let { organisationId: orgId } = params;
+	const router = useRouter();
 
-	const { } = useForm({});
-
-	const [formData, setFormData] = React.useState({
-		title: "",
-		description: "",
-		logo: "",
+	const {
+		handleSubmit,
+		register,
+		formState: { errors },
+	} = useForm<CreateProjectSchema>({
+		resolver: zodResolver(createProjectSchema),
 	});
 
-	type SelectOption = {
-		value: string;
-		name: string;
-	};
-
-	const handleChange = (
-		e:
-			| React.ChangeEvent<HTMLInputElement>
-			| React.ChangeEvent<HTMLTextAreaElement>
-			| SelectOption,
-	) => {
-		if (typeof e === "object" && "value" in e) {
-			setFormData({
-				...formData,
-				[e.name]: e.value,
-			});
-			return;
+	const { organisations, setOrganisations } = useOrganisationsStore();
+	useEffect(() => {
+		async function getOrganisations() {
+			try {
+				const resp: AxiosResponse<{
+					code: number;
+					organisations: Organisation[];
+				}> = await axios.get("/api/organisations");
+				setOrganisations(resp.data.organisations);
+			} catch (err) {
+				toast.error("Error getting organisations");
+			}
 		}
-
-		const { name, value } = e.target;
-		setFormData({
-			...formData,
-			[name]: value,
-		});
-		console.log(formData);
-	};
+		getOrganisations();
+	}, []);
 
 	return (
 		<main className="flex flex-col mt-10 bg-transparent">
@@ -70,25 +69,32 @@ export default function Page({ params }: PageProps) {
 							Organisation
 						</Label>
 						<Select
-							onValueChange={(value) =>
-								handleChange({
-									name: "organisation",
-									value,
-								})
-							}
+							onValueChange={(value) => {
+								organisations.map((org) => {
+									if (org.title === value) {
+										orgId = org.id;
+									}
+								});
+							}}
 						>
 							<SelectTrigger className="w-full">
-								<SelectValue placeholder="Select a Organisation" />
+								<SelectValue
+									placeholder={
+										organisations[parseInt(orgId) - 1]
+											? organisations[parseInt(orgId) - 1].title
+											: "Select Organisation"
+									}
+								></SelectValue>
 							</SelectTrigger>
 							<SelectContent>
 								<SelectGroup>
-									<SelectLabel>Organisations</SelectLabel>
-									<SelectItem value="new">
-										TODO: Render organisations
-									</SelectItem>
-									<SelectItem value="new2">
-										TODO: Render organisations
-									</SelectItem>
+									{organisations.map((org) => {
+										return (
+											<SelectItem key={org.id} value={org.title}>
+												{org.title}
+											</SelectItem>
+										);
+									})}
 								</SelectGroup>
 							</SelectContent>
 						</Select>
@@ -98,25 +104,31 @@ export default function Page({ params }: PageProps) {
 							Title
 						</Label>
 						<Input
-							name="title"
 							type="text"
 							id="title"
 							placeholder="Enter title here"
-							onChange={handleChange}
-							value={formData.title}
+							{...register("title")}
 						/>
+						{errors.title && (
+							<p className="text-red-500 text-xs italic">
+								{errors.title.message}
+							</p>
+						)}
 					</div>
 					<div className="grid w-full items-center gap-3">
 						<Label htmlFor="title" className="font-normal">
 							Description
 						</Label>
 						<Textarea
-							name="description"
 							id="description"
 							placeholder="Enter description here"
-							onChange={handleChange}
-							value={formData.description}
+							{...register("description")}
 						/>
+						{errors.description && (
+							<p className="text-red-500 text-xs italic">
+								{errors.description.message}
+							</p>
+						)}
 					</div>
 				</form>
 				<div className="flex gap-3">
@@ -127,7 +139,24 @@ export default function Page({ params }: PageProps) {
 					>
 						<Link href={`/home/organisations/${orgId}`}>Cancel</Link>
 					</Button>
-					<Button className="rounded-md bg-[#376789] text-white">
+					<Button
+						onClick={handleSubmit(async (data) => {
+							try {
+								await axios.post(`/api/organisations/${orgId}/projects`, data);
+								toast.success("Project created sucessfully");
+								router.push(`/home/organisations/${orgId}`);
+							} catch (err) {
+								if (err instanceof AxiosError) {
+									if (err.response?.status === 409) {
+										toast.error("Title already exists");
+										return;
+									}
+								}
+								toast.error("Something went wrong");
+							}
+						})}
+						className="rounded-md bg-[#376789] text-white"
+					>
 						Create Project
 					</Button>
 				</div>

@@ -10,7 +10,7 @@ import (
 type ProjectRepository interface {
 	Create(user_id, org_id uint, title string, description string, logo string) (*models.Project, error)
 	List(user_id, org_id uint, pagination *helper.Pagination) ([]models.Project, uint, error)
-	Update(user_id, p_id uint, title, description, logo string) (*models.Project, error)
+	Update(user_id, o_id, p_id uint, title, description, logo string) (*models.Project, error)
 	Delete(user_id, id uint) error
 	Details(user_id, id uint) (*models.Project, error)
 }

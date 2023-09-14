@@ -23,7 +23,7 @@ func (h *httpHandler) create(w http.ResponseWriter, r *http.Request) {
 		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid X-User Header", http.StatusUnauthorized)))
 		return
 	}
-	o_id := helper.GetPathParamByName(r, "organisation_id")
+	o_id := helper.GetPathParamByName(r, "org_id")
 	org_id, err := helper.StringToInt(o_id)
 	if err != nil {
 		h.logger.Error("error in parsing org_id", "error", err.Error())

@@ -7,6 +7,7 @@ import Link from "next/link";
 import DeleteButttonWithConfirmModal from "./DeleteButttonWithConfimModal";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { formatTimestamp } from "@/lib/utils/formatDate";
 
 interface OrganisationProps {
   org: Org;
@@ -85,8 +86,8 @@ export const Organisation: FC<OrganisationProps> = ({
               <h3 className="text-md">{project.title}</h3>
               <p className="text-sm text-[#6B7280]">
                 Created at:{" "}
-                <span className="text-[#6B7280] font-semibold">
-                  {project.createdAt}
+                <span className="text-[#6B7280] font-semibold text-xs">
+                  {formatTimestamp(project.createdAt)}
                 </span>
               </p>
             </div>
@@ -109,7 +110,13 @@ export const Organisation: FC<OrganisationProps> = ({
           variant="secondary"
           asChild
         >
-          <Link href={`/home/organisations/${org.id}`} className="w-full">
+          <Link
+            href={
+              `/home/organisations/${org.id}` +
+              (org.projects?.length === 0 ? "/projects/new" : "")
+            }
+            className="w-full"
+          >
             {org.projects?.length === 0 ? "Add a project" : "View all projects"}
           </Link>
         </Button>

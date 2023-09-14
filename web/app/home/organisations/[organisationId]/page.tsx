@@ -19,19 +19,7 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
   async function fetchOrganisation() {
     setLoading(true);
     try {
-      const res: AxiosResponse<Organisation> = await axios(
-        "/api/organisations/" + organisationId,
-      );
-      if (!res.data.projects) {
-        res.data.projects = [
-          {
-            id: "1",
-            createdAt: "2021-08-23T18:25:43.511Z",
-            updatedAt: "2021-08-23T18:25:43.511Z",
-            title: "Project 1",
-          },
-        ];
-      }
+      const res = await axios("/api/organisations/" + organisationId);
       setOrganisation(res.data);
     } catch (err) {
       toast.error("Error getting organisation");

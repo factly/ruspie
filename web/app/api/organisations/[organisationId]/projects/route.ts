@@ -67,7 +67,7 @@ export const POST = async (
     const body = await req.json();
     const project = createProjectSchema.parse(body);
     const res: AxiosResponse<Project> = await axios.post(
-      serverUrl + `/organisatoins/${organisationId}/projects`,
+      serverUrl + `/organisations/${organisationId}/projects`,
       project,
       {
         headers: {
@@ -84,6 +84,7 @@ export const POST = async (
     }
     if (err instanceof AxiosError) {
       const resp = err.response!;
+      console.log(resp.data);
       if (resp.status === 400 || resp.status === 401 || resp.status === 409) {
         errorResp.message = JSON.stringify(resp.data.errors[0].message);
         errorResp.status = resp.status;
