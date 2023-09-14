@@ -54,7 +54,7 @@ function SearchSql() {
 	};
 
 	return (
-		<div className='flex flex-col gap-6'>
+		<div className='flex flex-col gap-6 mb-10'>
 			<div className='mt-2 flex justify-between w-full gap-6'>
 				<SearchBar
 					inputClassName='!text-left py-3'

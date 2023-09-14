@@ -7,8 +7,9 @@ import {
 	TableRow,
 } from "@/components/ui/table"
 import { NotFound } from '@/components/icons/notFound';
-
 import React, { useState } from 'react';
+import { Button } from "../Button";
+import Icons from "@/components/icons";
 
 type Props = {
   data: any[];
@@ -38,6 +39,11 @@ function SqlResultTable({ data, itemsPerPage }: Props) {
     setCurrentPage(page);
   };
 
+  // Determine the range of page buttons to display
+  const pageButtonRange = 5;
+  const startPage = Math.max(currentPage - Math.floor(pageButtonRange / 2), 1);
+  const endPage = Math.min(startPage + pageButtonRange - 1, totalPages);
+
   return (
     <div>
       <Table className='mx-auto mt-10 w-9/10 md:w-3/5 overflow-x-auto'>
@@ -63,22 +69,41 @@ function SqlResultTable({ data, itemsPerPage }: Props) {
         </TableBody>
       </Table>
       {/* Pagination controls */}
-      <div className='flex justify-center mt-4'>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index}
-            onClick={() => handlePageChange(index + 1)}
-            className={`mx-2 px-3 py-1 rounded ${
-              currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-300'
-            }`}
-          >
-            {index + 1}
-          </button>
-        ))}
+      <div className='flex justify-end gap-2 mt-4'>
+        <Button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`px-3 py-1 rounded text-[#376789] ${
+            currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : ''
+          } rotate-180`}
+        >
+          <Icons.ChevronRightIcon size="large"/>
+        </Button>
+        <div className='flex gap-2'>
+          {Array.from({ length: endPage - startPage + 1 }, (_, index) => (
+            <Button
+              key={startPage + index}
+              onClick={() => handlePageChange(startPage + index)}
+              className={`px-3 py-1 rounded text-[#376789] ${
+                currentPage === startPage + index ? 'border border-[#376789]' : ''
+              }`}
+            >
+              {startPage + index}
+            </Button>
+          ))}
+        </div>
+        <Button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`px-3 py-1 rounded text-[#376789] ${
+            currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : ''
+          }`}
+        >
+          <Icons.ChevronRightIcon size="large"/>
+        </Button>
       </div>
     </div>
   );
 }
 
 export default SqlResultTable;
-
