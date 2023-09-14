@@ -2,25 +2,27 @@
 import React, { FC } from "react";
 import { Button } from "./Button";
 import Icons from "../icons";
-import { Organisation } from "@/types/organisation";
 import { SearchBar } from "./searchBar";
 import DeleteButttonWithConfirmModal from "./DeleteButttonWithConfimModal";
 import Link from "next/link";
-import { parseISO, format } from "date-fns";
 import { formatTimestamp } from "@/lib/utils/formatDate";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useProjectsStore } from "@/lib/zustand/projects";
+import { useRouter } from "next/navigation";
 
 interface OrganisationProps {
-	org: Organisation | null;
+	orgId: string;
 }
 
-const Project: FC<OrganisationProps> = ({ org }) => {
+const Project: FC<OrganisationProps> = ({ orgId }) => {
+	const router = useRouter();
 	const handleFilterProject = (query: string) => {
-		//
 		console.log(query);
 	};
 
-	const handleEditClick = () => {
-		console.log("edit clicked");
+	const handleEditClick = (projectId: string, orgId: string) => {
+		router.push(`/home/organisations/${orgId}/projects/${projectId}/edit`);
 	};
 
 	const handleDeleteClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -28,6 +30,18 @@ const Project: FC<OrganisationProps> = ({ org }) => {
 		event.nativeEvent.preventDefault();
 	};
 
+	const handleDelete = async (projectId: string, orgId: string) => {
+		try {
+			const res = await axios.delete(
+				`/api/organisations/${orgId}/projects/${projectId}`,
+			);
+			toast.success(res.data);
+		} catch (err) {
+			console.log(err);
+			toast.error("Something went wrong");
+		}
+	};
+	const { projects, setProjects } = useProjectsStore();
 	return (
 		<>
 			<SearchBar
@@ -35,21 +49,18 @@ const Project: FC<OrganisationProps> = ({ org }) => {
 				callback={handleFilterProject}
 			/>
 			<div className="flex flex-col items-center">
-				{org?.projects?.map((project, index) => (
-					<Link
-						href={`/home/organisations/${org?.id}/projects/${project.id}`}
+				{projects?.map((project, index) => (
+					<div
 						className={`flex flex-row justify-between items-center bg-white w-full p-4 border-b border-[#EAECF0]
 								${index === 0 ? "rounded-t-md" : ""}
-								${org !== null &&
-								org.projects !== undefined &&
-								index === org.projects.length - 1
-								? "rounded-b-md"
-								: ""
-							}
+								${projects !== undefined && index === projects.length - 1 ? "rounded-b-md" : ""}
 							`}
-						key={org.id + "_" + project.id + "_" + project.title}
+						key={orgId + "_" + project.id + "_" + project.title}
 					>
-						<div className="flex flex-col gap-2">
+						<Link
+							href={`/home/organisations/${orgId}/projects/${project.id}`}
+							className="flex flex-col gap-2"
+						>
 							<h3 className="text-md">{project.title}</h3>
 							<p className="text-sm text-[#6B7280]">
 								Created at:{" "}
@@ -57,23 +68,31 @@ const Project: FC<OrganisationProps> = ({ org }) => {
 									{formatTimestamp(project.createdAt)}
 								</span>
 							</p>
-						</div>
+						</Link>
 						<div className="flex gap-2">
 							<Button
 								variant="outline"
 								size="icon"
 								className="rounded border border-[#E6E6E6]"
-								onClick={handleEditClick}
+								onClick={() => handleEditClick(project.id, orgId)}
 							>
 								<Icons.EditIcon />
 							</Button>
 							<DeleteButttonWithConfirmModal
 								onButtonClick={handleDeleteClick}
-								onConfirm={async () => { }}
+								onConfirm={async () => {
+									await handleDelete(project.id, orgId);
+								}}
+								onConfirmFinish={() => {
+									const newPros = projects.filter(
+										(pro) => pro.id !== project.id,
+									);
+									setProjects(newPros || []);
+								}}
 								onCancel={() => { }}
 							/>
 						</div>
-					</Link>
+					</div>
 				))}
 			</div>
 		</>

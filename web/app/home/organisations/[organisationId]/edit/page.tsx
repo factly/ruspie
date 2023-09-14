@@ -33,19 +33,8 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
         const res: AxiosResponse<Organisation> = await axios(
           "/api/organisations/" + organisationId,
         );
-        if (!res.data.projects) {
-          res.data.projects = [
-            {
-              id: "1",
-              createdAt: "2021-08-23T18:25:43.511Z",
-              updatedAt: "2021-08-23T18:25:43.511Z",
-              title: "Project 1",
-            },
-          ];
-        }
         setOrganisation(res.data);
         setValue("title", res.data.title);
-        console.log(res.data);
         setValue("description", res.data.description);
       } catch (err) {
         toast.error("Somethign went wrong");

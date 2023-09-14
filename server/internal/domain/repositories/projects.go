@@ -12,7 +12,8 @@ type ProjectRepository interface {
 	List(user_id, org_id uint, pagination *helper.Pagination) ([]models.Project, uint, error)
 	Update(user_id, o_id, p_id uint, title, description, logo string) (*models.Project, error)
 	Delete(user_id, id uint) error
-	Details(user_id, id uint) (*models.Project, error)
+	Details(user_id, org_id, id uint) (*models.Project, error)
+	ChangeOrganisation(user_id, project_id, new_org_id, old_org_id uint) (*models.Project, error)
 }
 
 func NewProjectRepository(db database.IDatabaseService) (ProjectRepository, error) {

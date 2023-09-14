@@ -10,17 +10,24 @@ import axios, { AxiosResponse } from "axios";
 import { toast } from "react-hot-toast";
 import { Loader } from "lucide-react";
 import { OrgaisationParam } from "@/types/params/oragnisation_param";
+import { useProjectsStore } from "@/lib/zustand/projects";
 
 export default function Page({ params: { organisationId } }: OrgaisationParam) {
   const [organisation, setOrganisation] = React.useState<Organisation | null>(
     null,
   );
+  const { projects, setProjects } = useProjectsStore();
 
   async function fetchOrganisation() {
     setLoading(true);
     try {
-      const res = await axios("/api/organisations/" + organisationId);
+      const res: AxiosResponse<Organisation> = await axios(
+        "/api/organisations/" + organisationId,
+      );
       setOrganisation(res.data);
+      if (res.data.projects) {
+        setProjects(res.data.projects);
+      }
     } catch (err) {
       toast.error("Error getting organisation");
     } finally {
@@ -40,7 +47,6 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
       </div>
     );
   }
-
   return (
     <main className="flex flex-col mt-10 bg-transparent">
       <div className="flex flex-row justify-around items-start">
@@ -59,9 +65,7 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
           </Link>
         </div>
         <div className="flex flex-col w-2/5 justify-around gap-10">
-          {organisation?.projects?.length !== 0 && (
-            <Projects org={organisation || null} />
-          )}
+          {projects.length !== 0 && <Projects orgId={organisationId} />}
         </div>
         <Button className="rounded-md bg-[#376789] text-white" asChild>
           <Link href={`/home/organisations/${organisation?.id}/projects/new`}>
@@ -69,7 +73,7 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
           </Link>
         </Button>
       </div>
-      {organisation?.projects?.length === 0 && (
+      {projects.length === 0 && (
         <div className="flex flex-col items-center gap-4 my-auto w-full">
           <Icons.NotFound />
           <p className="text-xl w-fit font-medium">

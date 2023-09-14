@@ -12,12 +12,12 @@ import {
 import { Button } from "@/components/ui/Button";
 import Icons from "@/components/icons";
 import { Loader } from "lucide-react";
-import { useOrganisationsStore } from "@/lib/zustand/organisation";
 
 interface DeleteButtonWithConfirmModalProps {
 	onConfirm: () => Promise<void>;
 	onButtonClick: (e: any) => void;
 	onCancel: () => void;
+	onConfirmFinish?: () => void;
 	id?: string;
 }
 function DeleteButttonWithConfirmModal(
@@ -25,7 +25,6 @@ function DeleteButttonWithConfirmModal(
 ) {
 	const [open, setOpen] = React.useState(false);
 	const [loading, setLoading] = React.useState(false);
-	const { organisations, setOrganisations } = useOrganisationsStore();
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -66,10 +65,9 @@ function DeleteButttonWithConfirmModal(
 							} finally {
 								setOpen(false);
 								setLoading(false);
-								const newOrgs = organisations.filter(
-									(org) => org.id !== props.id,
-								);
-								setOrganisations(newOrgs);
+								if (props.onConfirmFinish) {
+									props.onConfirmFinish();
+								}
 							}
 						}}
 					>

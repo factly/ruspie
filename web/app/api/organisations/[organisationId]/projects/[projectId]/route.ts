@@ -1,6 +1,9 @@
 import { errorToResp } from "@/lib/utils/error_to_resp";
 import { getServerUrl } from "@/lib/utils/serverUrl";
-import { updateProjectSchema } from "@/lib/zod/validators/projects";
+import {
+  changeOrgProjectSchema,
+  updateProjectSchema,
+} from "@/lib/zod/validators/projects";
 import { APIError } from "@/types/api_error";
 import { Project } from "@/types/organisation";
 import { ProjectParam } from "@/types/params/project_param";
@@ -42,7 +45,7 @@ export async function GET(
   }
 }
 
-export async function PATCH(
+export async function PUT(
   req: Request,
   { params: { organisationId, projectId } }: ProjectParam,
 ) {
@@ -61,7 +64,8 @@ export async function PATCH(
   try {
     const body = await req.json();
     const project = updateProjectSchema.parse(body);
-    const res: AxiosResponse<Project> = await axios.patch(
+    console.log(project);
+    const res: AxiosResponse<Project> = await axios.put(
       serverUrl + `/organisations/${organisationId}/projects/${projectId}/`,
       project,
       {
@@ -87,7 +91,8 @@ export async function PATCH(
       if (
         response.status === 400 ||
         response.status === 404 ||
-        response.status === 401
+        response.status === 401 ||
+        response.status === 409
       ) {
         errorResp.message = JSON.stringify(response.data);
         errorResp.status = response.status;
@@ -118,12 +123,77 @@ export const DELETE = async (
 
   try {
     await axios.delete(
-      serverUrl + `organisations/${organisationId}/projects/${projectId}/`,
+      serverUrl + `/organisations/${organisationId}/projects/${projectId}/`,
+      {
+        headers: {
+          "X-User": "1",
+        },
+      },
     );
-    return new Response("Successfully deleted the organisation");
+    return new Response("Successfully deleted the project");
   } catch (err) {
+    console.log(err);
     if (err instanceof AxiosError) {
       const response = err.response;
+      console.log(response?.data);
+      if (!response) {
+        errorResp.message = "Unhandled Error occured";
+        errorResp.status = 500;
+        return new Response(...errorToResp(errorResp));
+      }
+      if (
+        response.status === 400 ||
+        response.status === 404 ||
+        response.status === 401
+      ) {
+        errorResp.message = JSON.stringify(response.data);
+        errorResp.status = response.status;
+        return new Response(...errorToResp(errorResp));
+      }
+    }
+    errorResp.message = "Internal server error";
+    errorResp.status = 500;
+    return new Response(...errorToResp(errorResp));
+  }
+};
+
+export const PATCH = async (
+  req: Request,
+  { params: { organisationId, projectId } }: ProjectParam,
+) => {
+  const errorResp: APIError = { message: "", status: 500 };
+  if (!organisationId || !projectId) {
+    errorResp.message = "Internal Server Error";
+    return new Response(...errorToResp(errorResp));
+  }
+
+  const serverUrl = getServerUrl();
+  if (!serverUrl) {
+    errorResp.message = "Internal Server Error";
+    return new Response(...errorToResp(errorResp));
+  }
+
+  try {
+    const body = await req.json();
+    const changeOrgReq = changeOrgProjectSchema.parse(body);
+    const res = await axios.patch(
+      serverUrl +
+      `/organisations/${organisationId}/projects/${projectId}/change_org`,
+      {
+        new_org_id: changeOrgReq.new_org_id.toString(),
+      },
+      {
+        headers: {
+          "X-User": 1,
+        },
+      },
+    );
+    return new Response(JSON.stringify(res.data));
+  } catch (err) {
+    console.log(err);
+    if (err instanceof AxiosError) {
+      const response = err.response;
+      console.log(response?.data);
       if (!response) {
         errorResp.message = "Unhandled Error occured";
         errorResp.status = 500;

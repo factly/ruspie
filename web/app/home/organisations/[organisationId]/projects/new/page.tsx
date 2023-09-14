@@ -24,15 +24,11 @@ import {
 	createProjectSchema,
 } from "@/lib/zod/validators/projects";
 import { useRouter } from "next/navigation";
+import { OrgaisationParam } from "@/types/params/oragnisation_param";
 
-interface PageProps {
-	params: {
-		organisationId: string;
-	};
-}
-
-export default function Page({ params }: PageProps) {
-	let { organisationId: orgId } = params;
+export default function Page({
+	params: { organisationId: orgId },
+}: OrgaisationParam) {
 	const router = useRouter();
 
 	const {
@@ -78,13 +74,7 @@ export default function Page({ params }: PageProps) {
 							}}
 						>
 							<SelectTrigger className="w-full">
-								<SelectValue
-									placeholder={
-										organisations[parseInt(orgId) - 1]
-											? organisations[parseInt(orgId) - 1].title
-											: "Select Organisation"
-									}
-								></SelectValue>
+								<SelectValue placeholder={"Select Organisation"}></SelectValue>
 							</SelectTrigger>
 							<SelectContent>
 								<SelectGroup>

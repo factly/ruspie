@@ -24,8 +24,15 @@ func (h *httpHandler) details(w http.ResponseWriter, r *http.Request) {
 		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid project_id", http.StatusBadRequest)))
 		return
 	}
+	o_id := helper.GetPathParamByName(r, "org_id")
+	org_id, err := helper.StringToInt(o_id)
+	if err != nil {
+		h.logger.Error("error in parsing org_id", "error", err.Error())
+		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid organisation_id", http.StatusBadRequest)))
+		return
+	}
 
-	project, err := h.projectRepository.Details(uint(user_id), uint(project_id))
+	project, err := h.projectRepository.Details(uint(user_id), uint(org_id), uint(project_id))
 	if err != nil {
 		h.logger.Error("error in fetching project", "error", err.Error())
 		if customErr, ok := err.(*custom_errors.CustomError); ok {

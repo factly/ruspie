@@ -20,6 +20,7 @@ func (h *httpHandler) routes(server_context repositories.ServerRepoContext, logg
 		r.Get("/", h.details)
 		r.Delete("/", h.delete)
 		r.Put("/", h.update)
+		r.Patch("/change_org", h.changeOrgId)
 		r.Mount("/files", files.InitRoutes(server_context, logger))
 	})
 	return router
