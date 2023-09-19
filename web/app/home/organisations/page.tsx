@@ -55,7 +55,7 @@ export default function Page() {
 									placeholder="Search Organisation"
 									callback={handleFilterOrg}
 								/>
-								<div className="flex flex-col items-center gap-6">
+								<div className="flex flex-col items-center gap-6 max-h-[60vh] overflow-y-auto">
 									{organisations.map((org) => (
 										<Organisation
 											org={org}

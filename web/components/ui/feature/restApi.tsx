@@ -9,6 +9,13 @@ import {
 	DropdownMenuTrigger,
 	DropdownMenuCheckboxItem
 } from "@/components/ui/dropdown-menu"
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import React from 'react'
 import { Button } from '../Button';
 import Icons from '@/components/icons';
@@ -30,6 +37,18 @@ export default function RestApi() {
 		limit: 1,
 		columns_to_retrieve: [],
 	});
+
+	// filterInputsFields stores the filter inputs
+	type filterType = {
+		columnName: string;
+		value: string;
+	}[];
+	const [filterInputFields, setFilterInputFields] = useState<filterType>([
+		{
+			columnName: '',
+			value: '',
+		},
+	]);
 
 	const [schema, setSchema] = useState(null)
 	// responseData stores the search data coming from ruspie and displays it in the response textarea
@@ -58,7 +77,56 @@ export default function RestApi() {
 		})
 	}
 
-	const handleSubmit = (e) => {
+	const addFilterFields = (e: any) => {
+		e.preventDefault();
+		setFilterInputFields([
+			...filterInputFields,
+			{
+				columnName: '',
+				value: '',
+			},
+		]);
+	};
+	const handleFilterFormInputChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
+		setFilterInputFields(
+			filterInputFields.map((inputField, i) => {
+				if (index === i) {
+					return {
+						...inputField,
+						[event.target.name]: event.target.value,
+					};
+				}
+				return inputField;
+			})
+		);
+	};
+	type SelectEvent = {
+		name: string;
+		value: string;
+	};
+
+	const handleFilterFormColumnChange = (index: number, event: SelectEvent) => {
+		setFilterInputFields(
+			filterInputFields.map((inputField, i) => {
+				if (index === i) {
+					return {
+						...inputField,
+						columnName: event.value,
+					};
+				}
+				return inputField;
+			})
+		);
+	}
+
+	const removeFilterFields = (index: number) => {
+		const values = [...filterInputFields];
+		values.splice(index, 1);
+		setFilterInputFields(values);
+	};
+
+
+	const handleSubmit = (e: any) => {
 		setResponseData('');
 		e.preventDefault();
 		let queryParam: any = {};
@@ -96,7 +164,7 @@ export default function RestApi() {
 
 
 	return (
-		<div className='w-full flex flex-row justify-end gap-16 h-full'>
+		<div className='w-full flex flex-row justify-end gap-16 h-full max-h-[80vh] overflow-x-auto mb-10'>
 			<div className='px-4 w-2/5'>
 				<form className="flex flex-col items-center w-4/5 gap-6">
 					<div className="grid w-full items-center gap-3">
@@ -149,7 +217,7 @@ export default function RestApi() {
 						<DropdownMenu>
 							<DropdownMenuTrigger className="w-full bg-white px-3 py-2 rounded-md border border-gray-200 text-left flex justify-between items-center">
 								Columns To retrieve
-							 <Icons.ChevronDownIcon />
+								<Icons.ChevronDownIcon />
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className='h-36 overflow-y-auto bg-white w-[22rem]'>
 								{
@@ -184,11 +252,76 @@ export default function RestApi() {
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</div>
+					<div className='grid w-full items-center gap-3'>
+						{
+							filterInputFields.length > 0 &&
+							<Label htmlFor="filter" className="font-normal">
+								Filters
+							</Label>
+						}
+						{
+							filterInputFields.map((inputField, index) => (
+								<div className="flex w-full items-center justify-between gap-3" key={index}>
+									<Select
+										onValueChange={(value) => {
+											handleFilterFormColumnChange(index, {
+												name: 'columnName',
+												value,
+											});
+										}}
+									>
+										<SelectTrigger className="w-[50%]">
+											<SelectValue placeholder="Select a Column" />
+										</SelectTrigger>
+										<SelectContent className='h-44 overflow-y-auto bg-white w-[180px]'>
+											{
+												schemaLoading ? <div>Loading...</div> :
+													schema !== null &&
+													schema?.fields?.map((field) => {
+														if (field.name === undefined) return null;
+														return (
+															<SelectItem value={field.name} key={field.name}>
+																{field.name}
+															</SelectItem>
+														)
+													})
+											}
+										</SelectContent>
+									</Select>
+									<Input
+										name="value"
+										className='w-[50%]'
+										type='text'
+										id="value"
+										value={inputField.value}
+										placeholder="value"
+										onChange={(event) => handleFilterFormInputChange(index, event)}
+									/>
+									<Button
+										type='button'
+										variant='ghost'
+										className='cursor-pointer p-2'
+										onClick={() => removeFilterFields(index)}
+									>
+										<Icons.CloseIcon />
+									</Button>
+								</div>
+							))
+						}
+					</div>
 					<div className="flex w-full items-center justify-between">
-						<Button className='rounded-md bg-[#376789] text-white px-4 py-2'
+						<Button
+							className='rounded-md bg-[#376789] text-white px-4 py-2'
 							onClick={handleSubmit}
-						> Execute </Button>
-						<Button variant='outline' className='rounded-md border-[#376789] text-[#376789] px-4 py-2'>
+						>
+							Execute
+						</Button>
+						<Button
+							variant='outline'
+							type='button'
+							className='rounded-md border-[#376789] text-[#376789] px-4 py-2'
+							onClick={addFilterFields}
+						>
 							<Icons.PlusIcon color="#376789" /> Add Filter
 						</Button>
 					</div>

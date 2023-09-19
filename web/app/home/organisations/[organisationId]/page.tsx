@@ -48,8 +48,8 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
     );
   }
   return (
-    <main className="flex flex-col mt-10 bg-transparent">
-      <div className="flex flex-row justify-around items-start">
+    <main className="flex flex-col mt-10 bg-transparent px-20">
+      <div className="flex flex-row justify-between items-start">
         <div className="flex flex-row gap-3 items-center">
           <Avatar>
             <AvatarImage
@@ -61,13 +61,18 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
             </AvatarFallback>
           </Avatar>
           <Link href={`/home/organisations`}>
-            <h1 className="text-xl font-semibold"> {organisation?.title} </h1>
+            <h1 className="text-xl font-semibold">
+              {/* truncate the text if more than 15 char */}
+              {organisation?.title && organisation?.title.length > 12
+                ? organisation?.title.substring(0, 12) + "..."
+                : organisation?.title}
+            </h1>
           </Link>
         </div>
         <div className="flex flex-col w-2/5 justify-around gap-10">
           {projects.length !== 0 && <Projects orgId={organisationId} />}
         </div>
-        <Button className="rounded-md bg-[#376789] text-white" asChild>
+        <Button className="rounded-md bg-[#376789] text-white ml-10" asChild>
           <Link href={`/home/organisations/${organisation?.id}/projects/new`}>
             <Icons.PlusIcon /> Add Projects
           </Link>

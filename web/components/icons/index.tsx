@@ -10,6 +10,7 @@ import { ChevronDownIcon } from './chevronDown';
 import { DefaultOrganisation } from './defaultOrganisation';
 import { ArrowRight2 } from './arrowRight2';
 import { ArrowLeft2 } from './arrowLeft2';
+import { CloseIcon } from './closeIcon';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -25,6 +26,7 @@ export default {
 	DefaultOrganisation,
 	ArrowRight2,
 	ArrowLeft2,
+	CloseIcon
 }
 
 
