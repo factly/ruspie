@@ -21,6 +21,7 @@ import { Button } from '../Button';
 import Icons from '@/components/icons';
 import { fetchSchemaForTable } from '@/lib/actions/features/getSchema';
 import { restEndpoint } from '@/lib/constants/apiEndpoints';
+import { createFilter } from '@/lib/actions/features/restApi';
 
 export default function RestApi() {
 
@@ -41,11 +42,36 @@ export default function RestApi() {
 	// filterInputsFields stores the filter inputs
 	type filterType = {
 		columnName: string;
+		operator: string;
 		value: string;
 	}[];
+
+	const operatorList = [
+		{
+			label: '>',
+			value: 'gt=',
+		},
+		{
+			label: '<',
+			value: 'lt=',
+		},
+		{
+			label: '=',
+			value: '=',
+		},
+		{
+			label: '>=',
+			value: 'gte=',
+		},
+		{
+			label: '<=',
+			value: 'lte=',
+		},
+	];
 	const [filterInputFields, setFilterInputFields] = useState<filterType>([
 		{
 			columnName: '',
+			operator: '',
 			value: '',
 		},
 	]);
@@ -83,6 +109,7 @@ export default function RestApi() {
 			...filterInputFields,
 			{
 				columnName: '',
+				operator: '',
 				value: '',
 			},
 		]);
@@ -119,6 +146,20 @@ export default function RestApi() {
 		);
 	}
 
+	const handleFilterFormOperatorChange = (index: number, event: SelectEvent) => {
+		setFilterInputFields(
+			filterInputFields.map((inputField, i) => {
+				if (index === i) {
+					return {
+						...inputField,
+						operator: event.value,
+					};
+				}
+				return inputField;
+			})
+		);
+	}
+
 	const removeFilterFields = (index: number) => {
 		const values = [...filterInputFields];
 		values.splice(index, 1);
@@ -140,7 +181,8 @@ export default function RestApi() {
 			}
 		}
 
-		const URL = `${restEndpoint}/${dataset.api_id}?` + new URLSearchParams(queryParam)
+		const URL = `${restEndpoint}/${dataset.api_id}?` + new URLSearchParams(queryParam) + createFilter(filterInputFields, schema);
+		alert(URL);
 		setLoading(true);
 		fetch(URL)
 			.then((res) => {
@@ -165,7 +207,7 @@ export default function RestApi() {
 
 	return (
 		<div className='w-full flex flex-row justify-end gap-16 h-full max-h-[80vh] overflow-x-auto mb-10'>
-			<div className='px-4 w-2/5'>
+			<div className='px-4 w-3/6'>
 				<form className="flex flex-col items-center w-4/5 gap-6">
 					<div className="grid w-full items-center gap-3">
 						<Label htmlFor="fileFormat" className="font-normal">
@@ -271,7 +313,7 @@ export default function RestApi() {
 										}}
 									>
 										<SelectTrigger className="w-[50%]">
-											<SelectValue placeholder="Select a Column" />
+											<SelectValue placeholder="Column" />
 										</SelectTrigger>
 										<SelectContent className='h-44 overflow-y-auto bg-white w-[180px]'>
 											{
@@ -285,6 +327,27 @@ export default function RestApi() {
 															</SelectItem>
 														)
 													})
+											}
+										</SelectContent>
+									</Select>
+									<Select
+										onValueChange={(value) => {
+											handleFilterFormOperatorChange(index, {
+												name: 'operator',
+												value,
+											});
+										}}
+									>
+										<SelectTrigger className="w-[20%]">
+											<SelectValue placeholder="Operator" />
+										</SelectTrigger>
+										<SelectContent className='h-44 overflow-y-auto bg-white'>
+											{
+												operatorList.map((operator) => (
+													<SelectItem value={operator.value} key={operator.value}>
+														{operator.label}
+													</SelectItem>
+												))
 											}
 										</SelectContent>
 									</Select>
