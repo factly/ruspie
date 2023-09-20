@@ -19,15 +19,14 @@ func (h *httpHandler) details(w http.ResponseWriter, r *http.Request) {
 	}
 
 	f_id := helper.GetPathParamByName(r, "file_id")
-	file_id, err := helper.StringToInt(f_id)
 
-	if err != nil {
+	if f_id == "" {
 		h.logger.Error("error in parsing project_id", "error", err.Error())
 		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid project_id", http.StatusBadRequest)))
 		return
 	}
 
-	file, err := h.fileRepository.Details(uint(user_id), uint(file_id))
+	file, err := h.fileRepository.Details(uint(user_id), f_id)
 	if err != nil {
 		h.logger.Error("error in fetching project", "error", err.Error())
 		if customErr, ok := err.(*custom_errors.CustomError); ok {
