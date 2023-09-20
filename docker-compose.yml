@@ -356,5 +356,12 @@ services:
     stdin_open: true
     networks:
       - ruspie
+
+  companion:
+    image: transloadit/companion
+    ports:
+      - "3020:3020"
+    env_file:
+      - ./companion/.env
 networks:
   ruspie:

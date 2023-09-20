@@ -12,16 +12,17 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import DeleteButttonWithConfirmModal from "./DeleteButttonWithConfimModal";
+import { Organisation, Project } from "@/types/organisation";
+import { File as Dataset } from "@/types/file";
 
-// Todo: add props type
 function DatasetTable({
 	org,
 	project,
 	datasets,
 }: {
-	org: any;
-	project: any;
-	datasets: any[];
+	org: Organisation | undefined;
+	project: Project | undefined;
+	datasets: Dataset[];
 }) {
 	const handleDeleteClick = (event: React.MouseEvent<HTMLElement>) => {
 		event.stopPropagation();
@@ -40,12 +41,10 @@ function DatasetTable({
 			<TableBody className="bg-white">
 				{datasets.map((dataset) => (
 					<TableRow key={dataset.id}>
-						<TableCell className="p-4">{dataset.title}</TableCell>
+						<TableCell className="p-4">{dataset.name}</TableCell>
+						<TableCell className="p-4 text-[#1e1e1e]">{dataset.name}</TableCell>
 						<TableCell className="p-4 text-[#1e1e1e]">
-							{dataset.updatedAt}
-						</TableCell>
-						<TableCell className="p-4 text-[#1e1e1e]">
-							{dataset.createdBy}
+							{dataset.updatedAt.toString()}
 						</TableCell>
 						<TableCell className="p-4">
 							<div className="flex flex-row gap-2 justify-center">
@@ -56,7 +55,7 @@ function DatasetTable({
 									asChild
 								>
 									<Link
-										href={`/home/organisations/${org?.id}/projects/${project.id}/dataset/1`}
+										href={`/home/organisations/${org?.id}/projects/${project?.id}/dataset/1`}
 									>
 										<Icons.ArrowRight />
 									</Link>
