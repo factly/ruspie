@@ -68,7 +68,7 @@ export default function Page() {
 					<Button variant='link' className="px-2 text-[#0022D4]">Try with your own data</Button>
 				</div>
 			</div>
-			<Feature feature={selectedFeature} />
+			<Feature feature={selectedFeature}  />
 		</main>
 	)
 }
