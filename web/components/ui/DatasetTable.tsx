@@ -2,7 +2,7 @@
 import Icons from "@/components/icons";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
-import React from "react";
+import React, { FC } from "react";
 import {
 	Table,
 	TableBody,
@@ -12,19 +12,32 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import DeleteButttonWithConfirmModal from "./DeleteButttonWithConfimModal";
+import { formatTimestamp } from "@/lib/utils/formatDate";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useFileStore } from "@/lib/zustand/files";
 
-// Todo: add props type
-function DatasetTable({
-	org,
-	project,
-	datasets,
-}: {
-	org: any;
-	project: any;
-	datasets: any[];
-}) {
+interface DatasetTableProps {
+	orgId: string;
+	projectId: string;
+}
+
+const DatasetTable: FC<DatasetTableProps> = ({ orgId, projectId }) => {
 	const handleDeleteClick = (event: React.MouseEvent<HTMLElement>) => {
 		event.stopPropagation();
+	};
+
+	const { files, setFiles } = useFileStore();
+	const handleDelete = async (datasetId: string) => {
+		try {
+			const res = await axios.delete(
+				`/api/organisations/${orgId}/projects/${projectId}/datasets/${datasetId}`,
+			);
+			toast.success(res.data);
+		} catch (err) {
+			console.log(err);
+			toast.error("Something went wrong");
+		}
 	};
 
 	return (
@@ -32,20 +45,20 @@ function DatasetTable({
 			<TableHeader>
 				<TableRow className="bg-transparent text-[#666666] border-t rounded-t-md border-x">
 					<TableHead className="p-4">Dataset Name</TableHead>
+					<TableHead className="p-4">Created at</TableHead>
 					<TableHead className="p-4">Updated at</TableHead>
-					<TableHead className="p-4">Created by</TableHead>
 					<TableHead className="p-4 text-center">Actions</TableHead>
 				</TableRow>
 			</TableHeader>
 			<TableBody className="bg-white">
-				{datasets.map((dataset) => (
+				{files.map((dataset) => (
 					<TableRow key={dataset.id}>
-						<TableCell className="p-4">{dataset.title}</TableCell>
+						<TableCell className="p-4">{dataset.name}</TableCell>
 						<TableCell className="p-4 text-[#1e1e1e]">
-							{dataset.updatedAt}
+							{formatTimestamp(dataset.createdAt.toString())}
 						</TableCell>
 						<TableCell className="p-4 text-[#1e1e1e]">
-							{dataset.createdBy}
+							{formatTimestamp(dataset.updatedAt.toString())}
 						</TableCell>
 						<TableCell className="p-4">
 							<div className="flex flex-row gap-2 justify-center">
@@ -56,14 +69,22 @@ function DatasetTable({
 									asChild
 								>
 									<Link
-										href={`/home/organisations/${org?.id}/projects/${project.id}/dataset/1`}
+										href={`/home/organisations/${orgId}/projects/${projectId}/dataset/1`}
 									>
 										<Icons.ArrowRight />
 									</Link>
 								</Button>
 								<DeleteButttonWithConfirmModal
 									onButtonClick={handleDeleteClick}
-									onConfirm={async () => { }}
+									onConfirm={async () => {
+										await handleDelete(dataset.id);
+									}}
+									onConfirmFinish={() => {
+										const newFiles = files.filter(
+											(file) => file.id != dataset.id,
+										);
+										setFiles(newFiles);
+									}}
 									onCancel={() => { }}
 								/>
 							</div>
@@ -73,6 +94,6 @@ function DatasetTable({
 			</TableBody>
 		</Table>
 	);
-}
+};
 
 export default DatasetTable;

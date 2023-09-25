@@ -15,5 +15,7 @@ export interface Project {
   updatedAt: string;
   title: string;
   description?: string;
+  Organisation: Organisation;
+  OrganisationId: string;
   files?: File[];
 }

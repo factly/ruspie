@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (pg *PgFileRepository) Delete(user_id, id uint) error {
+func (pg *PgFileRepository) Delete(user_id uint, id uint) error {
 	file := &models.File{}
 	file.ID = id
 	err := pg.client.Where("created_by_id = ? AND id = ?", user_id, id).First(&file).Error
