@@ -5,14 +5,14 @@ services:
     image: minio/minio
     ports:
       - "9000:9000"
-      - "9002:9002"
+      - "9001:9001"
     volumes:
       - ./volumes/minio/data:/export
       - ./volumes/minio/config:/root/.minio
     environment:
       - MINIO_ROOT_USER=miniokey
       - MINIO_ROOT_PASSWORD=miniosecret
-    command: server -console-address :9002 /export
+    command: server /export --console-address ":9001"
     networks:
       - ruspie
 
@@ -346,6 +346,7 @@ services:
       - "3000:3000"
     environment:
       - SERVER_URL=http://ruspie-server:8800
+      - NEXT_PUBLIC_COMPANION_URL=http://localhost:3020
     volumes:
       - type: bind
         source: ./web
@@ -363,5 +364,8 @@ services:
       - "3020:3020"
     env_file:
       - ./companion/.env
+    networks:
+      - ruspie
+
 networks:
   ruspie:

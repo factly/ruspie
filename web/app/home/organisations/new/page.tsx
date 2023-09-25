@@ -18,7 +18,7 @@ import { Organisation } from "@/types/organisation";
 import { toast } from "react-hot-toast";
 import { ZodError } from "zod";
 import { useRouter } from "next/navigation";
-
+import UppyUploader from "@/components/UppyUploader";
 export default function Page() {
   const {
     handleSubmit,
@@ -76,7 +76,11 @@ export default function Page() {
             <Label htmlFor="title" className="font-normal">
               Logo
             </Label>
-            {/* <Input type="file" id="title" placeholder="Enter title here" /> */}
+            <UppyUploader
+              onUpload={(values: any) => {
+                console.log(values);
+              }}
+            />
             <div className="p-6 border border-input rounded-md w-fit cursor-pointer">
               <Image src={UploadImage} alt="logo" width={125} height={125} />
             </div>

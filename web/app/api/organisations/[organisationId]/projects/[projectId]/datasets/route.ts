@@ -67,7 +67,8 @@ export const POST = async (
     const body = await req.json();
     const file = createFileSchema.parse(body);
     const res: AxiosResponse<File> = await axios.post(
-      serverUrl + `/organisations/${organisationId}/projects/${projectId}`,
+      serverUrl +
+        `/organisations/${organisationId}/projects/${projectId}/files`,
       file,
       {
         headers: {
