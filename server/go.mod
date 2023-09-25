@@ -6,6 +6,7 @@ require (
 	github.com/factly/x v0.0.95
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/cors v1.2.1
+	github.com/google/uuid v1.1.2
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
 	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
