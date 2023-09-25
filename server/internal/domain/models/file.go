@@ -7,7 +7,7 @@ import (
 )
 
 type File struct {
-	ID          string          `gorm:"primaryKey" json:"id"`
+	ID          uint            `gorm:"primaryKey" json:"id"`
 	CreatedAt   time.Time       `json:"createdAt"`
 	UpdatedAt   time.Time       `json:"updatedAt"`
 	DeletedAt   *gorm.DeletedAt `gorm:"index" json:"deleted_at" swaggertype:"primitive,string"`

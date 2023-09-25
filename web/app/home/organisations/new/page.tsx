@@ -76,11 +76,11 @@ export default function Page() {
             <Label htmlFor="title" className="font-normal">
               Logo
             </Label>
-            <UppyUploader
-              onUpload={(values: any) => {
-                console.log(values);
-              }}
-            />
+            {/* <UppyUploader */}
+            {/*   onUpload={(values: any) => { */}
+            {/*     console.log(values); */}
+            {/*   }} */}
+            {/* /> */}
             <div className="p-6 border border-input rounded-md w-fit cursor-pointer">
               <Image src={UploadImage} alt="logo" width={125} height={125} />
             </div>

@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import DatasetTable from "@/components/ui/DatasetTable";
 import { File as Dataset } from "@/types/file";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Organisation, Project } from "@/types/organisation";
 import { Loader } from "lucide-react";
 import { toast } from "react-hot-toast";
 import axios, { AxiosResponse } from "axios";
 import { ProjectParam } from "@/types/params/project_param";
+import { useFileStore } from "@/lib/zustand/files";
 
 export default function Page({
   params: { organisationId, projectId },
@@ -18,7 +19,7 @@ export default function Page({
   const [org, setOrg] = useState<Organisation>();
   const [project, setProject] = useState<Project>();
   const [loading, setLoading] = useState<boolean>();
-  const [datasets, setDatasets] = useState<Dataset[]>();
+  const { files, setFiles } = useFileStore();
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -29,7 +30,7 @@ export default function Page({
         );
         setOrg(res.data.organisation);
         setProject(res.data);
-        setDatasets(res.data.files);
+        setFiles(res.data.files);
       } catch (err) {
         toast.error("Something went wrong");
       } finally {
@@ -73,15 +74,19 @@ export default function Page({
           </Link>
         </Button>
       </div>
-      {datasets?.length === 0 ? (
+      {files?.length === 0 ? (
         <div className="flex flex-col items-center gap-4 my-auto w-full">
           <Icons.NotFound />
           <p className="text-xl w-fit font-medium">
             Oops! nothing found. Get started by creating new Dataset
           </p>
         </div>
+      ) : org && project ? (
+        <DatasetTable orgId={org.id} projectId={project.id} />
       ) : (
-        <DatasetTable org={org} project={project} datasets={datasets || []} />
+        <div className="h-screen flex items-center justify-center -mt-28">
+          <Loader className="h-10 w-10 animate-spin text-gray-400" />
+        </div>
       )}
     </main>
   );

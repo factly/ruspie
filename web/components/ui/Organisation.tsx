@@ -26,7 +26,6 @@ export const Organisation: FC<OrganisationProps> = ({
   };
 
   const handleDelete = async () => {
-    console.log("clicked");
     try {
       const res = await axios.delete(`/api/organisations/${org.id}`);
       toast.success(res.data);
