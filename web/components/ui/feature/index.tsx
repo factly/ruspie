@@ -12,7 +12,7 @@ type Props = {
 
 function Feature({ feature }: Props) {
 
-	if(feature.value	=== "search"){
+	if(feature.value	=== "SQL"){
 		return (<SearchSql />)
 	}
 
