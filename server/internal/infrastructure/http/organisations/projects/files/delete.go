@@ -18,9 +18,14 @@ func (h *httpHandler) delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	f_id := helper.GetPathParamByName(r, "file_id")
+	if f_id == "" {
+		h.logger.Error("error in parsing project_id path parameter", "error", err.Error())
+		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid project_id path parameter", http.StatusBadRequest)))
+		return
+	}
 	file_id, err := helper.StringToInt(f_id)
 	if err != nil {
-		h.logger.Error("error in parsing project_id path parameter", "error", err.Error())
+		h.logger.Error("Invalid file Id passed", "error", err.Error())
 		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid project_id path parameter", http.StatusBadRequest)))
 		return
 	}

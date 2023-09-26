@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (pg *PgFileRepository) Update(user_id, f_id uint, name, extenstion, s3_url string) (*models.File, error) {
+func (pg *PgFileRepository) Update(user_id uint, f_id, name, extenstion, s3_url string) (*models.File, error) {
 	exists := pg.FileNameExists(name, &user_id)
 	if exists {
 		return nil, &custom_errors.CustomError{Context: custom_errors.NameOrTitleAlreadyExists, Err: errors.New("project title already exists")}

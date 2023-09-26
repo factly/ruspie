@@ -8,9 +8,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func (pg *PgFileRepository) Details(user_id, p_id uint) (*models.File, error) {
+func (pg *PgFileRepository) Details(user_id uint, f_id string) (*models.File, error) {
 	file := &models.File{}
-	err := pg.client.Where("created_by_id = ? AND id = ?", user_id, p_id).Preload("Project").First(&file).Error
+	err := pg.client.Where("created_by_id = ? AND id = ?", user_id, f_id).Preload("Project").First(&file).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, &custom_errors.CustomError{Context: custom_errors.NotFound, Err: errors.New("file with given id not found")}

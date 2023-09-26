@@ -10,9 +10,9 @@ import (
 type FileRepository interface {
 	Create(user_id, p_id uint, name, extenstion, s3_url string) (*models.File, error)
 	List(user_id, p_id uint, pagination *helper.Pagination) (*[]models.File, uint, error)
-	Update(user_id, id uint, name, extenstion, s3_url string) (*models.File, error)
-	Delete(user_id, id uint) error
-	Details(user_id, id uint) (*models.File, error)
+	Update(user_id uint, id, name, extenstion, s3_url string) (*models.File, error)
+	Delete(user_id uint, id uint) error
+	Details(user_id uint, id string) (*models.File, error)
 }
 
 func NewFileRepository(db database.IDatabaseService) (FileRepository, error) {

@@ -1,6 +1,6 @@
 import React from "react";
 
-export function UploadClould() {
+export function UploadCloud() {
   return (
     <svg
       width="48"
@@ -22,7 +22,6 @@ export function UploadClould() {
           id="Vector_2"
           d="M24 24V42"
           stroke="#6C6C6C"
-          stroke-width="2"
           strokeWidth="round"
           strokeLinejoin="round"
         />
