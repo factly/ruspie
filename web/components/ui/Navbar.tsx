@@ -5,7 +5,7 @@ import { Logo } from "./Logo";
 export const NavBar: FC = () => {
   return (
     <>
-      <nav className="bg-white border-b border-gray-200">
+      <nav className="bg-white border-b border-gray-200 sticky top-0 w-full">
         <div className="max-w-screen flex flex-wrap items-center justify-between">
           <div className="max-w-screen-xl flex flex-wrap items-center justify-between p-2">
             <Link href="/home">

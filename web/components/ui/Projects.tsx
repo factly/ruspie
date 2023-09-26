@@ -48,7 +48,7 @@ const Project: FC<OrganisationProps> = ({ orgId }) => {
 				placeholder="Search Organisation"
 				callback={handleFilterProject}
 			/>
-			<div className="flex flex-col items-center">
+			<div className="flex flex-col items-center  max-h-[60vh] overflow-y-auto">
 				{projects?.map((project, index) => (
 					<div
 						className={`flex flex-row justify-between items-center bg-white w-full p-4 border-b border-[#EAECF0]

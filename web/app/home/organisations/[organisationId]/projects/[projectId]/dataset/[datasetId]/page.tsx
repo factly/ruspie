@@ -14,7 +14,7 @@ import Feature from "@/components/ui/feature";
 export default function Page() {
 
 	const features: FeatureType[] = [
-		{ label: 'Search query', value: 'search' },
+		{ label: 'SQL', value: 'SQL' },
 		{ label: 'REST API', value: 'rest' },
 		{ label: 'GraphQL', value: 'graphql' },
 		{ label: 'Schema', value: 'schema' },
@@ -28,7 +28,7 @@ export default function Page() {
 
 	return (
 		<main className="flex flex-col mt-10 bg-transparent px-8">
-			<div className="flex flex-row justify-between ml-auto md:w-[60%]">
+			<div className="flex flex-row justify-between ml-auto md:w-[60%] mb-2">
 				{/* select feature */}
 				<Select
 					onValueChange={(value) =>
@@ -53,19 +53,16 @@ export default function Page() {
 				</Select>
 				{/* select Dataset */}
 				<div className="flex flex-col items-end">
-					<div>
-						<Select>
-							<SelectTrigger className="w-[200px]">
-								<SelectValue placeholder="Select a Dataset" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="new">
-									New Dataset
-								</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
-					<Button variant='link' className="px-2 text-[#0022D4]">Try with your own data</Button>
+					<Select>
+						<SelectTrigger className="w-[200px]">
+							<SelectValue placeholder="Select a Dataset" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="new">
+								New Dataset
+							</SelectItem>
+						</SelectContent>
+					</Select>
 				</div>
 			</div>
 			<Feature feature={selectedFeature} />
