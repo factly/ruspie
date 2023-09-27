@@ -96,14 +96,12 @@ export default function Page() {
                   />
                 </div>
               </DialogTrigger>
-              <DialogContent>
-                <div className="w-screen">
+              <DialogContent className="w-fit max-w-4xl">
                   <UppyUploader
                     onUpload={(values: any) => {
                       console.log(values);
                     }}
                   />
-                </div>
               </DialogContent>
             </Dialog>
           </div>
