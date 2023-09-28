@@ -26,7 +26,12 @@ export async function GET(
   try {
     const res: AxiosResponse<File> = await axios.get(
       serverUrl +
-      `/organisations/${organisationId}/projects/${projectId}/files/${fileId}/`,
+        `/organisations/${organisationId}/projects/${projectId}/files/${fileId}/`,
+      {
+        headers: {
+          "X-User": "1",
+        },
+      },
     );
     return new Response(JSON.stringify(res.data));
   } catch (err) {
@@ -111,7 +116,7 @@ export const DELETE = async (
   try {
     await axios.delete(
       serverUrl +
-      `/organisations/${organisationId}/projects/${projectId}/files/${fileId}/`,
+        `/organisations/${organisationId}/projects/${projectId}/files/${fileId}/`,
       {
         headers: {
           "X-User": "1",

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: { domains: ["api.dicebear.com"] },
+  images: { domains: ["api.dicebear.com", "127.0.0.1"] },
 };
 
 module.exports = nextConfig;

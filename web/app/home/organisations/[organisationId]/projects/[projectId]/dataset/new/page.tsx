@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/dataEntry/input";
 import { Label } from "@/components/dataEntry/label";
@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import UppyUploader from "@/components/UppyUploader";
 
 export default function Page({
   params: { projectId, organisationId },
@@ -23,6 +24,7 @@ export default function Page({
   } = useForm<CreateFileSchema>({
     resolver: zodResolver(createFileSchema),
   });
+  const [filename, setFilename] = useState<string>("");
   const router = useRouter();
   return (
     <main className="flex flex-col mt-10 bg-transparent">
@@ -47,22 +49,13 @@ export default function Page({
               ""
             )}
           </div>
-          <div className="grid w-full items-center gap-3">
-            <Label htmlFor="Dataset" className="font-normal">
-              Upload Dataset
-            </Label>
-            {/* <Input type="file" id="title" placeholder="Enter title here" /> */}
-            <div
-              className="rounded-md w-full cursor-pointer h-[250px] flex flex-col justify-center items-center gap-3"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='7' ry='7' stroke='%2366666669' stroke-width='3' stroke-dasharray='10 24' stroke-dashoffset='0' stroke-linecap='round'/%3e%3c/svg%3e")`,
+          <div>
+            <UppyUploader
+              onUpload={(_, path) => {
+                setFilename(path);
               }}
-            >
-              <Icons.UploadClould />
-              <p className="text-sm text-gray-400">
-                Drag and drop or Click to upload
-              </p>
-            </div>
+              isDataset={true}
+            />
           </div>
         </form>
         <div className="flex gap-3">
@@ -81,8 +74,8 @@ export default function Page({
             onClick={handleSubmit(async (data) => {
               const file = {
                 name: data.name,
-                s3_url: "http://minio:9000/ruspie/lead_shot.csv",
-                extension: "csv",
+                s3_url: "http://minio:9000/ruspie/" + filename,
+                extension: filename.split(".")[1],
               };
               try {
                 await axios.post(

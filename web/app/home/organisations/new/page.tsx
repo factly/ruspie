@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/dataEntry/input";
 import { Label } from "@/components/dataEntry/label";
@@ -19,16 +19,10 @@ import { toast } from "react-hot-toast";
 import { ZodError } from "zod";
 import { useRouter } from "next/navigation";
 import UppyUploader from "@/components/UppyUploader";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { UppyFile } from "@uppy/core";
 export default function Page() {
+  const [uploadedImage, setUploadedImage] = useState<string>();
   const {
     handleSubmit,
     formState: { errors },
@@ -89,7 +83,7 @@ export default function Page() {
               <DialogTrigger asChild>
                 <div className="p-6 border border-input rounded-md w-fit cursor-pointer">
                   <Image
-                    src={UploadImage}
+                    src={uploadedImage || UploadImage}
                     alt="logo"
                     width={125}
                     height={125}
@@ -97,11 +91,14 @@ export default function Page() {
                 </div>
               </DialogTrigger>
               <DialogContent className="w-fit max-w-4xl">
-                  <UppyUploader
-                    onUpload={(values: any) => {
-                      console.log(values);
-                    }}
-                  />
+                <UppyUploader
+                  onUpload={(values: UppyFile, path: string) => {
+                    const s3_url = "http://127.0.0.1:9000/ruspie" + path;
+                    console.log(s3_url);
+                    setUploadedImage(s3_url);
+                  }}
+                  isDataset={false}
+                />
               </DialogContent>
             </Dialog>
           </div>
@@ -118,6 +115,7 @@ export default function Page() {
           <Button
             onClick={handleSubmit(async (data) => {
               try {
+                data.logo = uploadedImage;
                 await createOrganisation(data);
                 toast.success("Organisation created successfully");
                 reset();
