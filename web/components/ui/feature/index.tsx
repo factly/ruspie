@@ -25,7 +25,7 @@ function Feature({ feature, dataset }: Props) {
   }
 
   if (feature.value === "schema") {
-    return <Schema />;
+    return <Schema dataset={dataset} />;
   }
 
   return <h2>Feature</h2>;
