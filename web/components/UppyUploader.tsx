@@ -1,43 +1,57 @@
 "use client";
-import React from "react";
-import { Uppy } from "@uppy/core";
+import { Uppy, UppyFile } from "@uppy/core";
 import AwsS3 from "@uppy/aws-s3";
-import { Dashboard } from "@uppy/react";
 import "@uppy/core/dist/style.css";
 import "@uppy/dashboard/dist/style.css";
-import "@uppy/url/dist/style.css";
-import "@uppy/image-editor/dist/style.css";
+import { Dashboard } from "@uppy/react";
 
-function UppyUploader({ onUpload, allowedFileTypes = [] }) {
+function UppyUploader({
+  onUpload,
+  isDataset,
+}: {
+  onUpload: (data: UppyFile, path: string) => void;
+  isDataset: boolean;
+}) {
+  const allowedFileTypes = isDataset ? ["text/csv"] : ["image/*"];
+  const maxFileSize = (isDataset ? 100 : 5) * 1024 * 1024;
+  let path = "";
   const uppy = new Uppy({
     id: "uppy-media",
-    // restrictions: {
-    //   allowedFileTypes: allowedFileTypes,
-    // },
+    restrictions: {
+      maxNumberOfFiles: 1,
+      minNumberOfFiles: 0,
+      maxFileSize,
+      allowedFileTypes,
+    },
     autoProceed: false,
+    allowMultipleUploads: false,
     onBeforeUpload: (files) => {
-      const updatedFiles = {};
-
+      const updatedFiles: { [key: string]: any } = {};
       Object.keys(files).forEach((fileID) => {
+        const name = files[fileID].name.trim().replace(" ", "_");
+        path =
+          (!isDataset
+            ? "/" + new Date().getFullYear() + "/" + new Date().getMonth() + "/"
+            : "ruspie_" + new Date().getTime()) +
+          "_" +
+          name;
         updatedFiles[fileID] = {
           ...files[fileID],
           file_name: name,
           meta: {
             ...files[fileID].meta,
-            name:
-              new Date().getFullYear() +
-              "/" +
-              new Date().getMonth() +
-              "/" +
-              Date.now().toString() +
-              "_" +
-              name,
+            name: path,
           },
         };
       });
       return updatedFiles;
     },
   }).use(AwsS3, { companionUrl: "http://localhost:3020" });
+
+  uppy.on("upload-success", (data) => {
+    onUpload(data, path);
+  });
+
   uppy.on("file-added", (file) => {
     const data = file.data;
     const url = data.thumbnail ? data.thumbnail : URL.createObjectURL(data);
@@ -50,24 +64,6 @@ function UppyUploader({ onUpload, allowedFileTypes = [] }) {
     image.onerror = () => {
       URL.revokeObjectURL(url);
     };
-  });
-  uppy.on("complete", (result) => {
-    // const uploadList = result.successful.map((successful) => {
-    //   const upload = {};
-    //   const { meta } = successful;
-    //   upload["alt_text"] = meta.alt_text ? meta.alt_text : successful.file_name;
-    //   upload["caption"] = meta.caption;
-    //   upload["description"] = meta.caption;
-    //   upload["dimensions"] = `${meta.width}x${meta.height}`;
-    //   upload["file_size"] = successful.size;
-    //   upload["name"] = successful.file_name;
-    //   upload["title"] = meta.caption ? meta.caption : "";
-    //   upload["type"] = meta.type;
-    //   upload["url"] = {};
-    //   upload["url"]["raw"] = successful.uploadURL;
-    //   return upload;
-    // });
-    // onUpload(uploadList);
   });
 
   return (
