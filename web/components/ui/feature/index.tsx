@@ -13,7 +13,7 @@ type Props = {
 
 function Feature({ feature, dataset }: Props) {
   if (feature.value === "SQL") {
-    return <SearchSql />;
+    return <SearchSql dataset={dataset} />;
   }
 
   if (feature.value === "rest") {

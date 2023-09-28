@@ -7,7 +7,6 @@ export const fetchSchemaForTable = async (dataset: File, json = false) => {
 
   const response = await fetch(`${schemaURL}/${name}`);
 
-  console.log(response);
   if (!response.ok) {
     throw new Error(`Failed to fetch schema: ${response.status}`);
   }

@@ -28,7 +28,7 @@ function UppyUploader({
     onBeforeUpload: (files) => {
       const updatedFiles: { [key: string]: any } = {};
       Object.keys(files).forEach((fileID) => {
-        const name = files[fileID].name.trim().replace(" ", "_");
+        const name = convertToAlphanumeric(files[fileID].name);
         path =
           (!isDataset
             ? "/" + new Date().getFullYear() + "/" + new Date().getMonth() + "/"
@@ -86,6 +86,15 @@ function UppyUploader({
       ]}
     />
   );
+}
+
+function convertToAlphanumeric(str: string) {
+  const alphanumericRegex = /[^a-zA-Z0-9]+/g;
+
+  // Remove non-alphanumeric characters and return the result
+  const result = str.replace(alphanumericRegex, "");
+
+  return result;
 }
 
 export default UppyUploader;

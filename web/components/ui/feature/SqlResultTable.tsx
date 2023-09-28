@@ -1,13 +1,13 @@
 import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table"
-import { NotFound } from '@/components/icons/notFound';
-import React, { useState } from 'react';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { NotFound } from "@/components/icons/notFound";
+import React, { useState } from "react";
 import { Button } from "../Button";
 import Icons from "@/components/icons";
 
@@ -20,7 +20,11 @@ function SqlResultTable({ data, itemsPerPage }: Props) {
   const [currentPage, setCurrentPage] = useState(1);
 
   if (data === null || data.length === 0) {
-    return <NotFound />;
+    return (
+      <div className="flex items-start justify-center">
+        <NotFound />
+      </div>
+    );
   }
 
   const tableHeaders = Object.keys(data[0]);
@@ -46,21 +50,21 @@ function SqlResultTable({ data, itemsPerPage }: Props) {
 
   return (
     <div>
-      <Table className='mx-auto mt-10 w-9/10 md:w-3/5 overflow-x-auto'>
+      <Table className="mx-auto mt-10 w-9/10 md:w-3/5 overflow-x-auto">
         <TableHeader>
-          <TableRow className='bg-transparent text-[#666666] border-t rounded-t-md border-x'>
+          <TableRow className="bg-transparent text-[#666666] border-t rounded-t-md border-x">
             {tableHeaders.map((header: string) => (
-              <TableHead key={header} className='p-4 md:min-w-[150px]'>
+              <TableHead key={header} className="p-4 md:min-w-[150px]">
                 {header}
               </TableHead>
             ))}
           </TableRow>
         </TableHeader>
-        <TableBody className='bg-white'>
+        <TableBody className="bg-white">
           {currentPageData.map((row: any) => (
             <TableRow key={row.id}>
               {tableHeaders.map((header: string) => (
-                <TableCell key={header} className='p-4 md:min-w-[150px]'>
+                <TableCell key={header} className="p-4 md:min-w-[150px]">
                   {row[header]}
                 </TableCell>
               ))}
@@ -69,23 +73,25 @@ function SqlResultTable({ data, itemsPerPage }: Props) {
         </TableBody>
       </Table>
       {/* Pagination controls */}
-      <div className='flex justify-end gap-2 mt-4'>
+      <div className="flex justify-end gap-2 mt-4">
         <Button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
           className={`px-3 py-1 rounded text-[#376789] ${
-            currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : ''
+            currentPage === 1 ? "text-gray-400 cursor-not-allowed" : ""
           } rotate-180`}
         >
-          <Icons.ChevronRightIcon size="large"/>
+          <Icons.ChevronRightIcon size="large" />
         </Button>
-        <div className='flex gap-2'>
+        <div className="flex gap-2">
           {Array.from({ length: endPage - startPage + 1 }, (_, index) => (
             <Button
               key={startPage + index}
               onClick={() => handlePageChange(startPage + index)}
               className={`px-3 py-1 rounded text-[#376789] ${
-                currentPage === startPage + index ? 'border border-[#376789]' : ''
+                currentPage === startPage + index
+                  ? "border border-[#376789]"
+                  : ""
               }`}
             >
               {startPage + index}
@@ -96,10 +102,10 @@ function SqlResultTable({ data, itemsPerPage }: Props) {
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           className={`px-3 py-1 rounded text-[#376789] ${
-            currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : ''
+            currentPage === totalPages ? "text-gray-400 cursor-not-allowed" : ""
           }`}
         >
-          <Icons.ChevronRightIcon size="large"/>
+          <Icons.ChevronRightIcon size="large" />
         </Button>
       </div>
     </div>
