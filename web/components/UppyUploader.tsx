@@ -28,7 +28,11 @@ function UppyUploader({
     onBeforeUpload: (files) => {
       const updatedFiles: { [key: string]: any } = {};
       Object.keys(files).forEach((fileID) => {
-        const name = convertToAlphanumeric(files[fileID].name);
+        const extenstion = files[fileID].name.split(".")[1];
+        const name =
+          convertToAlphanumeric(files[fileID].name.split(".")[0]) +
+          "." +
+          extenstion;
         path =
           (!isDataset
             ? "/" + new Date().getFullYear() + "/" + new Date().getMonth() + "/"
