@@ -70,7 +70,7 @@ export default function Page({
           }
         >
           <SelectTrigger className="w-[300px]">
-            <SelectValue placeholder="Select a Feature" />
+            <SelectValue placeholder="Sql" />
           </SelectTrigger>
           <SelectContent>
             {features.map(({ label, value }) => (
@@ -80,17 +80,6 @@ export default function Page({
             ))}
           </SelectContent>
         </Select>
-        {/* select Dataset */}
-        <div className="flex flex-col items-end">
-          <Select>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select a Dataset" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="new">New Dataset</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
       </div>
       <Feature feature={selectedFeature} dataset={dataset!} />
     </main>

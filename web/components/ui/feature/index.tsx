@@ -21,7 +21,7 @@ function Feature({ feature, dataset }: Props) {
   }
 
   if (feature.value === "graphql") {
-    return <Graphql />;
+    return <Graphql dataset={dataset} />;
   }
 
   if (feature.value === "schema") {
