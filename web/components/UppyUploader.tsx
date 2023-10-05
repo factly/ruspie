@@ -13,7 +13,7 @@ function UppyUploader({
   isDataset: boolean;
 }) {
   const allowedFileTypes = isDataset ? ["text/csv"] : ["image/*"];
-  const maxFileSize = (isDataset ? 100 : 5) * 1024 * 1024;
+  const maxFileSize = isDataset ? null : 5 * 1024 * 1024;
   let path = "";
   const uppy = new Uppy({
     id: "uppy-media",
@@ -36,9 +36,9 @@ function UppyUploader({
         path =
           (!isDataset
             ? "/" + new Date().getFullYear() + "/" + new Date().getMonth() + "/"
-            : "ruspie_" + new Date().getTime()) +
-          "_" +
-          name;
+            : "") +
+          "ruspie_" +
+          new Date().getTime();
         updatedFiles[fileID] = {
           ...files[fileID],
           file_name: name,
