@@ -8,6 +8,7 @@ pub struct TextToSQLBody {
     query: String,
     tablename: String,
     schema: Option<String>,
+    rows: Option<String>,
 }
 
 pub async fn text_to_sql(
@@ -19,12 +20,13 @@ pub async fn text_to_sql(
      TEXT TO SQL CONVERSION
            TABLE_NAME: {}\n\
            SCHEMA: {:?}\
+           FIRST 10 ROWS: {:?}
            NOTE: RETURN ONLY SQL, ALL THE KEYS IN THE JSON_RESPONSE ARE COLUMN NAMES , ALWAYS USE DOUBLE QUOTES FOR TABLE NAMES AND COLUMN NAMES IN SQL AND ALWAYS USE SINGLE QUOTES FOR VALUES IN SQL
            QUERY: ${}
      	  EXAMPLE: SELECT * FROM "table_name" WHERE "column_name" = 'value'
     
         "#,
-        body.tablename, body.schema, body.query
+        body.tablename, body.schema, body.rows, body.query
     );
     let sql = openai_ctx.generate(payload.into()).await?;
     return Ok(Json(sql));

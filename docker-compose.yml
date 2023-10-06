@@ -44,7 +44,9 @@ services:
       - RUSPIE_PRE_FETCH_INTERVAL=60
       - MONGO_URI=mongodb://mongo:mongo@mongodb:27017
       - PRE_FETCH_SOURCE=mongo
-      - OPENAI_ENDPOINT_URL="https://api.openai.com/v1/chat/completions"
+      - OPENAI_ENDPOINT_URL=https://api.openai.com/v1/chat/completions
+      - OPENAI_API_KEY=$OPENAI_API_KEY
+      - TEXT_TO_SQL=true
     networks:
       - ruspie
     depends_on:
