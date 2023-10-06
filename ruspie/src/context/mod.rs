@@ -4,6 +4,7 @@ use serde::Deserialize;
 pub mod api_context;
 pub mod auth;
 pub mod loaders;
+pub mod openai;
 
 #[derive(Debug, serde::Deserialize, Clone)]
 pub struct Schemas {

@@ -6,6 +6,7 @@ use std::{
 };
 
 use axum::{http::Method, Extension, Router};
+use log::info;
 use roapi::server::http::HttpApiServer;
 use tokio::sync::Mutex;
 
@@ -15,8 +16,9 @@ use crate::{
         auth::middleware::auth_middleware,
         check_ext_middleware,
         kavach::{middleware::kavach_middleware, KavachValidateToken},
+        openai::register_text_to_sql_routes,
     },
-    context::{api_context::RuspieApiContext, auth::context::RawAuthContext},
+    context::{api_context::RuspieApiContext, auth::context::RawAuthContext, openai},
 };
 
 enum AuthType {
@@ -80,6 +82,28 @@ pub fn build_http_server<H: RuspieApiContext>(
             app = app.layer(kavach_middleware);
         }
         AuthType::NoAuth => {}
+    }
+
+    let text_to_sql_enable =
+        std::env::var("TEXT_TO_SQL")
+            .ok()
+            .and_then(|e| match e.to_lowercase().as_str() {
+                "true" => Some(true),
+                _ => Some(false),
+            });
+    if let Some(enabled) = text_to_sql_enable {
+        if enabled {
+            info!("text_to_sql service is enabled");
+            let api_key = std::env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY is not set");
+            let endpoint_url =
+                std::env::var("OPENAI_ENDPOINT_URL").expect("OPENAI_ENDPOINT_URL is not set");
+
+            let openai_ctx = openai::OpenAIContext::new(api_key, endpoint_url);
+            let text_to_sql_routes = register_text_to_sql_routes();
+            app = app
+                .nest("/", text_to_sql_routes)
+                .layer(Extension(openai_ctx));
+        }
     }
 
     let cors = tower_http::cors::CorsLayer::new()

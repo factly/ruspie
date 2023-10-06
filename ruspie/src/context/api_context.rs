@@ -105,6 +105,7 @@ impl RuspieApiContext for RawRuspieApiContext {
     ) -> Result<Vec<arrow::record_batch::RecordBatch>, QueryError> {
         self.cq.query_sql(query).await
     }
+
     fn get_source(&self) -> &Source {
         &self.source
     }

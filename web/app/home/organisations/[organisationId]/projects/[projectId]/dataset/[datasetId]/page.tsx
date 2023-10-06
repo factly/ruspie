@@ -70,7 +70,7 @@ export default function Page({
           }
         >
           <SelectTrigger className="w-[300px]">
-            <SelectValue placeholder="Sql" />
+            <SelectValue placeholder="SQL" />
           </SelectTrigger>
           <SelectContent>
             {features.map(({ label, value }) => (
