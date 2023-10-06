@@ -35,9 +35,7 @@ function SearchSql({ dataset }: { dataset: File }) {
       const schema =
         selectedOption === "Schema" ? await fetchSchemaForTable(dataset) : null;
       const rows =
-        selectedOption === "Rows"
-          ? await fetchRowsForTable(dataset.name)
-          : null;
+        selectedOption === "Rows" ? await fetchRowsForTable(dataset) : null;
       const name = getNameFromUrl(dataset.s3_url);
       const sql = await convertTextToSql({
         table: name,
@@ -45,8 +43,10 @@ function SearchSql({ dataset }: { dataset: File }) {
         query: userQuery,
         rows: rows,
       });
-      setGeneratedSql(sql.response);
-      const sqlResult = await fetchSqlForQuery(sql.response);
+      const sqlGenerated = sql.choices[0].message.content;
+      console.log(sqlGenerated);
+      setGeneratedSql(sqlGenerated);
+      const sqlResult = await fetchSqlForQuery(sqlGenerated);
       setTableData(sqlResult);
       setLoading(false);
     } catch (error) {

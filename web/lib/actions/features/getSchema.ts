@@ -1,6 +1,7 @@
 import { restEndpoint, schemaURL } from "@/lib/constants/apiEndpoints";
 import { File } from "@/types/file";
 import { getNameFromUrl } from "./getNameFromUrl";
+import axios from "axios";
 
 export const fetchSchemaForTable = async (dataset: File, json = false) => {
   const name = getNameFromUrl(dataset.s3_url);
@@ -16,20 +17,18 @@ export const fetchSchemaForTable = async (dataset: File, json = false) => {
   return response.text();
 };
 
-export const fetchRowsForTable = async (table: string, limit = 20) => {
-  const requestOptions: RequestInit = {
-    method: "GET",
-    redirect: "follow",
-  };
+export const fetchRowsForTable = async (dataset: File, limit = 10) => {
+  const name = getNameFromUrl(dataset.s3_url);
 
-  const response = await fetch(
-    `${restEndpoint}/${table}?limit=${limit}`,
-    requestOptions,
-  );
+  const response = await axios.get(`${restEndpoint}/${name}?limit=${limit}`, {
+    headers: {
+      "FILE-EXT": dataset.extenstion,
+    },
+  });
 
-  if (!response.ok) {
+  if (response.status === 400) {
     throw new Error(`Failed to table rows: ${response.status}`);
   }
 
-  return response.text();
+  return response.data;
 };
