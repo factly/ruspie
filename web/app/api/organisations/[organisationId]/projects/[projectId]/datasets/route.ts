@@ -26,6 +26,9 @@ export const GET = async (
   try {
     const res: AxiosResponse<{ files: File[] }> = await axios.get(
       serverUrl + `/organisations/${organisationId}/projects/${projectId}`,
+      {
+        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
+      },
     );
     return new Response(JSON.stringify(res.data));
   } catch (err) {
@@ -68,12 +71,10 @@ export const POST = async (
     const file = createFileSchema.parse(body);
     const res: AxiosResponse<File> = await axios.post(
       serverUrl +
-        `/organisations/${organisationId}/projects/${projectId}/files`,
+      `/organisations/${organisationId}/projects/${projectId}/files`,
       file,
       {
-        headers: {
-          "X-User": "1",
-        },
+        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
       },
     );
     return new Response(JSON.stringify(res.data), { status: 201 });

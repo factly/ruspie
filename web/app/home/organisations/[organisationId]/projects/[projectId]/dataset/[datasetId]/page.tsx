@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/components/ui/Button";
 import {
   Select,
   SelectContent,
@@ -14,6 +13,8 @@ import { File } from "@/types/file";
 import axios, { AxiosResponse } from "axios";
 import { Loader } from "lucide-react";
 import { FileParam } from "@/types/params/file_param";
+import Link from "next/link";
+import { Project } from "@/types/organisation";
 
 export default function Page({
   params: { organisationId, datasetId, projectId },
@@ -27,14 +28,17 @@ export default function Page({
 
   const [dataset, setDataset] = useState<File>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [project, setProject] = useState<Project>();
   useEffect(() => {
     async function getDataset() {
       setLoading(true);
       try {
-        const file: AxiosResponse<File> = await axios.get(
+        const file: AxiosResponse = await axios.get(
           `/api/organisations/${organisationId}/projects/${projectId}/datasets/${datasetId}`,
         );
         setDataset(file.data);
+        console.log(file.data);
+        setProject(file.data.project);
       } catch (err) {
       } finally {
         setLoading(false);
@@ -59,27 +63,38 @@ export default function Page({
 
   return (
     <main className="flex flex-col mt-10 bg-transparent px-8">
-      <div className="flex flex-row justify-between ml-auto md:w-[60%] mb-2">
-        {/* select feature */}
-        <Select
-          onValueChange={(value) =>
-            handleFeatureChange({
-              label: "organisation",
-              value,
-            })
-          }
-        >
-          <SelectTrigger className="w-[300px]">
-            <SelectValue placeholder="SQL" />
-          </SelectTrigger>
-          <SelectContent>
-            {features.map(({ label, value }) => (
-              <SelectItem value={value} key={value}>
-                {label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="flex flex-row items-center justify-between  md:w-[60%] mb-2">
+        <div className="flex gap-3 items-center">
+          <Link
+            href={`/home/organisations/${organisationId}/projects/${projectId}`}
+          >
+            <h1 className="text-lg font-semibold text-gray-600 hover:text-black cursor-pointer">
+              {project?.title} {"> "}
+              {dataset?.name}{" "}
+            </h1>
+          </Link>
+        </div>
+        <div className="">
+          <Select
+            onValueChange={(value) =>
+              handleFeatureChange({
+                label: "organisation",
+                value,
+              })
+            }
+          >
+            <SelectTrigger className="w-[300px]">
+              <SelectValue placeholder="SQL" />
+            </SelectTrigger>
+            <SelectContent>
+              {features.map(({ label, value }) => (
+                <SelectItem value={value} key={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <Feature feature={selectedFeature} dataset={dataset!} />
     </main>

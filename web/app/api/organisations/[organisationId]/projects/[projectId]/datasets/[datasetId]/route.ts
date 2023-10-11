@@ -26,11 +26,9 @@ export async function GET(
   try {
     const res: AxiosResponse<File> = await axios.get(
       serverUrl +
-        `/organisations/${organisationId}/projects/${projectId}/files/${fileId}/`,
+      `/organisations/${organisationId}/projects/${projectId}/files/${fileId}/`,
       {
-        headers: {
-          "X-User": "1",
-        },
+        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
       },
     );
     return new Response(JSON.stringify(res.data));
@@ -116,11 +114,9 @@ export const DELETE = async (
   try {
     await axios.delete(
       serverUrl +
-        `/organisations/${organisationId}/projects/${projectId}/files/${fileId}/`,
+      `/organisations/${organisationId}/projects/${projectId}/files/${fileId}/`,
       {
-        headers: {
-          "X-User": "1",
-        },
+        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
       },
     );
     return new Response("Successfully deleted the organisation");

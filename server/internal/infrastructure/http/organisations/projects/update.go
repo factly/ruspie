@@ -18,11 +18,15 @@ type updateRequest struct {
 
 func (h *httpHandler) update(w http.ResponseWriter, r *http.Request) {
 
-	userID, err := helper.GetUserID(r)
-	if err != nil {
-		h.logger.Error("error in parsing X-User header", "error", err.Error())
-		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid X-User header", http.StatusUnauthorized)))
-		return
+	var err error
+	var userID uint = 1
+	if helper.AuthEnable() {
+		userID, err = helper.GetUserID(r)
+		if err != nil {
+			h.logger.Error("error in parsing X-User header", "error", err.Error())
+			errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid X-User Header", http.StatusUnauthorized)))
+			return
+		}
 	}
 
 	p_id := helper.GetPathParamByName(r, "project_id")

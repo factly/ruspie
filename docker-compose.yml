@@ -350,6 +350,7 @@ services:
     environment:
       - SERVER_URL=http://ruspie-server:8800
       - NEXT_PUBLIC_COMPANION_URL=http://localhost:3020
+      - KAVACH_ENABLED=false
     volumes:
       - type: bind
         source: ./web

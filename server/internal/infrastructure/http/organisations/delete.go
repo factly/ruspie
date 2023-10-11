@@ -10,11 +10,15 @@ import (
 )
 
 func (h *httpHandler) delete(w http.ResponseWriter, r *http.Request) {
-	user_id, err := helper.GetUserID(r)
-	if err != nil {
-		h.logger.Error("error in parsing X-User header", "error", err.Error())
-		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid X-User header", http.StatusUnauthorized)))
-		return
+	var err error
+	var user_id uint = 1
+	if helper.AuthEnable() {
+		user_id, err = helper.GetUserID(r)
+		if err != nil {
+			h.logger.Error("error in parsing X-User header", "error", err.Error())
+			errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid X-User Header", http.StatusUnauthorized)))
+			return
+		}
 	}
 
 	o_id := helper.GetPathParamByName(r, "org_id")

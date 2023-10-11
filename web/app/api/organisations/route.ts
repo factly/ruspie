@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     const res: AxiosResponse<Organisation> = await axios.post(
       serverUrl + "/organisations",
       organisation,
-      { headers: { "X-User": "1" } },
+      { headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined },
     );
     return new Response(JSON.stringify(res.data), { status: 201 });
   } catch (err) {
@@ -60,7 +60,7 @@ export async function GET() {
   try {
     const res: AxiosResponse<{ code: number; organisations: Organisation[] }> =
       await axios.get(serverUrl + "/organisations", {
-        headers: { "X-User": "1" },
+        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
       });
     return new Response(JSON.stringify(res.data));
   } catch (err) {

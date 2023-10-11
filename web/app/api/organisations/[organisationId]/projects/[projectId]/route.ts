@@ -30,9 +30,7 @@ export async function GET(
     const res: AxiosResponse<Project> = await axios.get(
       serverUrl + `/organisations/${organisationId}/projects/${projectId}/`,
       {
-        headers: {
-          "X-User": 1,
-        },
+        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
       },
     );
     return new Response(JSON.stringify(res.data));
@@ -74,9 +72,7 @@ export async function PUT(
       serverUrl + `/organisations/${organisationId}/projects/${projectId}/`,
       project,
       {
-        headers: {
-          "X-User": "1",
-        },
+        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
       },
     );
     return new Response(JSON.stringify(res.data));
@@ -130,9 +126,7 @@ export const DELETE = async (
     await axios.delete(
       serverUrl + `/organisations/${organisationId}/projects/${projectId}/`,
       {
-        headers: {
-          "X-User": "1",
-        },
+        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
       },
     );
     return new Response("Successfully deleted the project");
@@ -183,14 +177,12 @@ export const PATCH = async (
     const changeOrgReq = changeOrgProjectSchema.parse(body);
     const res = await axios.patch(
       serverUrl +
-        `/organisations/${organisationId}/projects/${projectId}/change_org`,
+      `/organisations/${organisationId}/projects/${projectId}/change_org`,
       {
         new_org_id: changeOrgReq.new_org_id.toString(),
       },
       {
-        headers: {
-          "X-User": 1,
-        },
+        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
       },
     );
     return new Response(JSON.stringify(res.data));

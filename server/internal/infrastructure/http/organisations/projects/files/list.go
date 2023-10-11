@@ -16,11 +16,15 @@ type response struct {
 }
 
 func (h *httpHandler) list(w http.ResponseWriter, r *http.Request) {
-	user_id, err := helper.GetUserID(r)
-	if err != nil {
-		h.logger.Error("error decoding request body", "error", err.Error())
-		errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid X-User Header", http.StatusUnauthorized)))
-		return
+	var err error
+	var user_id uint = 1
+	if helper.AuthEnable() {
+		user_id, err = helper.GetUserID(r)
+		if err != nil {
+			h.logger.Error("error in parsing X-User header", "error", err.Error())
+			errorx.Render(w, errorx.Parser(errorx.GetMessage("invalid X-User Header", http.StatusUnauthorized)))
+			return
+		}
 	}
 
 	pagination, err := helper.GetPagination(r)

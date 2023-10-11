@@ -26,6 +26,7 @@ export const GET = async (
   try {
     const res: AxiosResponse<{ projects: Project[] }> = await axios.get(
       serverUrl + `/organisations/${organisationId}/projects/`,
+      { headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined },
     );
     return new Response(JSON.stringify(res.data));
   } catch (err) {
@@ -70,9 +71,7 @@ export const POST = async (
       serverUrl + `/organisations/${organisationId}/projects`,
       project,
       {
-        headers: {
-          "X-User": 1,
-        },
+        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
       },
     );
     return new Response(JSON.stringify(res.data), { status: 201 });

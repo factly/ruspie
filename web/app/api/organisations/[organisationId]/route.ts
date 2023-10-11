@@ -26,11 +26,7 @@ export async function GET(
   try {
     const resp: AxiosResponse<Organisation> = await axios(
       `${serverUrl}/organisations/${organisationId}/`,
-      {
-        headers: {
-          "X-User": "1",
-        },
-      },
+      { headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined },
     );
     return new Response(JSON.stringify(resp.data), { status: 200 });
   } catch (err) {
@@ -70,11 +66,7 @@ export async function PUT(
     const res: AxiosResponse<Organisation> = await axios.put(
       serverUrl + `/organisations/${organisationId}/`,
       organisation,
-      {
-        headers: {
-          "X-User": "1",
-        },
-      },
+      { headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined },
     );
     return new Response(JSON.stringify(res.data));
   } catch (err) {
@@ -125,9 +117,7 @@ export const DELETE = async (
 
   try {
     await axios.delete(serverUrl + `/organisations/${organisationId}/`, {
-      headers: {
-        "X-User": "1",
-      },
+      headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
     });
     return new Response("Successfully deleted the organisation");
   } catch (err) {
