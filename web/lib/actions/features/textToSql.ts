@@ -22,7 +22,6 @@ export const convertTextToSql = async ({
     tablename: table,
     rows: JSON.stringify(rows),
   });
-  console.log(body);
 
   const requestOptions: RequestInit = {
     method: "POST",

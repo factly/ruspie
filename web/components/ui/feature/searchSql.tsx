@@ -46,7 +46,10 @@ function SearchSql({ dataset }: { dataset: File }) {
       const sqlGenerated = sql.choices[0].message.content;
       console.log(sqlGenerated);
       setGeneratedSql(sqlGenerated);
-      const sqlResult = await fetchSqlForQuery(sqlGenerated);
+      const sqlResult = await fetchSqlForQuery(
+        sqlGenerated,
+        dataset.extenstion,
+      );
       setTableData(sqlResult);
       setLoading(false);
     } catch (error) {
