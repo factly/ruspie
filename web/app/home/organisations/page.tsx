@@ -34,9 +34,19 @@ export default function Page() {
 	}, []);
 	const [selectedOrg, setSelectedOrg] = React.useState<string | null>(null);
 
-	const handleFilterOrg = (query: string) => {
-		//
-		console.log(query);
+	const handleFilterOrg = async (query: string) => {
+		try {
+			setLoading(true);
+			const resp: AxiosResponse<{
+				code: number;
+				organisations: OrganisationType[];
+			}> = await axios.get(`/api/organisations?search_query=${query}`);
+			setOrganisations(resp.data.organisations);
+		} catch (err) {
+			toast.error("Error getting organisations");
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	return (
@@ -44,6 +54,10 @@ export default function Page() {
 			<div className="flex flex-row justify-around items-start">
 				<h1 className="text-xl font-semibold"> Organizations </h1>
 				<div className="flex flex-col w-2/5 justify-around gap-10">
+					<SearchBar
+						placeholder="Search Organisation"
+						callback={handleFilterOrg}
+					/>
 					{loading ? (
 						<div className="h-screen flex items-center justify-center -mt-28">
 							<Loader className="h-10 w-10 animate-spin text-gray-400" />
@@ -51,10 +65,6 @@ export default function Page() {
 					) : (
 						organisations.length !== 0 && (
 							<>
-								<SearchBar
-									placeholder="Search Organisation"
-									callback={handleFilterOrg}
-								/>
 								<div className="flex flex-col items-center gap-6 max-h-[60vh] overflow-y-auto">
 									{organisations.map((org) => (
 										<Organisation

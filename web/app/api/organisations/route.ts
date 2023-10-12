@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const serverUrl = getServerUrl();
   const errorResp: APIError = { message: "", status: 500 };
   if (!serverUrl) {
@@ -57,11 +57,19 @@ export async function GET() {
     return new Response(...errorToResp(errorResp));
   }
 
+  const search_query = req.nextUrl.searchParams.get("search_query");
   try {
     const res: AxiosResponse<{ code: number; organisations: Organisation[] }> =
-      await axios.get(serverUrl + "/organisations", {
-        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
-      });
+      await axios.get(
+        serverUrl +
+        "/organisations" +
+        (search_query !== null && search_query !== ""
+          ? `?search_query=${search_query}`
+          : ""),
+        {
+          headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
+        },
+      );
     return new Response(JSON.stringify(res.data));
   } catch (err) {
     if (err instanceof AxiosError) {

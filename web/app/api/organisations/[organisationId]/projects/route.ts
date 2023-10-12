@@ -5,10 +5,11 @@ import { APIError } from "@/types/api_error";
 import { Project } from "@/types/organisation";
 import { OrgaisationParam } from "@/types/params/oragnisation_param";
 import axios, { AxiosError, AxiosResponse } from "axios";
+import { NextRequest } from "next/server";
 import { ZodError } from "zod";
 
 export const GET = async (
-  _req: Request,
+  req: NextRequest,
   { params: { organisationId } }: OrgaisationParam,
 ) => {
   const errorResp: APIError = { message: "", status: 500 };
@@ -17,6 +18,7 @@ export const GET = async (
     return new Response(...errorToResp(errorResp));
   }
 
+  const search_query = req.nextUrl.searchParams.get("search_query");
   const serverUrl = getServerUrl();
   if (!serverUrl) {
     errorResp.message = "Internal Server Error";
@@ -25,7 +27,12 @@ export const GET = async (
 
   try {
     const res: AxiosResponse<{ projects: Project[] }> = await axios.get(
-      serverUrl + `/organisations/${organisationId}/projects/`,
+      serverUrl +
+      `/organisations/${organisationId}/projects` +
+      (search_query !== null && search_query !== ""
+        ? `?search_query=${search_query}`
+        : ""),
+
       { headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined },
     );
     return new Response(JSON.stringify(res.data));

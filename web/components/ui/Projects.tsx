@@ -2,7 +2,6 @@
 import React, { FC } from "react";
 import { Button } from "./Button";
 import Icons from "../icons";
-import { SearchBar } from "./searchBar";
 import DeleteButttonWithConfirmModal from "./DeleteButttonWithConfimModal";
 import Link from "next/link";
 import { formatTimestamp } from "@/lib/utils/formatDate";
@@ -17,9 +16,6 @@ interface OrganisationProps {
 
 const Project: FC<OrganisationProps> = ({ orgId }) => {
 	const router = useRouter();
-	const handleFilterProject = (query: string) => {
-		console.log(query);
-	};
 
 	const handleEditClick = (projectId: string, orgId: string) => {
 		router.push(`/home/organisations/${orgId}/projects/${projectId}/edit`);
@@ -44,10 +40,6 @@ const Project: FC<OrganisationProps> = ({ orgId }) => {
 	const { projects, setProjects } = useProjectsStore();
 	return (
 		<>
-			<SearchBar
-				placeholder="Search Organisation"
-				callback={handleFilterProject}
-			/>
 			<div className="flex flex-col items-center  max-h-[60vh] overflow-y-auto">
 				{projects?.map((project, index) => (
 					<div

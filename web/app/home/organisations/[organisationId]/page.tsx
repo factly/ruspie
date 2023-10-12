@@ -11,6 +11,7 @@ import { toast } from "react-hot-toast";
 import { Loader } from "lucide-react";
 import { OrgaisationParam } from "@/types/params/oragnisation_param";
 import { useProjectsStore } from "@/lib/zustand/projects";
+import { SearchBar } from "@/components/ui/searchBar";
 
 export default function Page({ params: { organisationId } }: OrgaisationParam) {
   const [organisation, setOrganisation] = React.useState<Organisation | null>(
@@ -47,6 +48,23 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
       </div>
     );
   }
+  const handleFilterProject = async (query: string) => {
+    setLoading(true);
+    try {
+      console.log("here");
+      const res: AxiosResponse = await axios(
+        "/api/organisations/" +
+        organisationId +
+        "/projects" +
+        `?search_query=${query}`,
+      );
+      setProjects(res.data.projects);
+    } catch (err) {
+      toast.error("Error getting organisation");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <main className="flex flex-col mt-10 bg-transparent px-20">
       <div className="flex flex-row justify-between items-start">
@@ -70,7 +88,17 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
           </Link>
         </div>
         <div className="flex flex-col w-2/5 justify-around gap-10">
-          {projects.length !== 0 && <Projects orgId={organisationId} />}
+          <SearchBar
+            placeholder="Search Organisation"
+            callback={handleFilterProject}
+          />
+          {loading ? (
+            <div className="h-screen flex items-center justify-center -mt-28">
+              <Loader className="h-10 w-10 animate-spin text-gray-400" />
+            </div>
+          ) : (
+            projects.length !== 0 && <Projects orgId={organisationId} />
+          )}
         </div>
         <Button className="rounded-md bg-[#376789] text-white ml-10" asChild>
           <Link href={`/home/organisations/${organisation?.id}/projects/new`}>
