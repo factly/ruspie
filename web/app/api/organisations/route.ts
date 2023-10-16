@@ -24,7 +24,12 @@ export async function POST(req: NextRequest) {
     const res: AxiosResponse<Organisation> = await axios.post(
       serverUrl + "/organisations",
       organisation,
-      { headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined },
+      {
+        headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+          ? { "X-User": "1" }
+          : undefined,
+        withCredentials: true,
+      },
     );
     return new Response(JSON.stringify(res.data), { status: 201 });
   } catch (err) {
@@ -50,7 +55,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const serverUrl = getServerUrl();
+  // const serverUrl = getServerUrl();
+  const serverUrl = "http://localhost:4455/.factly/ruspie/server";
   const errorResp: APIError = { message: "", status: 500 };
   if (!serverUrl) {
     errorResp.message = "Internal Server Error";
@@ -67,13 +73,19 @@ export async function GET(req: NextRequest) {
           ? `?search_query=${search_query}`
           : ""),
         {
-          headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
+          headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+            ? { "X-User": "1" }
+            : undefined,
+          withCredentials: true,
         },
       );
+    console.log("=====>", res);
     return new Response(JSON.stringify(res.data));
   } catch (err) {
+    console.log(err);
     if (err instanceof AxiosError) {
       const response = err.response;
+      console.log("----->", response?.data);
       if (!response) {
         errorResp.message = "Internal Server Error";
         errorResp.status = 500;

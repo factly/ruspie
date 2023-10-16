@@ -15,6 +15,7 @@ import { Loader } from "lucide-react";
 import { FileParam } from "@/types/params/file_param";
 import Link from "next/link";
 import { Project } from "@/types/organisation";
+import { getBasepathUrl } from "@/lib/utils/baseUrl";
 
 export default function Page({
   params: { organisationId, datasetId, projectId },
@@ -29,11 +30,13 @@ export default function Page({
   const [dataset, setDataset] = useState<File>();
   const [loading, setLoading] = useState<boolean>(false);
   const [project, setProject] = useState<Project>();
+  const basePath = getBasepathUrl();
   useEffect(() => {
     async function getDataset() {
       setLoading(true);
       try {
         const file: AxiosResponse = await axios.get(
+          basePath +
           `/api/organisations/${organisationId}/projects/${projectId}/datasets/${datasetId}`,
         );
         setDataset(file.data);

@@ -12,18 +12,20 @@ import { Loader } from "lucide-react";
 import { OrgaisationParam } from "@/types/params/oragnisation_param";
 import { useProjectsStore } from "@/lib/zustand/projects";
 import { SearchBar } from "@/components/ui/searchBar";
+import { getBasepathUrl } from "@/lib/utils/baseUrl";
 
 export default function Page({ params: { organisationId } }: OrgaisationParam) {
   const [organisation, setOrganisation] = React.useState<Organisation | null>(
     null,
   );
   const { projects, setProjects } = useProjectsStore();
+  const basePath = getBasepathUrl();
 
   async function fetchOrganisation() {
     setLoading(true);
     try {
       const res: AxiosResponse<Organisation> = await axios(
-        "/api/organisations/" + organisationId,
+        basePath + "/api/organisations/" + organisationId,
       );
       setOrganisation(res.data);
       if (res.data.projects) {
@@ -53,6 +55,7 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
     try {
       console.log("here");
       const res: AxiosResponse = await axios(
+        basePath +
         "/api/organisations/" +
         organisationId +
         "/projects" +

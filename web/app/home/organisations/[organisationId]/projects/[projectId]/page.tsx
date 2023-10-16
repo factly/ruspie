@@ -12,6 +12,7 @@ import { toast } from "react-hot-toast";
 import axios, { AxiosResponse } from "axios";
 import { ProjectParam } from "@/types/params/project_param";
 import { useFileStore } from "@/lib/zustand/files";
+import { getBasepathUrl } from "@/lib/utils/baseUrl";
 
 export default function Page({
   params: { organisationId, projectId },
@@ -20,12 +21,14 @@ export default function Page({
   const [project, setProject] = useState<Project>();
   const [loading, setLoading] = useState<boolean>();
   const { files, setFiles } = useFileStore();
+  const basePath = getBasepathUrl();
 
   useEffect(() => {
     const fetchProject = async () => {
       setLoading(true);
       try {
         const res: AxiosResponse = await axios.get(
+          basePath +
           `/api/organisations/${organisationId}/projects/${projectId}`,
         );
         setOrg(res.data.organisation);

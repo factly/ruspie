@@ -1,0 +1,39 @@
+[
+  {
+    "id": "ruspie:server:protected",
+    "upstream": {
+      "preserve_host": true,
+      "url": "http://ruspie-server:8800",
+      "strip_path": ".factly/ruspie/server"
+    },
+    "match": {
+      "url": "http://127.0.0.1:4455/.factly/ruspie/server/<.*>",
+      "methods": [
+        "GET",
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    "authenticators": [
+      {
+        "handler": "cookie_session"
+      }
+    ],
+    "authorizer": {
+      "handler": "allow"
+    },
+    "mutators": [
+      {
+        "handler": "id_token"
+      },
+      {
+        "handler": "hydrator"
+      },
+      {
+        "handler": "header"
+      }
+    ]
+  }
+]

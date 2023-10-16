@@ -25,6 +25,7 @@ import {
 } from "@/lib/zod/validators/projects";
 import { useRouter } from "next/navigation";
 import { OrgaisationParam } from "@/types/params/oragnisation_param";
+import { getBasepathUrl } from "@/lib/utils/baseUrl";
 
 export default function Page({
 	params: { organisationId: orgId },
@@ -40,13 +41,14 @@ export default function Page({
 	});
 
 	const { organisations, setOrganisations } = useOrganisationsStore();
+	const basePath = getBasepathUrl();
 	useEffect(() => {
 		async function getOrganisations() {
 			try {
 				const resp: AxiosResponse<{
 					code: number;
 					organisations: Organisation[];
-				}> = await axios.get("/api/organisations");
+				}> = await axios.get(basePath + "/api/organisations");
 				setOrganisations(resp.data.organisations);
 			} catch (err) {
 				toast.error("Error getting organisations");
@@ -132,7 +134,10 @@ export default function Page({
 					<Button
 						onClick={handleSubmit(async (data) => {
 							try {
-								await axios.post(`/api/organisations/${orgId}/projects`, data);
+								await axios.post(
+									basePath + `/api/organisations/${orgId}/projects`,
+									data,
+								);
 								toast.success("Project created sucessfully");
 								router.push(`/home/organisations/${orgId}`);
 							} catch (err) {

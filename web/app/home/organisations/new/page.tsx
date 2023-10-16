@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import UppyUploader from "@/components/UppyUploader";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { UppyFile } from "@uppy/core";
+import { getBasepathUrl } from "@/lib/utils/baseUrl";
 export default function Page() {
   const [uploadedImage, setUploadedImage] = useState<string>();
   const {
@@ -31,9 +32,10 @@ export default function Page() {
   } = useForm<CreateOrganisationSchema>({
     resolver: zodResolver(createOrganisationSchema),
   });
+  const basePath = getBasepathUrl();
   const createOrganisation = async (data: CreateOrganisationSchema) => {
     const res: AxiosResponse<Organisation> = await axios.post(
-      "/api/organisations",
+      basePath + "/api/organisations",
       data,
     );
     return res.data;

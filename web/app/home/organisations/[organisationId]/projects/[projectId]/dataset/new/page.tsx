@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/dataEntry/input";
 import { Label } from "@/components/dataEntry/label";
-import Icons from "@/components/icons";
 import Link from "next/link";
 import { ProjectParam } from "@/types/params/project_param";
 import { CreateFileSchema, createFileSchema } from "@/lib/zod/validators/files";
@@ -13,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import UppyUploader from "@/components/UppyUploader";
+import { getBasepathUrl } from "@/lib/utils/baseUrl";
 
 export default function Page({
   params: { projectId, organisationId },
@@ -26,6 +26,7 @@ export default function Page({
   });
   const [filename, setFilename] = useState<string>("");
   const router = useRouter();
+  const basePath = getBasepathUrl();
   return (
     <main className="flex flex-col mt-10 bg-transparent">
       <div className="flex flex-row justify-around items-start">
@@ -79,6 +80,7 @@ export default function Page({
               };
               try {
                 await axios.post(
+                  basePath +
                   `/api/organisations/${organisationId}/projects/${projectId}/datasets`,
                   file,
                 );

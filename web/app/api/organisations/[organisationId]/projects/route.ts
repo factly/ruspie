@@ -33,7 +33,12 @@ export const GET = async (
         ? `?search_query=${search_query}`
         : ""),
 
-      { headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined },
+      {
+        headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+          ? { "X-User": "1" }
+          : undefined,
+        withCredentials: true,
+      },
     );
     return new Response(JSON.stringify(res.data));
   } catch (err) {
@@ -78,7 +83,10 @@ export const POST = async (
       serverUrl + `/organisations/${organisationId}/projects`,
       project,
       {
-        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
+        headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+          ? { "X-User": "1" }
+          : undefined,
+        withCredentials: true,
       },
     );
     return new Response(JSON.stringify(res.data), { status: 201 });

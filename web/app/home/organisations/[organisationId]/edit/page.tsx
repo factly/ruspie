@@ -20,18 +20,20 @@ import { ZodError } from "zod";
 import { useRouter } from "next/navigation";
 import { Loader } from "lucide-react";
 import { OrgaisationParam } from "@/types/params/oragnisation_param";
+import { getBasepathUrl } from "@/lib/utils/baseUrl";
 
 export default function Page({ params: { organisationId } }: OrgaisationParam) {
   const [organisation, setOrganisation] = React.useState<Organisation | null>(
     null,
   );
   const [loading, setLoading] = React.useState<boolean>(false);
+  const basePath = getBasepathUrl();
   useEffect(() => {
     async function fetchOrganisation() {
       setLoading(true);
       try {
         const res: AxiosResponse<Organisation> = await axios(
-          "/api/organisations/" + organisationId,
+          basePath + "/api/organisations/" + organisationId,
         );
         setOrganisation(res.data);
         setValue("title", res.data.title);
@@ -62,7 +64,7 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
     payload.description = data.description;
     payload.logo = data.description;
     const res: AxiosResponse<Organisation> = await axios.put(
-      `/api/organisations/${organisationId}`,
+      basePath + `/api/organisations/${organisationId}`,
       payload,
     );
     return res.data;

@@ -23,11 +23,11 @@ import {
   CreateProjectSchema,
   UpdateProjectSchema,
   createProjectSchema,
-  updateProjectSchema,
 } from "@/lib/zod/validators/projects";
 import { useRouter } from "next/navigation";
 import { ProjectParam } from "@/types/params/project_param";
 import { Loader } from "lucide-react";
+import { getBasepathUrl } from "@/lib/utils/baseUrl";
 
 export default function Page({
   params: { organisationId: orgId, projectId },
@@ -44,6 +44,7 @@ export default function Page({
   const { organisations, setOrganisations } = useOrganisationsStore();
   const [loading, setLoading] = React.useState<boolean>(false);
   let newOrgId = orgId;
+  const basePath = getBasepathUrl();
 
   useEffect(() => {
     async function getOrganisations() {
@@ -52,7 +53,7 @@ export default function Page({
         const resp: AxiosResponse<{
           code: number;
           organisations: Organisation[];
-        }> = await axios.get("/api/organisations");
+        }> = await axios.get(basePath + "/api/organisations");
         const orgs = resp.data.organisations;
         setOrganisations(orgs);
         const projects = orgs.find((org) => {
@@ -175,6 +176,7 @@ export default function Page({
               if (newOrgId !== orgId) {
                 try {
                   await axios.patch(
+                    basePath +
                     `/api/organisations/${orgId}/projects/${projectId}`,
                     {
                       new_org_id: newOrgId,
@@ -192,6 +194,7 @@ export default function Page({
                 }
                 payload.description = data.description;
                 await axios.put(
+                  basePath +
                   `/api/organisations/${orgId}/projects/${projectId}`,
                   payload,
                 );

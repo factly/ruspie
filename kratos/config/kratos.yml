@@ -18,24 +18,25 @@ selfservice:
     - http://127.0.0.1:4455/.factly/kavach/web/
     - http://127.0.0.1:4455/.factly/data-portal/admin/
     - http://127.0.0.1:4455/.factly/bindu/studio/
+    - http://127.0.0.1:4455/.factly/ruspie/web/
 
   methods:
     password:
       enabled: true
-      
+
     oidc:
       enabled: true
       config:
         providers:
           - id: github
-            provider: github 
+            provider: github
             client_id: 123abc
             client_secret: 123abc
             mapper_url: file:///etc/config/kratos/oidc.github.jsonnet
             scope:
               - user:email
 
-          - id: google 
+          - id: google
             provider: google
             client_id: 123abc
             client_secret: 123abc
@@ -43,12 +44,12 @@ selfservice:
             scope:
               - email
               - profile
-      
-    link: 
+
+    link:
       enabled: true
       config:
         lifespan: 15m
-    
+
     totp:
       enabled: true
       config:
@@ -69,12 +70,11 @@ selfservice:
 
     login:
       ui_url: http://127.0.0.1:4455/.factly/kavach/web/auth/login
-      lifespan: 10m 
+      lifespan: 10m
 
     verification:
       enabled: true
       ui_url: http://127.0.0.1:4455/.factly/kavach/web/auth/verification
-      
 
     registration:
       after:
@@ -82,12 +82,10 @@ selfservice:
       lifespan: 10m
       ui_url: http://127.0.0.1:4455/.factly/kavach/web/auth/registration
 
-            
     recovery:
       enabled: true
       ui_url: http://127.0.0.1:4455/.factly/kavach/web/auth/recovery
-    
-      
+
 log:
   level: debug
   format: text
