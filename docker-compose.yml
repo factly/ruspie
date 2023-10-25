@@ -181,7 +181,7 @@ services:
       [
         "/bin/sh",
         "-c",
-        "/app/kavach-server migrate && /app/kavach-server create-super-org",
+        "/app/kavach-server migrate && /app/kavach-server create-super-org"
       ]
     networks:
       - ruspie
@@ -353,10 +353,11 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - SERVER_URL=http://ruspie-server:8800
+      - NEXT_PUBLIC_SERVER_URL=http://127.0.0.1:4455/.factly/ruspie/server
       - NEXT_PUBLIC_COMPANION_URL=http://localhost:3020
       - NEXT_PUBLIC_KAVACH_ENABLED=true
       - NEXT_PUBLIC_BASEPATH=/.factly/ruspie/web
+      - NEXT_PUBLIC_S3_URL=http://127.0.0.1:9000
     volumes:
       - type: bind
         source: ./web

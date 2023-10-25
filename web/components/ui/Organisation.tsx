@@ -9,6 +9,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { formatTimestamp } from "@/lib/utils/formatDate";
 import { useOrganisationsStore } from "@/lib/zustand/organisation";
+import { getServerUrl } from "@/lib/utils/serverUrl";
 
 interface OrganisationProps {
   org: Org;
@@ -27,8 +28,13 @@ export const Organisation: FC<OrganisationProps> = ({
 
   const handleDelete = async () => {
     try {
-      const res = await axios.delete(`/api/organisations/${org.id}`);
-      toast.success(res.data);
+      await axios.delete(getServerUrl() + `/organisations/${org.id}/`, {
+        headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+          ? { "X-User": "1" }
+          : undefined,
+        withCredentials: true,
+      });
+      toast.success("deleted organisation");
     } catch (err) {
       console.log(err);
       toast.error("Something went wrong");

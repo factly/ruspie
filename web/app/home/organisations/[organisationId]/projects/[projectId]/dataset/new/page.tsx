@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import UppyUploader from "@/components/UppyUploader";
 import { getBasepathUrl } from "@/lib/utils/baseUrl";
+import { getServerUrl } from "@/lib/utils/serverUrl";
 
 export default function Page({
   params: { projectId, organisationId },
@@ -80,9 +81,15 @@ export default function Page({
               };
               try {
                 await axios.post(
-                  basePath +
-                  `/api/organisations/${organisationId}/projects/${projectId}/datasets`,
+                  getServerUrl() +
+                  `/organisations/${organisationId}/projects/${projectId}/datasets`,
                   file,
+                  {
+                    headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+                      ? { "X-User": "1" }
+                      : undefined,
+                    withCredentials: true,
+                  },
                 );
                 toast.success("Successfully created new dataset");
                 router.push(

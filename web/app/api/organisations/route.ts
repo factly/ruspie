@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   // const serverUrl = getServerUrl();
-  const serverUrl = "http://localhost:4455/.factly/ruspie/server";
+  const serverUrl = "http://oathkeeper:4455/.factly/ruspie/server";
   const errorResp: APIError = { message: "", status: 500 };
   if (!serverUrl) {
     errorResp.message = "Internal Server Error";
@@ -79,13 +79,11 @@ export async function GET(req: NextRequest) {
           withCredentials: true,
         },
       );
-    console.log("=====>", res);
     return new Response(JSON.stringify(res.data));
   } catch (err) {
     console.log(err);
     if (err instanceof AxiosError) {
       const response = err.response;
-      console.log("----->", response?.data);
       if (!response) {
         errorResp.message = "Internal Server Error";
         errorResp.status = 500;

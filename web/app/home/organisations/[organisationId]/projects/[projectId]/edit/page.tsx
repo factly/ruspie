@@ -27,7 +27,7 @@ import {
 import { useRouter } from "next/navigation";
 import { ProjectParam } from "@/types/params/project_param";
 import { Loader } from "lucide-react";
-import { getBasepathUrl } from "@/lib/utils/baseUrl";
+import { getServerUrl } from "@/lib/utils/serverUrl";
 
 export default function Page({
   params: { organisationId: orgId, projectId },
@@ -44,7 +44,7 @@ export default function Page({
   const { organisations, setOrganisations } = useOrganisationsStore();
   const [loading, setLoading] = React.useState<boolean>(false);
   let newOrgId = orgId;
-  const basePath = getBasepathUrl();
+  const serverUrl = getServerUrl();
 
   useEffect(() => {
     async function getOrganisations() {
@@ -53,7 +53,12 @@ export default function Page({
         const resp: AxiosResponse<{
           code: number;
           organisations: Organisation[];
-        }> = await axios.get(basePath + "/api/organisations");
+        }> = await axios.get(serverUrl + "/organisations", {
+          headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+            ? { "X-User": "1" }
+            : undefined,
+          withCredentials: true,
+        });
         const orgs = resp.data.organisations;
         setOrganisations(orgs);
         const projects = orgs.find((org) => {
@@ -176,10 +181,16 @@ export default function Page({
               if (newOrgId !== orgId) {
                 try {
                   await axios.patch(
-                    basePath +
-                    `/api/organisations/${orgId}/projects/${projectId}`,
+                    serverUrl +
+                    `/organisations/${orgId}/projects/${projectId}/change_org`,
                     {
-                      new_org_id: newOrgId,
+                      new_org_id: newOrgId.toString(),
+                    },
+                    {
+                      headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+                        ? { "X-User": "1" }
+                        : undefined,
+                      withCredentials: true,
                     },
                   );
                 } catch (err) {
@@ -194,9 +205,14 @@ export default function Page({
                 }
                 payload.description = data.description;
                 await axios.put(
-                  basePath +
-                  `/api/organisations/${orgId}/projects/${projectId}`,
+                  serverUrl + `/organisations/${orgId}/projects/${projectId}/`,
                   payload,
+                  {
+                    headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+                      ? { "X-User": "1" }
+                      : undefined,
+                    withCredentials: true,
+                  },
                 );
                 toast.success("Project updated sucessfully");
                 router.push(`/home/organisations/${newOrgId}`);

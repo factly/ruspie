@@ -9,6 +9,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useProjectsStore } from "@/lib/zustand/projects";
 import { useRouter } from "next/navigation";
+import { getServerUrl } from "@/lib/utils/serverUrl";
 
 interface OrganisationProps {
 	orgId: string;
@@ -25,13 +26,20 @@ const Project: FC<OrganisationProps> = ({ orgId }) => {
 		event.stopPropagation();
 		event.nativeEvent.preventDefault();
 	};
+	const serverUrl = getServerUrl();
 
 	const handleDelete = async (projectId: string, orgId: string) => {
 		try {
-			const res = await axios.delete(
-				`/api/organisations/${orgId}/projects/${projectId}`,
+			await axios.delete(
+				serverUrl + `/organisations/${orgId}/projects/${projectId}`,
+				{
+					headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+						? { "X-User": "1" }
+						: undefined,
+					withCredentials: true,
+				},
 			);
-			toast.success(res.data);
+			toast.success("project deleted ssucessfully");
 		} catch (err) {
 			console.log(err);
 			toast.error("Something went wrong");

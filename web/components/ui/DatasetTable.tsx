@@ -16,6 +16,7 @@ import { formatTimestamp } from "@/lib/utils/formatDate";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useFileStore } from "@/lib/zustand/files";
+import { getServerUrl } from "@/lib/utils/serverUrl";
 
 interface DatasetTableProps {
   orgId: string;
@@ -28,12 +29,20 @@ const DatasetTable: FC<DatasetTableProps> = ({ orgId, projectId }) => {
   };
 
   const { files, setFiles } = useFileStore();
+  const serverUrl = getServerUrl();
   const handleDelete = async (datasetId: string) => {
     try {
       const res = await axios.delete(
-        `/api/organisations/${orgId}/projects/${projectId}/datasets/${datasetId}`,
+        serverUrl +
+        `/organisations/${orgId}/projects/${projectId}/files/${datasetId}/`,
+        {
+          headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+            ? { "X-User": "1" }
+            : undefined,
+          withCredentials: true,
+        },
       );
-      toast.success(res.data);
+      toast.success("dataset deleted ssucessfully");
     } catch (err) {
       console.log(err);
       toast.error("Something went wrong");
@@ -85,7 +94,7 @@ const DatasetTable: FC<DatasetTableProps> = ({ orgId, projectId }) => {
                     );
                     setFiles(newFiles);
                   }}
-                  onCancel={() => {}}
+                  onCancel={() => { }}
                 />
               </div>
             </TableCell>

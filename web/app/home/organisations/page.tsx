@@ -10,12 +10,12 @@ import axios, { AxiosResponse } from "axios";
 import { toast } from "react-hot-toast";
 import { Loader } from "lucide-react";
 import { useOrganisationsStore } from "@/lib/zustand/organisation";
-import { getBasepathUrl } from "@/lib/utils/baseUrl";
+import { getServerUrl } from "@/lib/utils/serverUrl";
 
 export default function Page() {
 	const [loading, setLoading] = React.useState(true);
 	const { organisations, setOrganisations } = useOrganisationsStore();
-	const basePath = getBasepathUrl();
+	const serverUrl = getServerUrl();
 
 	useEffect(() => {
 		async function getOrganisations() {
@@ -24,7 +24,12 @@ export default function Page() {
 				const resp: AxiosResponse<{
 					code: number;
 					organisations: OrganisationType[];
-				}> = await axios.get(basePath + "/api/organisations");
+				}> = await axios.get(serverUrl + "/organisations", {
+					headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+						? { "X-User": "1" }
+						: undefined,
+					withCredentials: true,
+				});
 				setOrganisations(resp.data.organisations);
 			} catch (err) {
 				toast.error("Error getting organisations");
@@ -42,9 +47,12 @@ export default function Page() {
 			const resp: AxiosResponse<{
 				code: number;
 				organisations: OrganisationType[];
-			}> = await axios.get(
-				basePath + `/api/organisations?search_query=${query}`,
-			);
+			}> = await axios.get(serverUrl + `/organisations?search_query=${query}`, {
+				headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+					? { "X-User": "1" }
+					: undefined,
+				withCredentials: true,
+			});
 			setOrganisations(resp.data.organisations);
 		} catch (err) {
 			toast.error("Error getting organisations");
