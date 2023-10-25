@@ -32,8 +32,7 @@ errors:
       config:
         to: http://127.0.0.1:4455/.factly/kavach/web/auth/login
         when:
-          -
-            error:
+          - error:
               - unauthorized
               - forbidden
             request:
@@ -53,6 +52,8 @@ access_rules:
     - file:///etc/config/oathkeeper/access-rules/kavach-web.json
     - file:///etc/config/oathkeeper/access-rules/kavach-server.json
     - file:///etc/config/oathkeeper/access-rules/kratos.json
+    - file:///etc/config/oathkeeper/access-rules/ruspie-server.json
+    - file:///etc/config/oathkeeper/access-rules/ruspie-web.json
 
 authenticators:
   anonymous:
@@ -99,13 +100,13 @@ mutators:
         {
           "session": {{ .Extra | toJson }}
         }
-        
+
   header:
     enabled: true
     config:
       headers:
-        X-Kratos: '{{ print .Subject }}'
-        
+        X-Kratos: "{{ print .Subject }}"
+
   hydrator:
     enabled: true
     config:

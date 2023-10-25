@@ -4,14 +4,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import DatasetTable from "@/components/ui/DatasetTable";
-import { File as Dataset } from "@/types/file";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Organisation, Project } from "@/types/organisation";
 import { Loader } from "lucide-react";
 import { toast } from "react-hot-toast";
 import axios, { AxiosResponse } from "axios";
 import { ProjectParam } from "@/types/params/project_param";
 import { useFileStore } from "@/lib/zustand/files";
+import { getServerUrl } from "@/lib/utils/serverUrl";
 
 export default function Page({
   params: { organisationId, projectId },
@@ -20,13 +20,20 @@ export default function Page({
   const [project, setProject] = useState<Project>();
   const [loading, setLoading] = useState<boolean>();
   const { files, setFiles } = useFileStore();
+  const serverUrl = getServerUrl();
 
   useEffect(() => {
     const fetchProject = async () => {
       setLoading(true);
       try {
         const res: AxiosResponse = await axios.get(
-          `/api/organisations/${organisationId}/projects/${projectId}`,
+          serverUrl + `/organisations/${organisationId}/projects/${projectId}`,
+          {
+            headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+              ? { "X-User": "1" }
+              : undefined,
+            withCredentials: true,
+          },
         );
         setOrg(res.data.organisation);
         setProject(res.data);

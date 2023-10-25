@@ -30,7 +30,10 @@ export async function GET(
     const res: AxiosResponse<Project> = await axios.get(
       serverUrl + `/organisations/${organisationId}/projects/${projectId}/`,
       {
-        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
+        headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+          ? { "X-User": "1" }
+          : undefined,
+        withCredentials: true,
       },
     );
     return new Response(JSON.stringify(res.data));
@@ -72,7 +75,10 @@ export async function PUT(
       serverUrl + `/organisations/${organisationId}/projects/${projectId}/`,
       project,
       {
-        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
+        headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+          ? { "X-User": "1" }
+          : undefined,
+        withCredentials: true,
       },
     );
     return new Response(JSON.stringify(res.data));
@@ -126,7 +132,10 @@ export const DELETE = async (
     await axios.delete(
       serverUrl + `/organisations/${organisationId}/projects/${projectId}/`,
       {
-        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
+        headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+          ? { "X-User": "1" }
+          : undefined,
+        withCredentials: true,
       },
     );
     return new Response("Successfully deleted the project");
@@ -182,7 +191,10 @@ export const PATCH = async (
         new_org_id: changeOrgReq.new_org_id.toString(),
       },
       {
-        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
+        headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+          ? { "X-User": "1" }
+          : undefined,
+        withCredentials: true,
       },
     );
     return new Response(JSON.stringify(res.data));

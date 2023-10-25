@@ -16,6 +16,7 @@ type listOrgs struct {
 }
 
 func (h *httpHandler) list(w http.ResponseWriter, r *http.Request) {
+	h.logger.Error("hhhhereeasdjflasjdflasjd.......")
 	var err error
 	var user_id uint = 1
 	if helper.AuthEnable() {

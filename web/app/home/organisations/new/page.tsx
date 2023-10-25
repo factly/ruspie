@@ -13,14 +13,14 @@ import {
 } from "@/lib/zod/validators/organisation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import axios, { AxiosError, AxiosResponse } from "axios";
-import { Organisation } from "@/types/organisation";
+import axios, { AxiosError } from "axios";
 import { toast } from "react-hot-toast";
 import { ZodError } from "zod";
 import { useRouter } from "next/navigation";
 import UppyUploader from "@/components/UppyUploader";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { UppyFile } from "@uppy/core";
+import { getServerUrl } from "@/lib/utils/serverUrl";
 export default function Page() {
   const [uploadedImage, setUploadedImage] = useState<string>();
   const {
@@ -31,12 +31,27 @@ export default function Page() {
   } = useForm<CreateOrganisationSchema>({
     resolver: zodResolver(createOrganisationSchema),
   });
+  const serverUrl = getServerUrl();
   const createOrganisation = async (data: CreateOrganisationSchema) => {
-    const res: AxiosResponse<Organisation> = await axios.post(
-      "/api/organisations",
-      data,
-    );
-    return res.data;
+    try {
+      await axios.post(serverUrl + "/organisations", data, {
+        headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+          ? { "X-User": "1" }
+          : undefined,
+        withCredentials: true,
+      });
+      toast.success("Organisation created successfully");
+      reset();
+      router.push("/home/organisations");
+      return;
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const resp = err.response!;
+        toast.error(resp.data.errors[0].message);
+        return;
+      }
+      toast.error("something went wrong");
+    }
   };
   const router = useRouter();
   return (
@@ -94,7 +109,6 @@ export default function Page() {
                 <UppyUploader
                   onUpload={(values: UppyFile, path: string) => {
                     const s3_url = "http://127.0.0.1:9000/ruspie" + path;
-                    console.log(s3_url);
                     setUploadedImage(s3_url);
                   }}
                   isDataset={false}
@@ -117,9 +131,6 @@ export default function Page() {
               try {
                 data.logo = uploadedImage;
                 await createOrganisation(data);
-                toast.success("Organisation created successfully");
-                reset();
-                router.push("/home/organisations");
               } catch (err) {
                 if (err instanceof AxiosError) {
                   const { response } = err;

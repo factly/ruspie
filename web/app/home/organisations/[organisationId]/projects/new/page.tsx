@@ -25,11 +25,13 @@ import {
 } from "@/lib/zod/validators/projects";
 import { useRouter } from "next/navigation";
 import { OrgaisationParam } from "@/types/params/oragnisation_param";
+import { getServerUrl } from "@/lib/utils/serverUrl";
 
 export default function Page({
 	params: { organisationId: orgId },
 }: OrgaisationParam) {
 	const router = useRouter();
+	const serverUrl = getServerUrl();
 
 	const {
 		handleSubmit,
@@ -46,7 +48,12 @@ export default function Page({
 				const resp: AxiosResponse<{
 					code: number;
 					organisations: Organisation[];
-				}> = await axios.get("/api/organisations");
+				}> = await axios.get(serverUrl + "/organisations", {
+					headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+						? { "X-User": "1" }
+						: undefined,
+					withCredentials: true,
+				});
 				setOrganisations(resp.data.organisations);
 			} catch (err) {
 				toast.error("Error getting organisations");
@@ -132,7 +139,16 @@ export default function Page({
 					<Button
 						onClick={handleSubmit(async (data) => {
 							try {
-								await axios.post(`/api/organisations/${orgId}/projects`, data);
+								await axios.post(
+									serverUrl + `/organisations/${orgId}/projects`,
+									data,
+									{
+										headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+											? { "X-User": "1" }
+											: undefined,
+										withCredentials: true,
+									},
+								);
 								toast.success("Project created sucessfully");
 								router.push(`/home/organisations/${orgId}`);
 							} catch (err) {

@@ -15,6 +15,7 @@ import { Loader } from "lucide-react";
 import { FileParam } from "@/types/params/file_param";
 import Link from "next/link";
 import { Project } from "@/types/organisation";
+import { getServerUrl } from "@/lib/utils/serverUrl";
 
 export default function Page({
   params: { organisationId, datasetId, projectId },
@@ -29,12 +30,14 @@ export default function Page({
   const [dataset, setDataset] = useState<File>();
   const [loading, setLoading] = useState<boolean>(false);
   const [project, setProject] = useState<Project>();
+  const serverUrl = getServerUrl();
   useEffect(() => {
     async function getDataset() {
       setLoading(true);
       try {
         const file: AxiosResponse = await axios.get(
-          `/api/organisations/${organisationId}/projects/${projectId}/datasets/${datasetId}`,
+          serverUrl +
+          `/organisations/${organisationId}/projects/${projectId}/files/${datasetId}`,
         );
         setDataset(file.data);
         console.log(file.data);
@@ -53,7 +56,7 @@ export default function Page({
     setSelectedFeature(value);
   };
 
-  if (loading && !dataset) {
+  if (loading || !dataset) {
     return (
       <div className="h-screen flex items-center justify-center -mt-28">
         <Loader className="h-10 w-10 animate-spin text-gray-400" />

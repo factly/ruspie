@@ -12,25 +12,34 @@ import { Loader } from "lucide-react";
 import { OrgaisationParam } from "@/types/params/oragnisation_param";
 import { useProjectsStore } from "@/lib/zustand/projects";
 import { SearchBar } from "@/components/ui/searchBar";
+import { getServerUrl } from "@/lib/utils/serverUrl";
 
 export default function Page({ params: { organisationId } }: OrgaisationParam) {
   const [organisation, setOrganisation] = React.useState<Organisation | null>(
     null,
   );
   const { projects, setProjects } = useProjectsStore();
+  const serverUrl = getServerUrl();
 
   async function fetchOrganisation() {
     setLoading(true);
     try {
       const res: AxiosResponse<Organisation> = await axios(
-        "/api/organisations/" + organisationId,
+        serverUrl + `/organisations/${organisationId}/`,
+        {
+          headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+            ? { "X-User": "1" }
+            : undefined,
+          withCredentials: true,
+        },
       );
       setOrganisation(res.data);
       if (res.data.projects) {
         setProjects(res.data.projects);
       }
     } catch (err) {
-      toast.error("Error getting organisation");
+      console.log(err);
+      toast.error("Error getting projexts");
     } finally {
       setLoading(false);
     }
@@ -53,10 +62,17 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
     try {
       console.log("here");
       const res: AxiosResponse = await axios(
-        "/api/organisations/" +
+        serverUrl +
+        "/organisations/" +
         organisationId +
         "/projects" +
         `?search_query=${query}`,
+        {
+          headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+            ? { "X-User": "1" }
+            : undefined,
+          withCredentials: true,
+        },
       );
       setProjects(res.data.projects);
     } catch (err) {

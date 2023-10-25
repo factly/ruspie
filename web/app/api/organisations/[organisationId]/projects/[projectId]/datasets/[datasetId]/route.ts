@@ -28,7 +28,10 @@ export async function GET(
       serverUrl +
       `/organisations/${organisationId}/projects/${projectId}/files/${fileId}/`,
       {
-        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
+        headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+          ? { "X-User": "1" }
+          : undefined,
+        withCredentials: true,
       },
     );
     return new Response(JSON.stringify(res.data));
@@ -116,7 +119,10 @@ export const DELETE = async (
       serverUrl +
       `/organisations/${organisationId}/projects/${projectId}/files/${fileId}/`,
       {
-        headers: process.env.KAVACH_ENABLED ? { "X-User": "1" } : undefined,
+        headers: process.env.NEXT_PUBLIC_KAVACH_ENABLED
+          ? { "X-User": "1" }
+          : undefined,
+        withCredentials: true,
       },
     );
     return new Response("Successfully deleted the organisation");
