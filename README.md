@@ -366,17 +366,7 @@ You can find docker-compose files to all these vesions in /docker-compose-files 
 
 ## Ruspie + Studio + Kavach
 
-### Introduction
-
-Ruspie + Studio + Kavach is a comprehensive version of the Ruspie ecosystem that combines the core Ruspie query engine with the Ruspie Studio web interface and the Kavach authentication and authorization tool. This version offers a environment for managing datasets, querying data, and controlling access.
-
-### Key Components
-
-- **Ruspie**: The core Ruspie query engine for data querying using SQL and other querying.
-
-- **Ruspie Studio**: A user-friendly web interface that simplifies data querying, project management.
-
-- **Kavach**: An internal authentication and authorization tool that enhances security by controlling access to Ruspie Studio and its functionalities.
+Ruspie + Studio + Kavach is a configuration of the Ruspie that combines the core Ruspie query engine with the Ruspie Studio web interface and the Kavach authentication and authorization tool. This version offers a environment for managing datasets, querying data, and controlling access.
 
 ### Setup and Configuration
 
@@ -390,15 +380,7 @@ To get started with Ruspie + Studio + Kavach, follow these steps:
 
 ## Ruspie + Studio
 
-### Introduction
-
-Ruspie + Studio is a version of the Ruspie ecosystem that combines the core Ruspie query engine with the Ruspie Studio web interface. This version offers a environment for managing datasets, querying data without any authentication and very lightweight compared to the previos version.
-
-### Key Components
-
-- **Ruspie**
-
-- **Ruspie Studio**
+Ruspie + Studio is a configuration of the Ruspie that combines the core Ruspie query engine with the Ruspie Studio web interface. This version offers a environment for managing datasets, querying data without any authentication and very lightweight compared to the previos configuration.
 
 ### Setup and Configuration
 
@@ -411,8 +393,6 @@ To get started with Ruspie + Studio + Kavach, follow these steps:
 **Note: If you need text to sql service in the above two setups, use the same envs as mentioned above to enable it on this setup as well**
 
 ## Ruspie Barebones
-
-### Introduction
 
 Ruspie is the core query engine of the Ruspie ecosystem, designed for data querying using SQL and various query operators.
 
