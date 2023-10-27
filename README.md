@@ -312,6 +312,80 @@ That's it! You've successfully made a request to the `/text_to_sql` endpoint and
 
 # Studio(Optional)
 
-Simple web interface built with nextjs and golang enables to create organisations and projects and upload datasets and query using ruspie.
+Simple web interface built with nextjs and golang enables to create organisations and projects to upload datasets and query using ruspie.
 
 **Note: To run the server make sure to copy the envs from config.env.example in /studio/server/ directory into config.env file**
+
+# Vesions:
+
+You can find docker-compose files to all these vesions in /docker-compose-files directory
+
+## Ruspie + Studio + Kavach
+
+### Introduction
+
+Ruspie + Studio + Kavach is a comprehensive version of the Ruspie ecosystem that combines the core Ruspie query engine with the Ruspie Studio web interface and the Kavach authentication and authorization tool. This version offers a environment for managing datasets, querying data, and controlling access.
+
+### Key Components
+
+- **Ruspie**: The core Ruspie query engine for data querying using SQL and other querying.
+
+- **Ruspie Studio**: A user-friendly web interface that simplifies data querying, project management.
+
+- **Kavach**: An internal authentication and authorization tool that enhances security by controlling access to Ruspie Studio and its functionalities.
+
+### Setup and Configuration
+
+To get started with Ruspie + Studio + Kavach, follow these steps:
+
+1. **Run Docker Compose**: Navigate to the `/docker-compose-files/` directory and run the `docker-compose-studio-kavach.yml` file to start the integrated environment.
+
+2. **Kavach Integration**: Ensure that Kavach is configured with the required user roles and permissions for secure access control.
+
+3. **Access Web Interface**: Access Ruspie Studio via `http://127.0.0.1:4455/.factly/ruspie/web/home/organisations` for project and data management. Access the Ruspie API at `http://127.0.0.1:4455/.factly/ruspie/server` for querying datasets.
+
+## Ruspie + Studio
+
+### Introduction
+
+Ruspie + Studio is a version of the Ruspie ecosystem that combines the core Ruspie query engine with the Ruspie Studio web interface. This version offers a environment for managing datasets, querying data without any authentication and very lightweight compared to the previos version.
+
+### Key Components
+
+- **Ruspie**
+
+- **Ruspie Studio**
+
+### Setup and Configuration
+
+To get started with Ruspie + Studio + Kavach, follow these steps:
+
+1. **Run Docker Compose**: Navigate to the `/docker-compose-files/` directory and run the `docker-compose-studio.yml` file to start the integrated environment.
+
+2. **Access Web Interface**: Access Ruspie Studio via `http://127.0.0.1:3000/home/organisations` for project and data management. Access the Ruspie API at `http://127.0.0.1:8800/server` for querying datasets.
+
+**Note: If you need text to sql service in the above two setups, use the same envs as mentioned above to enable it on this setup as well**
+
+## Ruspie Barebones
+
+### Introduction
+
+Ruspie is the core query engine of the Ruspie ecosystem, designed for data querying using SQL and various query operators.
+
+## Key Components
+
+- **Ruspie**: The core query engine for data querying, offering support for SQL queries, filters, sorting, and more.
+
+- **Minio**: An open-source object storage service used for securely storing datasets.
+
+## Setup and Configuration
+
+To set up and configure Ruspie, follow these steps:
+
+1. **Environment Configuration**: Configure the necessary environment variables for Ruspie. These variables control various aspects of Ruspie's behavior, including the source of data and authentication.
+
+2. **Run Docker Compose**: .Navigate to the `/docker-compose-files/` directory and run the `docker-compose.yml` file to start the integrated environment
+
+3. **Dataset Management**: Upload datasets to Minio for use with Ruspie.
+
+To Upload datasets to Minio goto http://127.0.0.9001 and use `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY` used the docker-compose.yml file as username and password. As per the config in docker-compose.yml, datasets uploaded to the ruspie bucker can only be queried.
