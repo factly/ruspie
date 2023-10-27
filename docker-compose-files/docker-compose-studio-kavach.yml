@@ -359,6 +359,8 @@ services:
       - NEXT_PUBLIC_KAVACH_ENABLED=true
       - NEXT_PUBLIC_BASEPATH=/.factly/ruspie/web
       - NEXT_PUBLIC_S3_URL=http://127.0.0.1:9000
+      - NEXT_PUBLIC_TEXT_TO_SQL=$TEXT_TO_SQL
+      - NEXT_PUBLIC_KRATOS_URL=http://127.0.0.1:4455/.ory/kratos/public/
     volumes:
       - type: bind
         source: ../studio/web

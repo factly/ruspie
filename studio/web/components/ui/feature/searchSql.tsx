@@ -30,7 +30,6 @@ function SearchSql({ dataset }: { dataset: File }) {
   };
 
   //! we need a dataset from props along with api_id
-
   const onSearch = async () => {
     try {
       setLoading(true);
@@ -60,12 +59,11 @@ function SearchSql({ dataset }: { dataset: File }) {
         setTableData(sqlResult);
       }
       setLoading(false);
-    } catch (error) {
-      toast.error(JSON.stringify(error));
+    } catch (error: any) {
+      toast.error(error.code);
       setLoading(false);
     }
   };
-  console.log("===>", textToSqlEnabled);
   return (
     <div className="flex flex-col gap-6 mb-10">
       <div className="mt-2 flex justify-between w-full gap-6">
@@ -73,9 +71,11 @@ function SearchSql({ dataset }: { dataset: File }) {
           inputClassName="!text-left py-3"
           wrapperClassName="w-full"
           withoutPrefixIcon={true}
-          placeholder={`Search SQL use ${getNameFromUrl(
-            dataset.s3_url,
-          )} as table name`}
+          placeholder={
+            textToSqlEnabled
+              ? "write a query"
+              : `Search SQL use ${getNameFromUrl(dataset.s3_url)} as table name`
+          }
           callback={(value) => setUserQuery(value)}
         />
         <Button

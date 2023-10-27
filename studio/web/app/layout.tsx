@@ -2,6 +2,8 @@ import Providers from "@/components/Providers";
 import { NavBar } from "../components/ui/Navbar";
 import "./globals.css";
 import { Inter } from "next/font/google";
+import { cookies } from "next/headers";
+import { ClientCookiesProvider } from "@/components/CookieProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,10 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className + " bg-[#F9F9F9] h-screen"}>
-        <Providers>
-          <NavBar />
-          {children}
-        </Providers>
+        <ClientCookiesProvider value={cookies().getAll()}>
+          <Providers>
+            <NavBar />
+            {children}
+          </Providers>
+        </ClientCookiesProvider>
       </body>
     </html>
   );
