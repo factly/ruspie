@@ -46,7 +46,7 @@ services:
       - PRE_FETCH_SOURCE=mongo
       - OPENAI_ENDPOINT_URL=https://api.openai.com/v1/chat/completions
       - OPENAI_API_KEY=$OPENAI_API_KEY
-      - TEXT_TO_SQL=true
+      - TEXT_TO_SQL=$TEXT_TO_SQL
     networks:
       - ruspie
     depends_on:
@@ -145,6 +145,7 @@ services:
       - NEXT_PUBLIC_SERVER_URL=http://localhost:8800
       - NEXT_PUBLIC_COMPANION_URL=http://localhost:3020
       - NEXT_PUBLIC_S3_URL=http://127.0.0.1:9000
+      - NEXT_PUBLIC_TEXT_TO_SQL=$TEXT_TO_SQL
     volumes:
       - type: bind
         source: ../studio/web
