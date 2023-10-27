@@ -246,7 +246,7 @@ The Text to SQL service was previously available as a cloudflare worker endpoint
 
 As of the latest version, the Text to SQL functionality has been deprecated as a cloudflare worker and is no longer maintained as a separate component. The functionality of translating text queries into SQL queries is now available as an optional endpoint within the Ruspie API. Users can use the `/text_to_sql` endpoint to achieve the same results.
 
-## Update Your Workflow
+## Updated Workflow
 
 To enable the optional endpoint set the following envs:
 
