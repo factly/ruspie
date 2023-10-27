@@ -362,7 +362,7 @@ Additionally, if you decide to enable Kavach integration, set `KAVACH_ENABLED` t
 
 # Configurations:
 
-You can find docker-compose files to all these vesions in /docker-compose-files directory
+You can find docker-compose files to all these configurations in /docker-compose-files directory
 
 ## Ruspie + Studio + Kavach
 
@@ -395,12 +395,6 @@ To get started with Ruspie + Studio + Kavach, follow these steps:
 ## Ruspie Barebones
 
 Ruspie is the core query engine of the Ruspie ecosystem, designed for data querying using SQL and various query operators.
-
-## Key Components
-
-- **Ruspie**: The core query engine for data querying, offering support for SQL queries, filters, sorting, and more.
-
-- **Minio**: An open-source object storage service used for securely storing datasets.
 
 ## Setup and Configuration
 
