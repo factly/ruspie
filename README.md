@@ -302,11 +302,16 @@ Here's an example of a response:
 
 ```json
 {
-  "sql_query": "SELECT customer_name FROM customer_purchases WHERE purchase_date >= '2023-09-01'",
-  "status": "success"
+  "query": "SELECT customer_name FROM customer_purchases WHERE purchase_date >= '2023-09-01'"
 }
 ```
 
 The `sql_query` field in the response contains the valid SQL query that can be used to retrieve the requested data from the dataset.
 
 That's it! You've successfully made a request to the `/text_to_sql` endpoint and received a valid SQL query in response, allowing you to perform dataset queries using natural language text.
+
+# Studio(Optional)
+
+Simple web interface built with nextjs and golang enables to create organisations and projects and upload datasets and query using ruspie.
+
+**Note: To run the server make sure to copy the envs from config.env.example in /studio/server/ directory into config.env file**
