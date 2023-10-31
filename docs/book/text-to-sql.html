@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Authorization - docs</title>
+        <title>Text-To-Sql - docs</title>
 
 
         <!-- Custom HTML head -->
@@ -88,7 +88,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">2.</strong> Quick Start Guide</a></li><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">3.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="endpoints.html"><strong aria-hidden="true">4.</strong> Endpoints</a></li><li class="chapter-item expanded "><a href="quering.html"><strong aria-hidden="true">5.</strong> Querying</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rest.html"><strong aria-hidden="true">5.1.</strong> Rest</a></li><li class="chapter-item expanded "><a href="sql.html"><strong aria-hidden="true">5.2.</strong> Sql</a></li><li class="chapter-item expanded "><a href="graphQl.html"><strong aria-hidden="true">5.3.</strong> GraphQL</a></li></ol></li><li class="chapter-item expanded "><a href="authorization.html" class="active"><strong aria-hidden="true">6.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="text-to-sql.html"><strong aria-hidden="true">7.</strong> Text-To-Sql</a></li><li class="chapter-item expanded "><a href="studio.html"><strong aria-hidden="true">8.</strong> Studio</a></li><li class="chapter-item expanded "><a href="configurations.html"><strong aria-hidden="true">9.</strong> Various Configurations</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="kavach_and_studio.html"><strong aria-hidden="true">9.1.</strong> KAVACH + STUDIO + RUSPIE</a></li><li class="chapter-item expanded "><a href="ruspie_and_studio.html"><strong aria-hidden="true">9.2.</strong> STUDIO + RUSPIE</a></li><li class="chapter-item expanded "><a href="ruspie_barebones.html"><strong aria-hidden="true">9.3.</strong> RUSPIE BAREBONES</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">2.</strong> Quick Start Guide</a></li><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">3.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="endpoints.html"><strong aria-hidden="true">4.</strong> Endpoints</a></li><li class="chapter-item expanded "><a href="quering.html"><strong aria-hidden="true">5.</strong> Querying</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rest.html"><strong aria-hidden="true">5.1.</strong> Rest</a></li><li class="chapter-item expanded "><a href="sql.html"><strong aria-hidden="true">5.2.</strong> Sql</a></li><li class="chapter-item expanded "><a href="graphQl.html"><strong aria-hidden="true">5.3.</strong> GraphQL</a></li></ol></li><li class="chapter-item expanded "><a href="authorization.html"><strong aria-hidden="true">6.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="text-to-sql.html" class="active"><strong aria-hidden="true">7.</strong> Text-To-Sql</a></li><li class="chapter-item expanded "><a href="studio.html"><strong aria-hidden="true">8.</strong> Studio</a></li><li class="chapter-item expanded "><a href="configurations.html"><strong aria-hidden="true">9.</strong> Various Configurations</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="kavach_and_studio.html"><strong aria-hidden="true">9.1.</strong> KAVACH + STUDIO + RUSPIE</a></li><li class="chapter-item expanded "><a href="ruspie_and_studio.html"><strong aria-hidden="true">9.2.</strong> STUDIO + RUSPIE</a></li><li class="chapter-item expanded "><a href="ruspie_barebones.html"><strong aria-hidden="true">9.3.</strong> RUSPIE BAREBONES</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -171,31 +171,77 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="authorization"><a class="header" href="#authorization">Authorization</a></h2>
-<p>In Ruspie, authorization is enabled by setting the <code>MASTER_KEY</code> environment variable. Once this variable is set, users must provide a valid key in the <code>AUTHORIZATION</code> header of their request in order to access the Ruspie APIs.</p>
-<p>Ruspie provides a set of endpoints for managing keys, which can be accessed by making a request to the <code>/auth/keys</code> endpoint. This endpoint supports the following methods:</p>
+                        <h3 id="text-to-sql-service-deprecated"><a class="header" href="#text-to-sql-service-deprecated">TEXT-TO-SQL SERVICE (Deprecated)</a></h3>
+<p><strong>Note: The Text to SQL service that was previously deployed as a cloudflare worker has been deprecated. The functionality has been integrated into the Ruspie API as an optional endpoint. This section provides information about the deprecated service for reference.</strong></p>
+<h4 id="introduction"><a class="header" href="#introduction">Introduction</a></h4>
+<p>The Text to SQL functionality allowed users to convert natural language text queries into valid SQL queries. It provided a convenient way to interact with your dataset using plain English queries, making it accessible to users who may not be familiar with SQL.</p>
+<h4 id="how-it-worked"><a class="header" href="#how-it-worked">How it Worked</a></h4>
+<p>The Text to SQL service was a standalone component that accepted a text query and other parameters as input. It returned a valid SQL query that could be executed against the dataset stored in Ruspie. This service was deployed as a cloudflare worker.</p>
+<h4 id="deprecated-cloudflare-worker-endpoint"><a class="header" href="#deprecated-cloudflare-worker-endpoint">Deprecated Cloudflare Worker Endpoint</a></h4>
+<p>The Text to SQL service was previously available as a cloudflare worker endpoint. Users could send a POST request to this endpoint, providing the necessary input parameters, and receive a valid SQL query as the response.</p>
+<p><strong>Note: You can still refer the code to this service text-to-sql directory</strong></p>
+<h4 id="transition-to-ruspie-api"><a class="header" href="#transition-to-ruspie-api">Transition to Ruspie API</a></h4>
+<p>As of the latest version, the Text to SQL functionality has been deprecated as a cloudflare worker and is no longer maintained as a separate component. The functionality of translating text queries into SQL queries is now available as an optional endpoint within the Ruspie API. Users can use the <code>/text_to_sql</code> endpoint to achieve the same results.</p>
+<h4 id="updated-workflow"><a class="header" href="#updated-workflow">Updated Workflow</a></h4>
+<p>To enable the optional endpoint set the following envs:</p>
 <ol>
-<li><code>GET</code>: lists all keys that have been generated.</li>
-<li><code>POST</code>: generates a new key.</li>
-<li><code>PATCH</code> /{key_id}: edits the name and description of a key.</li>
-<li><code>DELETE</code> /{key_id}: deletes a key.</li>
-<li><code>POST</code> /invalidate/{key_id}: invalidates a key, rendering it no longer valid for authentication.</li>
+<li>TEXT_TO_SQL: true</li>
+<li>OPENAI_API_KEY: openai api key(get one from openai)</li>
 </ol>
-<p>To access these endpoints, users must provide the AUTHORIZATION header with their request, in the form <code>Bearer {MASTER_KEY}</code>, where <code>{MASTER_KEY}</code> is the value of the <code>MASTER_KEY</code> environment variable.</p>
-<p>Once a key has been generated, it can be used to authenticate requests to the Ruspie APIs by providing it in the <code>AUTHORIZATION</code> header, in the form <code>Bearer {key}</code>, where <code>{key}</code> is the generated key. For example, to query the <code>/api/tables/{table_name}</code> endpoint with a generated key, the request might look like this:</p>
-<pre><code class="language-bash">curl -H &quot;AUTHORIZATION: Bearer {key}&quot; localhost:8080/api/tables/{table_name}
+<h4 id="making-a-request-to-text_to_sql-endpoint"><a class="header" href="#making-a-request-to-text_to_sql-endpoint">Making a Request to <code>/text_to_sql</code> Endpoint</a></h4>
+<p>The <code>/text_to_sql</code> endpoint in the Ruspie API allows you to convert natural language text queries into valid SQL queries. To make a request to this endpoint, follow these steps:</p>
+<h4 id="1-set-the-http-method"><a class="header" href="#1-set-the-http-method">1. Set the HTTP Method</a></h4>
+<p>Send a POST request to the <code>/text_to_sql</code> endpoint. This is because you are sending data to the server to process.</p>
+<h4 id="2-set-the-request-headers"><a class="header" href="#2-set-the-request-headers">2. Set the Request Headers</a></h4>
+<p>Ensure that your request includes the necessary headers:</p>
+<ul>
+<li><strong>Content-Type</strong>: Set this header to <code>application/json</code> to specify that the request body contains JSON data.</li>
+</ul>
+<h4 id="3-create-the-request-body"><a class="header" href="#3-create-the-request-body">3. Create the Request Body</a></h4>
+<p>The request body should be in JSON format and include the following parameters:</p>
+<ul>
+<li>
+<p><strong>query</strong>: A string parameter that represents the natural language text query you want to convert into SQL. Provide a clear and concise description of the data you want to retrieve from the dataset.</p>
+</li>
+<li>
+<p><strong>tablename</strong>: A string parameter specifying the name of the dataset table on which you want to perform the query.</p>
+</li>
+<li>
+<p><strong>schema</strong> (Optional): If the schema of the dataset is not already known or needs to be explicitly defined, you can include it as a string parameter. The schema should list the columns available in the dataset.</p>
+</li>
+<li>
+<p><strong>rows</strong> (Optional): Intial rows of datasets.</p>
+</li>
+</ul>
+<p>Here is an example of the request body in JSON format:</p>
+<pre><code class="language-json">{
+  &quot;query&quot;: &quot;Retrieve the names of customers who made a purchase in the last month&quot;,
+  &quot;tablename&quot;: &quot;customer_purchases&quot;,
+  &quot;schema&quot;: &quot;customer_name, purchase_date, ...&quot;,
+  &quot;rows&quot;: &quot;10&quot;
+}
 </code></pre>
-<p>Note that keys can be invalidated or deleted, in which case they will no longer be valid for authentication. Users should manage their keys carefully to ensure that only valid keys are used to access the Ruspie APIs.</p>
+<h4 id="4-send-the-request"><a class="header" href="#4-send-the-request">4. Send the Request</a></h4>
+<p>Once you have set the HTTP method, headers, and created the request body, you can send the POST request to the <code>/text_to_sql</code> endpoint.</p>
+<h4 id="5-receive-the-response"><a class="header" href="#5-receive-the-response">5. Receive the Response</a></h4>
+<p>The server will process your request and respond with a JSON object that contains the valid SQL query. The response may also include additional information, such as a status indicating the success of the operation.</p>
+<p>Here's an example of a response:</p>
+<pre><code class="language-json">{
+  &quot;query&quot;: &quot;SELECT customer_name FROM customer_purchases WHERE purchase_date &gt;= '2023-09-01'&quot;
+}
+</code></pre>
+<p>The <code>sql_query</code> field in the response contains the valid SQL query that can be used to retrieve the requested data from the dataset.</p>
+<p>That's it! You've successfully made a request to the <code>/text_to_sql</code> endpoint and received a valid SQL query in response, allowing you to perform dataset queries using natural language text.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="graphQl.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="authorization.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="text-to-sql.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="studio.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -205,11 +251,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="graphQl.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="authorization.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="text-to-sql.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="studio.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

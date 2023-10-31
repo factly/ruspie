@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Authorization - docs</title>
+        <title>Various Configurations - docs</title>
 
 
         <!-- Custom HTML head -->
@@ -88,7 +88,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">2.</strong> Quick Start Guide</a></li><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">3.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="endpoints.html"><strong aria-hidden="true">4.</strong> Endpoints</a></li><li class="chapter-item expanded "><a href="quering.html"><strong aria-hidden="true">5.</strong> Querying</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rest.html"><strong aria-hidden="true">5.1.</strong> Rest</a></li><li class="chapter-item expanded "><a href="sql.html"><strong aria-hidden="true">5.2.</strong> Sql</a></li><li class="chapter-item expanded "><a href="graphQl.html"><strong aria-hidden="true">5.3.</strong> GraphQL</a></li></ol></li><li class="chapter-item expanded "><a href="authorization.html" class="active"><strong aria-hidden="true">6.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="text-to-sql.html"><strong aria-hidden="true">7.</strong> Text-To-Sql</a></li><li class="chapter-item expanded "><a href="studio.html"><strong aria-hidden="true">8.</strong> Studio</a></li><li class="chapter-item expanded "><a href="configurations.html"><strong aria-hidden="true">9.</strong> Various Configurations</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="kavach_and_studio.html"><strong aria-hidden="true">9.1.</strong> KAVACH + STUDIO + RUSPIE</a></li><li class="chapter-item expanded "><a href="ruspie_and_studio.html"><strong aria-hidden="true">9.2.</strong> STUDIO + RUSPIE</a></li><li class="chapter-item expanded "><a href="ruspie_barebones.html"><strong aria-hidden="true">9.3.</strong> RUSPIE BAREBONES</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Intro</a></li><li class="chapter-item expanded "><a href="quick_start.html"><strong aria-hidden="true">2.</strong> Quick Start Guide</a></li><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">3.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="endpoints.html"><strong aria-hidden="true">4.</strong> Endpoints</a></li><li class="chapter-item expanded "><a href="quering.html"><strong aria-hidden="true">5.</strong> Querying</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="rest.html"><strong aria-hidden="true">5.1.</strong> Rest</a></li><li class="chapter-item expanded "><a href="sql.html"><strong aria-hidden="true">5.2.</strong> Sql</a></li><li class="chapter-item expanded "><a href="graphQl.html"><strong aria-hidden="true">5.3.</strong> GraphQL</a></li></ol></li><li class="chapter-item expanded "><a href="authorization.html"><strong aria-hidden="true">6.</strong> Authorization</a></li><li class="chapter-item expanded "><a href="text-to-sql.html"><strong aria-hidden="true">7.</strong> Text-To-Sql</a></li><li class="chapter-item expanded "><a href="studio.html"><strong aria-hidden="true">8.</strong> Studio</a></li><li class="chapter-item expanded "><a href="configurations.html" class="active"><strong aria-hidden="true">9.</strong> Various Configurations</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="kavach_and_studio.html"><strong aria-hidden="true">9.1.</strong> KAVACH + STUDIO + RUSPIE</a></li><li class="chapter-item expanded "><a href="ruspie_and_studio.html"><strong aria-hidden="true">9.2.</strong> STUDIO + RUSPIE</a></li><li class="chapter-item expanded "><a href="ruspie_barebones.html"><strong aria-hidden="true">9.3.</strong> RUSPIE BAREBONES</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -171,31 +171,18 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="authorization"><a class="header" href="#authorization">Authorization</a></h2>
-<p>In Ruspie, authorization is enabled by setting the <code>MASTER_KEY</code> environment variable. Once this variable is set, users must provide a valid key in the <code>AUTHORIZATION</code> header of their request in order to access the Ruspie APIs.</p>
-<p>Ruspie provides a set of endpoints for managing keys, which can be accessed by making a request to the <code>/auth/keys</code> endpoint. This endpoint supports the following methods:</p>
-<ol>
-<li><code>GET</code>: lists all keys that have been generated.</li>
-<li><code>POST</code>: generates a new key.</li>
-<li><code>PATCH</code> /{key_id}: edits the name and description of a key.</li>
-<li><code>DELETE</code> /{key_id}: deletes a key.</li>
-<li><code>POST</code> /invalidate/{key_id}: invalidates a key, rendering it no longer valid for authentication.</li>
-</ol>
-<p>To access these endpoints, users must provide the AUTHORIZATION header with their request, in the form <code>Bearer {MASTER_KEY}</code>, where <code>{MASTER_KEY}</code> is the value of the <code>MASTER_KEY</code> environment variable.</p>
-<p>Once a key has been generated, it can be used to authenticate requests to the Ruspie APIs by providing it in the <code>AUTHORIZATION</code> header, in the form <code>Bearer {key}</code>, where <code>{key}</code> is the generated key. For example, to query the <code>/api/tables/{table_name}</code> endpoint with a generated key, the request might look like this:</p>
-<pre><code class="language-bash">curl -H &quot;AUTHORIZATION: Bearer {key}&quot; localhost:8080/api/tables/{table_name}
-</code></pre>
-<p>Note that keys can be invalidated or deleted, in which case they will no longer be valid for authentication. Users should manage their keys carefully to ensure that only valid keys are used to access the Ruspie APIs.</p>
+                        <h3 id="configurations"><a class="header" href="#configurations">Configurations</a></h3>
+<p>You can find docker-compose files to all these configurations in /docker directory</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="graphQl.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="studio.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="text-to-sql.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="kavach_and_studio.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -205,11 +192,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="graphQl.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="studio.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="text-to-sql.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="kavach_and_studio.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

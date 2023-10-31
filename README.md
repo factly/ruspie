@@ -362,7 +362,7 @@ Additionally, if you decide to enable Kavach integration, set `KAVACH_ENABLED` t
 
 # Configurations:
 
-You can find docker-compose files to all these configurations in /docker-compose-files directory
+You can find docker-compose files to all these configurations in /docker directory
 
 ## Ruspie + Studio + Kavach
 
