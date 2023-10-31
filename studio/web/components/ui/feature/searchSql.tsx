@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { SearchBar } from "../searchBar";
 import { Button } from "../Button";
 import { Switch } from "../switch";
@@ -24,6 +24,19 @@ function SearchSql({ dataset }: { dataset: File }) {
   const [userQuery, setUserQuery] = React.useState("");
   const [selectedOption, setSelectedOption] = React.useState("Schema");
   const [tableData, setTableData] = React.useState([]);
+
+  useEffect(() => {
+    async function loadIntialData() {
+      const sqlResult = await fetchSqlForQuery(
+        `select * from ${getNameFromUrl(dataset.s3_url)}`,
+        dataset.extension,
+      );
+      setTableData(sqlResult);
+    }
+    if (!textToSqlEnabled) {
+      loadIntialData();
+    }
+  }, []);
 
   const showGeneratedSql = () => {
     setGeneratedSqlVisible(!generatedSqlVisible);
@@ -77,6 +90,11 @@ function SearchSql({ dataset }: { dataset: File }) {
               : `Search SQL use ${getNameFromUrl(dataset.s3_url)} as table name`
           }
           callback={(value) => setUserQuery(value)}
+          value={
+            textToSqlEnabled
+              ? ""
+              : `select * from ${getNameFromUrl(dataset.s3_url)}`
+          }
         />
         <Button
           className="rounded-md bg-[#376789] text-white px-6 py-3"
@@ -86,32 +104,36 @@ function SearchSql({ dataset }: { dataset: File }) {
         </Button>
       </div>
       <div className="flex justify-between">
-        <div className="flex gap-6">
-          <p>Search Results in:</p>
-          <div className="flex gap-2">
-            Schema
-            <Switch
-              checked={selectedOption === "Rows"}
-              onCheckedChange={() =>
-                setSelectedOption(selectedOption === "Rows" ? "Schema" : "Rows")
-              }
-            />
-            Rows
-          </div>
-        </div>
         {textToSqlEnabled ? (
-          <Button
-            variant="link"
-            className="px-2 flex gap-3"
-            onClick={showGeneratedSql}
-          >
-            Generated with SQL
-            {generatedSql ? (
-              <Icons.ChevronDownIcon />
-            ) : (
-              <Icons.ChevronRightIcon size="large" />
-            )}
-          </Button>
+          <>
+            <div className="flex gap-6">
+              <p>Search Results in:</p>
+              <div className="flex gap-2">
+                Schema
+                <Switch
+                  checked={selectedOption === "Rows"}
+                  onCheckedChange={() =>
+                    setSelectedOption(
+                      selectedOption === "Rows" ? "Schema" : "Rows",
+                    )
+                  }
+                />
+                Rows
+              </div>
+            </div>
+            <Button
+              variant="link"
+              className="px-2 flex gap-3"
+              onClick={showGeneratedSql}
+            >
+              Generated with SQL
+              {generatedSql ? (
+                <Icons.ChevronDownIcon />
+              ) : (
+                <Icons.ChevronRightIcon size="large" />
+              )}
+            </Button>
+          </>
         ) : (
           <p>{`dataset_id: ${getNameFromUrl(dataset.s3_url)}`}</p>
         )}

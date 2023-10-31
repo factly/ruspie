@@ -8,6 +8,7 @@ interface SearchBarProps {
   withoutPrefixIcon?: boolean;
   inputClassName?: string;
   wrapperClassName?: string;
+  value?: string;
 }
 export const SearchBar: FC<SearchBarProps> = ({
   placeholder,
@@ -15,8 +16,9 @@ export const SearchBar: FC<SearchBarProps> = ({
   withoutPrefixIcon,
   inputClassName,
   wrapperClassName,
+  value: inputValue,
 }) => {
-  const [value, setSearchValue] = useState("");
+  const [value, setSearchValue] = useState(inputValue);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
     callback(e.target.value);
