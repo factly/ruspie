@@ -1,9 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/dataEntry/input";
 import { Label } from "@/components/dataEntry/label";
 import Link from "next/link";
+import Image from "next/image";
 import { ProjectParam } from "@/types/params/project_param";
 import { CreateFileSchema, createFileSchema } from "@/lib/zod/validators/files";
 import axios, { AxiosError } from "axios";
@@ -14,6 +15,10 @@ import { useRouter } from "next/navigation";
 import UppyUploader from "@/components/UppyUploader";
 import { getServerUrl } from "@/lib/utils/serverUrl";
 import { kavachAxiosConfig } from "@/lib/utils/kavachAxiosConfig";
+import UploadImage from "@/assets/uploadImage.png";
+import FileImage from "@/assets/document.png";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { title } from "process";
 
 export default function Page({
   params: { projectId, organisationId },
@@ -21,12 +26,19 @@ export default function Page({
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    formState,
+    getValues
   } = useForm<CreateFileSchema>({
     resolver: zodResolver(createFileSchema),
   });
+  const [title, setTitle] = useState<string>("");
   const [filename, setFilename] = useState<string>("");
+  const [uploadDialogOpen, setUploadDialogOpen] = useState<boolean>(false)
   const router = useRouter();
+  const {errors} = formState
+
+  const diableAddButton = filename === '' || title === ''
+  
   return (
     <main className="flex flex-col mt-10 bg-transparent">
       <div className="flex flex-row justify-around items-start">
@@ -41,6 +53,7 @@ export default function Page({
               id="title"
               {...register("name")}
               placeholder="Enter the title"
+              onChange={(e) => setTitle(e.target.value)}
             />
             {errors.name ? (
               <div className="text-red-500 italic  text-xs">
@@ -50,28 +63,35 @@ export default function Page({
               ""
             )}
           </div>
-          <div>
-            <UppyUploader
-              onUpload={(_, path) => {
-                setFilename(path);
-              }}
-              isDataset={true}
-            />
+          <div className="grid w-full items-center gap-3">
+            <Label htmlFor="title" className="font-normal">
+              Upload Dataset
+            </Label>
+            <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+              <DialogTrigger asChild>
+                <div className="p-6 border border-input rounded-md w-fit cursor-pointer">
+                  <Image
+                    src={filename !== '' ? FileImage : UploadImage}
+                    alt="logo"
+                    width={125}
+                    height={125}
+                  />
+                  {filename}
+                </div>
+              </DialogTrigger>
+              <DialogContent className="w-fit max-w-4xl">
+                <UppyUploader
+                  onUpload={(_, path) => {
+                    setFilename(path);
+                    setUploadDialogOpen(false);
+                  }}
+                  isDataset={true}
+                />
+              </DialogContent>
+            </Dialog>
           </div>
-        </form>
-        <div className="flex gap-3">
           <Button
-            variant="outline"
-            className="rounded-md text-[#376789] border-[#376789]"
-            asChild
-          >
-            <Link
-              href={`/home/organisations/${organisationId}/projects/${projectId}/`}
-            >
-              Cancel
-            </Link>
-          </Button>
-          <Button
+            disabled={diableAddButton || false}
             onClick={handleSubmit(async (data) => {
               const file = {
                 name: data.name.trim(),
@@ -101,9 +121,22 @@ export default function Page({
                 toast.error("Something went wrong");
               }
             })}
-            className="rounded-md bg-[#376789] text-white"
+            className="rounded-md bg-[#376789] text-white w-full"
           >
             Add Dataset
+          </Button>
+        </form>
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            className="rounded-md text-[#376789] border-[#376789]"
+            asChild
+          >
+            <Link
+              href={`/home/organisations/${organisationId}/projects/${projectId}/`}
+            >
+              Cancel
+            </Link>
           </Button>
         </div>
       </div>

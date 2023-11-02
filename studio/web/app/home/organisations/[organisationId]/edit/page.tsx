@@ -127,16 +127,6 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
               <Image src={UploadImage} alt="logo" width={125} height={125} />
             </div>
           </div>
-        </form>
-        <div className="flex gap-3">
-          <Link href="/home/organisations">
-            <Button
-              variant="outline"
-              className="rounded-md text-[#376789] border-[#376789]"
-            >
-              Cancel
-            </Button>
-          </Link>
           <Button
             onClick={handleSubmit(async (data) => {
               try {
@@ -161,10 +151,20 @@ export default function Page({ params: { organisationId } }: OrgaisationParam) {
                 toast.error("Something went wrong");
               }
             })}
-            className="rounded-md bg-[#376789] text-white"
+            className="rounded-md bg-[#376789] text-white w-full"
           >
             Edit Organisation
           </Button>
+        </form>
+        <div className="flex gap-3">
+          <Link href="/home/organisations">
+            <Button
+              variant="outline"
+              className="rounded-md text-[#376789] border-[#376789]"
+            >
+              Cancel
+            </Button>
+          </Link>
         </div>
       </div>
     </main>
