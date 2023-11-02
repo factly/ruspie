@@ -8,6 +8,13 @@ import {
   fetchRowsForTable,
   fetchSchemaForTable,
 } from "@/lib/actions/features/getSchema";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { convertTextToSql } from "@/lib/actions/features/textToSql";
 import Loading from "../loading";
 import { fetchSqlForQuery } from "@/lib/actions/features/searchSql";
@@ -77,6 +84,11 @@ function SearchSql({ dataset }: { dataset: File }) {
       setLoading(false);
     }
   };
+
+  const selectOptions = [
+    { label: "Schema", value: "Schema" },
+    { label: "Rows", value: "Rows" },
+  ];
   return (
     <div className="flex flex-col gap-6 mb-10">
       <div className="mt-2 flex justify-between w-full gap-6">
@@ -106,20 +118,22 @@ function SearchSql({ dataset }: { dataset: File }) {
       <div className="flex justify-between">
         {textToSqlEnabled ? (
           <>
-            <div className="flex gap-6">
+            <div className="flex gap-6 items-center justify-center">
               <p>Search Results in:</p>
-              <div className="flex gap-2">
-                Schema
-                <Switch
-                  checked={selectedOption === "Rows"}
-                  onCheckedChange={() =>
-                    setSelectedOption(
-                      selectedOption === "Rows" ? "Schema" : "Rows",
-                    )
-                  }
-                />
-                Rows
-              </div>
+              <Select
+                onValueChange={(value) => setSelectedOption(value)}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="SQL" />
+                </SelectTrigger>
+                <SelectContent>
+                  {selectOptions.map(({ label, value }) => (
+                    <SelectItem value={value} key={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <Button
               variant="link"
