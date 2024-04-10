@@ -1,12 +1,12 @@
 # Build stage
-FROM instrumentisto/rust:nightly-bullseye AS builder
+FROM instrumentisto/rust:bullseye AS builder
 
 WORKDIR /ruspie
 COPY ./ /ruspie
 
 RUN apt-get update \
     && apt-get install -y cmake \
-    && cargo +nightly install --locked --git https://github.com/factly/ruspie --bins ruspie
+    && cargo install --locked --git https://github.com/factly/ruspie ruspie
 
 # Final stage
 FROM debian:bullseye-slim
