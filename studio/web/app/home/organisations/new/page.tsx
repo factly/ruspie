@@ -114,16 +114,6 @@ export default function Page() {
               </DialogContent>
             </Dialog>
           </div>
-        </form>
-        <div className="flex gap-3">
-          <Link href="/home/organisations">
-            <Button
-              variant="outline"
-              className="rounded-md text-[#376789] border-[#376789]"
-            >
-              Cancel
-            </Button>
-          </Link>
           <Button
             onClick={handleSubmit(async (data) => {
               try {
@@ -144,10 +134,20 @@ export default function Page() {
                 toast.error("Something went wrong");
               }
             })}
-            className="rounded-md bg-[#376789] text-white"
+            className="rounded-md bg-[#376789] text-white self-start w-full"
           >
             Create Organization
           </Button>
+        </form>
+        <div className="flex gap-3">
+          <Link href="/home/organisations">
+            <Button
+              variant="outline"
+              className="rounded-md text-[#376789] border-[#376789]"
+            >
+              Cancel
+            </Button>
+          </Link>
         </div>
       </div>
     </main>

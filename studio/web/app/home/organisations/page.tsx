@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { SearchBar } from "@/components/ui/searchBar";
 import { Organisation } from "../../../components/ui/Organisation";
 import { Organisation as OrganisationType } from "@/types/organisation";
@@ -17,6 +18,7 @@ export default function Page() {
 	const [loading, setLoading] = React.useState(true);
 	const { organisations, setOrganisations } = useOrganisationsStore();
 	const serverUrl = getServerUrl();
+	const router = useRouter();
 
 	useEffect(() => {
 		async function getOrganisations() {
@@ -29,6 +31,10 @@ export default function Page() {
 					...kavachAxiosConfig,
 				});
 				setOrganisations(resp.data.organisations);
+				if (resp.data.organisations.length === 0) {
+					router.push("/home/organisations/new");
+					toast.error("No organisations found. Create a new one");
+				}
 			} catch (err) {
 				console.log(err);
 				toast.error("Error getting organisations");
@@ -36,7 +42,7 @@ export default function Page() {
 				setLoading(false);
 			}
 		}
-		getOrganisations();
+		getOrganisations()
 	}, []);
 	const [selectedOrg, setSelectedOrg] = React.useState<string | null>(null);
 
@@ -56,6 +62,8 @@ export default function Page() {
 			setLoading(false);
 		}
 	};
+
+
 
 	return (
 		<main className="flex flex-col mt-10 bg-transparent">

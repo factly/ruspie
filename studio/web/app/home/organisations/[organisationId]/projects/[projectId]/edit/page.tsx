@@ -4,14 +4,6 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/dataEntry/input";
 import { Label } from "@/components/dataEntry/label";
 import { Textarea } from "@/components/dataEntry/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useOrganisationsStore } from "@/lib/zustand/organisation";
@@ -39,6 +31,7 @@ export default function Page({
     register,
     formState: { errors },
     setValue,
+    watch,
   } = useForm<CreateProjectSchema>({
     resolver: zodResolver(createProjectSchema),
   });
@@ -94,46 +87,15 @@ export default function Page({
     );
   }
 
-  const currentOrganisation = organisations.find(
-    (org) => parseInt(org.id) === parseInt(orgId),
-  );
+  const titleValue = watch("title");
+
+  const disableButton = titleValue === undefined || titleValue === "";``
 
   return (
     <main className="flex flex-col mt-10 bg-transparent">
       <div className="flex flex-row justify-around items-start">
         <h1 className="text-xl font-semibold">Edit {project.title}</h1>
         <form className="flex flex-col items-center w-2/5 mt-20 gap-10">
-          <div className="grid w-full items-center gap-3">
-            <Label htmlFor="organisation" className="font-normal">
-              Organisation
-            </Label>
-            <Select
-              onValueChange={(value) => {
-                organisations.map((org) => {
-                  if (org.title === value) {
-                    newOrgId = org.id;
-                  }
-                });
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue
-                  placeholder={currentOrganisation?.title}
-                ></SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {organisations.map((org) => {
-                    return (
-                      <SelectItem key={org.id} value={org.title}>
-                        {org.title}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
           <div className="grid w-full items-center gap-3">
             <Label htmlFor="title" className="font-normal">
               Title
@@ -165,16 +127,8 @@ export default function Page({
               </p>
             )}
           </div>
-        </form>
-        <div className="flex gap-3">
           <Button
-            variant="outline"
-            className="rounded-md text-[#376789] border-[#376789]"
-            asChild
-          >
-            <Link href={`/home/organisations/${orgId}`}>Cancel</Link>
-          </Button>
-          <Button
+            disabled={disableButton}
             onClick={handleSubmit(async (data) => {
               if (newOrgId !== orgId) {
                 try {
@@ -218,9 +172,18 @@ export default function Page({
                 toast.error("Something went wrong");
               }
             })}
-            className="rounded-md bg-[#376789] text-white"
+            className="rounded-md bg-[#376789] text-white w-full"
           >
             Edit Project
+          </Button>
+        </form>
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            className="rounded-md text-[#376789] border-[#376789]"
+            asChild
+          >
+            <Link href={`/home/organisations/${orgId}`}>Cancel</Link>
           </Button>
         </div>
       </div>
